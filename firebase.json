@@ -1,0 +1,7 @@
+{
+  "_comment": "Firebase CLI project config. Not to be confused with content/firebase.json, which holds the public web SDK values the site is built with. Hosting is GitHub Pages, so only Firestore is declared here.",
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

@@ -1,14 +1,16 @@
 {
   "_comment": "Firebase web config. These values are NOT secrets — they identify the project, they do not authorise anything. Security comes from firestore.rules and from the authorised-domains list in the Firebase console. Google documents this explicitly. Fill these in from Firebase console → Project settings → Your apps → Web app.",
   "_setup": "See docs/SETUP-FIREBASE.md for the full walkthrough.",
-  "apiKey": "",
-  "authDomain": "",
-  "projectId": "",
-  "storageBucket": "",
-  "messagingSenderId": "",
-  "appId": "",
+  "apiKey": "AIzaSyDHKSw1_YBE_TfJt3IedO2QiqYEDgSz7GE",
+  "authDomain": "skillry-203fb.firebaseapp.com",
+  "projectId": "skillry-203fb",
+  "storageBucket": "skillry-203fb.firebasestorage.app",
+  "messagingSenderId": "340142454899",
+  "appId": "1:340142454899:web:615a62886f9f1a3eef9206",
   "_moderatorUids": "After your first sign-in, put your own uid here so you can moderate. Find it in Firebase console → Authentication → Users.",
   "moderatorUids": [],
   "sdkVersion": "11.0.2",
-  "_sdkVersion": "Copy the version from the snippet Firebase shows you when you register the web app. If sign-in silently does nothing, this is the first thing to check."
+  "_sdkVersion": "Copy the version from the snippet Firebase shows you when you register the web app. If sign-in silently does nothing, this is the first thing to check.",
+  "authProvider": "password",
+  "_authProvider": "Email/password. Firebase hashes and stores the password; this codebase never sees it. Posting additionally requires a verified email address — see firestore.rules."
 }

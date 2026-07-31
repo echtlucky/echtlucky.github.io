@@ -22,6 +22,17 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Reading is open to everyone. Writing needs a CONFIRMED address.
+    //
+    // With email/password sign-up, an account proves only that somebody typed
+    // an address into a box — not that it was theirs. Gating writes on
+    // email_verified is the difference between a forum and an open relay, and
+    // it belongs here rather than in the interface: a form is a suggestion,
+    // a rule is enforcement.
+    function verified() {
+      return signedIn() && request.auth.token.email_verified == true;
+    }
+
     function isSelf(uid) {
       return signedIn() && request.auth.uid == uid;
     }
@@ -51,6 +62,8 @@ service cloud.firestore {
 
       // A user may create and maintain their own profile, but may never set or
       // change `role` — that is the whole point of the function above.
+      // The profile document is written on first sign-in, before the address
+      // can possibly be confirmed, so it stays on signedIn().
       allow create: if isSelf(uid)
         && textOk(request.resource.data.displayName, 1, 60)
         && !('role' in request.resource.data);
@@ -66,7 +79,7 @@ service cloud.firestore {
     match /threads/{threadId} {
       allow read: if true;
 
-      allow create: if signedIn()
+      allow create: if verified()
         && isSelf(request.resource.data.authorUid)
         && textOk(request.resource.data.title, 6, 140)
         && textOk(request.resource.data.body, 10, 8000)
@@ -78,7 +91,7 @@ service cloud.firestore {
       // The author may edit their own text or tombstone the thread. Reply count
       // and last-activity move on every reply, so they are writable by any
       // signed-in user — bounded to those two fields.
-      allow update: if signedIn() && (
+      allow update: if verified() && (
         isModerator()
         || (isSelf(resource.data.authorUid)
             && request.resource.data.authorUid == resource.data.authorUid
@@ -97,13 +110,13 @@ service cloud.firestore {
       match /posts/{postId} {
         allow read: if true;
 
-        allow create: if signedIn()
+        allow create: if verified()
           && isSelf(request.resource.data.authorUid)
           && textOk(request.resource.data.body, 1, 8000)
           && freshTimestamp(request.resource.data.createdAt)
           && request.resource.data.deleted == false;
 
-        allow update: if signedIn() && (
+        allow update: if verified() && (
           isModerator()
           || (isSelf(resource.data.authorUid)
               && request.resource.data.authorUid == resource.data.authorUid

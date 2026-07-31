@@ -3,6 +3,11 @@
 The forum is built and waiting. It needs a Firebase project to point at. Total
 time: about 20 minutes, all of it in a browser except the last two commands.
 
+**Already done for skillry.de:** the web app is registered, the config is in
+`content/firebase.json`, the Email/Password provider is on, and the security
+rules are deployed. What remains is creating the database (step 2) and
+authorising the domains (step 4).
+
 **Cost:** the free Spark plan covers this comfortably. Firestore's free tier is
 50,000 document reads and 20,000 writes per day — a forum would need to be quite
 busy to approach that.
@@ -15,8 +20,9 @@ Right now the site stores nothing and calls nobody. Switching the forum on
 changes that, and it is worth being clear about it:
 
 - The forum page loads the Firebase SDK from `gstatic.com`. No other page does.
-- Signed-in users get a record with their GitHub display name, avatar URL and
-  account id. Posts are stored with the same.
+- Signed-in users get a record with their email address and a display name they
+  choose. Posts carry the display name. The password is hashed by Firebase and
+  never reaches this site.
 - In Germany that means the site needs an **Impressum** and a
   **Datenschutzerklärung**. Both are legal requirements, not optional polish.
   Draft copy for both is in [`docs/LEGAL-DE.md`](LEGAL-DE.md) — read it, adjust
@@ -42,21 +48,31 @@ cookies.
 3. Location: **eur3 (europe-west)** or **europe-west3 (Frankfurt)**. Keeping the
    data in the EU is the simpler position under GDPR.
 
-## 3. Turn on GitHub sign-in
+## 3. Turn on Email/password sign-in
 
-This is the part with a second browser tab, so take it slowly.
+Firebase console → **Build → Authentication → Sign-in method** → **Email/Password**
+→ enable → **Save**. Leave *Email link (passwordless)* off; the forum does not
+use it.
 
-1. Firebase → **Build → Authentication** → **Get started** → **Sign-in method**.
-2. Pick **GitHub**. Leave the panel open — you need the callback URL from it.
-3. Copy the **authorisation callback URL** Firebase shows you. It looks like
-   `https://<project-id>.firebaseapp.com/__/auth/handler`.
-4. In a new tab: **https://github.com/settings/developers** → **OAuth Apps** →
-   **New OAuth App**.
-   - Application name: the site name
-   - Homepage URL: `https://echtlucky.github.io` (or your domain once you have one)
-   - Authorization callback URL: **paste the Firebase URL from step 3**
-5. **Register application**, then **Generate a new client secret**.
-6. Back in Firebase: paste the **Client ID** and **Client secret**, then **Save**.
+**Firebase stores the password, hashed. This codebase never handles one** — the
+browser sends it straight to Google, and nothing about it passes through the
+site. That is the whole reason for using Firebase Auth rather than writing a
+login form.
+
+### Posting requires a confirmed address
+
+Signing up proves that somebody typed an address into a box, not that it was
+theirs. So `firestore.rules` gates every write on `email_verified`:
+
+```
+function verified() {
+  return signedIn() && request.auth.token.email_verified == true;
+}
+```
+
+Anyone can read the forum. To post, you open the link in the verification email.
+The check lives in the rules rather than in the form, because a form is a
+suggestion and a rule is enforcement.
 
 ## 4. Authorise your domains
 
@@ -128,12 +144,12 @@ decides what buttons you are *shown*. The rules are the ones that matter.
 
 | What you see | Almost always |
 | :--- | :--- |
-| Popup opens, closes, nothing happens | Domain missing from **Authorised domains** |
+| Verification email link is refused | Domain missing from **Authorised domains** |
 | `auth/unauthorized-domain` | Same |
 | `permission-denied` on posting | Rules not deployed — step 6 |
 | Threads never load | Wrong `projectId`, or Firestore never created |
 | Nothing loads at all, console 404 on gstatic | Wrong `sdkVersion` |
-| `auth/operation-not-allowed` | GitHub provider not enabled in Firebase |
+| `auth/operation-not-allowed` | Email/Password provider not enabled in Firebase |
 
 The browser console is worth opening — Firebase errors are unusually clear about
 which of these it is.

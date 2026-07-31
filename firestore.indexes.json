@@ -1,0 +1,14 @@
+{
+  "_comment": "The thread list sorts by lastActivity and optionally filters by category, which needs a composite index. Declaring it here means the first visitor does not meet an error that only the owner can fix.",
+  "indexes": [
+    {
+      "collectionGroup": "threads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "lastActivity", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
