@@ -62,7 +62,10 @@ export const UI = {
       discussions: 'GitHub Discussions',
       learn: 'Learn about AI safety',
       security: 'Report a security issue',
-      note: 'Built in the open. No trackers, no analytics, no cookies — this site sets nothing and stores nothing.',
+      legal: 'Legal',
+      impressum: 'Site notice',
+      privacy: 'Privacy',
+      note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum is entirely self-contained; the forum talks to Firebase, and the privacy page says exactly what that means.',
       rights: 'MIT licensed. Made by Skillry.',
     },
   },
@@ -95,7 +98,10 @@ export const UI = {
       discussions: 'GitHub Discussions',
       learn: 'KI-Sicherheit verstehen',
       security: 'Sicherheitslücke melden',
-      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Cookies — diese Seite setzt nichts und speichert nichts.',
+      legal: 'Rechtliches',
+      impressum: 'Impressum',
+      privacy: 'Datenschutz',
+      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum ist vollständig in sich geschlossen; das Forum spricht mit Firebase, und die Datenschutzseite sagt genau, was das heißt.',
       rights: 'MIT-lizenziert. Gemacht von Skillry.',
     },
   },
@@ -202,6 +208,10 @@ function footer(lang, t) {
       ${col(f.about, [
         ['GitHub', SITE.github],
         ['MIT', `${SITE.repoAirlock}/blob/main/LICENSE`],
+      ])}
+      ${col(f.legal, [
+        [f.impressum, href(lang, 'impressum')],
+        [f.privacy, href(lang, 'datenschutz')],
       ])}
     </div>
     <div class="base">

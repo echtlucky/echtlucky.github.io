@@ -103,6 +103,25 @@ textarea.fld { resize: vertical; min-height: 96px; line-height: 1.6; }
 .skill h3 a { color: var(--fg); }
 .skill h3 a:hover { color: var(--link); }
 
+/* ── legal prose ────────────────────────────────────────────────────────── */
+.legal h2 { font-size: 1.35rem; margin-top: 2.2rem; }
+.legal h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+.legal h4 { font-size: 0.95rem; margin-top: 1.2rem; color: var(--fg-muted); }
+.legal p, .legal li { color: var(--fg-muted); }
+.legal p { margin: 0.8em 0; }
+.legal ul, .legal ol { padding-left: 1.2rem; margin: 0.8em 0; }
+.legal li { margin-bottom: 0.35em; }
+.legal table { font-size: 0.88rem; }
+.legal .note { margin: 1.2em 0; }
+.legal hr.divider { margin: 2rem 0; }
+
+/* An unfilled placeholder has to be impossible to overlook — a legal page that
+   quietly ships {{NAME}} is worse than one that is obviously unfinished. */
+mark.todo {
+  background: var(--danger); color: #fff; font-family: var(--mono);
+  font-size: 0.78em; padding: 1px 6px; border-radius: 3px; letter-spacing: 0.04em;
+}
+
 /* ── footer lift ────────────────────────────────────────────────────────── */
 footer.site { position: relative; }
 footer.site::before {

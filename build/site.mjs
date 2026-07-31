@@ -21,11 +21,14 @@ import * as nexus from './pages/nexus.mjs';
 import * as skills from './pages/skills.mjs';
 import * as learn from './pages/learn.mjs';
 import * as forum from './pages/forum.mjs';
+import { impressum, privacy } from './pages/legal.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist');
 
-const PAGES = [home, airlock, nexus, skills, learn, forum];
+// The legal pages sit at the end: they are reachable from the footer, not
+// from the main navigation, which is where people actually look for them.
+const PAGES = [home, airlock, nexus, skills, learn, forum, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 
