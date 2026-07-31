@@ -21,7 +21,7 @@ const T = {
     h1: 'The control layer above your Windows.',
     lede:
       'A native app that runs in the background and bundles the tools you would otherwise open half a dozen programs for: assistant, launcher, browser, code editor and broadcast studio.',
-    cta: 'Repository',
+    cta: 'Follow on GitHub',
     ctaAirlock: 'See AIRLOCK instead',
 
     nameNoteH: 'One thing about the name',
@@ -53,7 +53,7 @@ const T = {
     statusH: 'Status',
     statusP:
       'Version 0.9.0, actively developed, Windows only, and the repository is private for now. This page will grow as it opens up — there is no sign-up form here and no waiting list, because collecting addresses for something not yet released would be a way of pretending it is.',
-    statusCta: 'Follow on GitHub',
+    statusCta: 'See AIRLOCK, which is open',
   },
 
   de: {
@@ -61,7 +61,7 @@ const T = {
     h1: 'Die Schaltzentrale über deinem Windows.',
     lede:
       'Eine native App, die im Hintergrund läuft und die Werkzeuge bündelt, für die du sonst ein halbes Dutzend Programme öffnest: Assistent, Launcher, Browser, Code-Editor und Studio.',
-    cta: 'Repository',
+    cta: 'Auf GitHub folgen',
     ctaAirlock: 'Stattdessen AIRLOCK ansehen',
 
     nameNoteH: 'Eine Sache zum Namen',
@@ -93,7 +93,7 @@ const T = {
     statusH: 'Stand',
     statusP:
       'Version 0.9.0, in aktiver Entwicklung, nur Windows, und das Repository ist vorerst privat. Diese Seite wächst mit, sobald es sich öffnet — hier gibt es kein Anmeldeformular und keine Warteliste, denn Adressen für etwas zu sammeln, das noch nicht veröffentlicht ist, wäre eine Art so zu tun, als wäre es das.',
-    statusCta: 'Auf GitHub folgen',
+    statusCta: 'AIRLOCK ansehen, das offen ist',
   },
 };
 
@@ -107,7 +107,7 @@ export function body(lang) {
     <h1>${t.h1}</h1>
     <p class="lede">${t.lede}</p>
     <div class="btn-row">
-      <a class="btn btn-primary" href="${SITE.repoNexus}">${t.cta}</a>
+      <a class="btn btn-primary" href="${SITE.github}">${t.cta}</a>
       <a class="btn" href="${href(lang, 'airlock')}">${t.ctaAirlock}</a>
     </div>
   </div>
@@ -164,7 +164,7 @@ export function body(lang) {
     <div class="stack">
       <h2>${t.statusH}</h2>
       <p class="muted">${t.statusP}</p>
-      <div class="btn-row"><a class="btn" href="${SITE.github}">${t.statusCta}</a></div>
+      <div class="btn-row"><a class="btn" href="${href(lang, 'airlock')}">${t.statusCta}</a></div>
     </div>
   </div>
 </section>
