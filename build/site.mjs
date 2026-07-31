@@ -13,6 +13,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { render, LANGS, base, href, SITE } from './layout.mjs';
+import { indexPage } from './search.mjs';
 
 import * as home from './pages/home.mjs';
 import * as airlock from './pages/airlock.mjs';
@@ -32,6 +33,7 @@ if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 
 const written = [];
+const searchIndex = [];
 
 for (const lang of LANGS) {
   for (const page of PAGES) {
@@ -50,6 +52,15 @@ for (const lang of LANGS) {
     const file = join(dir, 'index.html');
     writeFileSync(file, html, 'utf8');
     written.push([href(lang, page.slug), Buffer.byteLength(html)]);
+
+    // Index the rendered page, so search only ever finds what a reader can see.
+    searchIndex.push(...indexPage({
+      lang,
+      url: href(lang, page.slug),
+      title: meta.title,
+      html,
+      kind: page.slug === '' ? 'page' : 'page',
+    }));
   }
 }
 
@@ -79,6 +90,8 @@ ${urls.join('\n')}
 `,
   'utf8',
 );
+
+writeFileSync(join(OUT, 'search-index.json'), JSON.stringify(searchIndex), 'utf8');
 
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 'utf8');
 

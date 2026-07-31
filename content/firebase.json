@@ -1,0 +1,14 @@
+{
+  "_comment": "Firebase web config. These values are NOT secrets — they identify the project, they do not authorise anything. Security comes from firestore.rules and from the authorised-domains list in the Firebase console. Google documents this explicitly. Fill these in from Firebase console → Project settings → Your apps → Web app.",
+  "_setup": "See docs/SETUP-FIREBASE.md for the full walkthrough.",
+  "apiKey": "",
+  "authDomain": "",
+  "projectId": "",
+  "storageBucket": "",
+  "messagingSenderId": "",
+  "appId": "",
+  "_moderatorUids": "After your first sign-in, put your own uid here so you can moderate. Find it in Firebase console → Authentication → Users.",
+  "moderatorUids": [],
+  "sdkVersion": "11.0.2",
+  "_sdkVersion": "Copy the version from the snippet Firebase shows you when you register the web app. If sign-in silently does nothing, this is the first thing to check."
+}

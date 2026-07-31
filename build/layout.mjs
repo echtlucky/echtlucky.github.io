@@ -7,6 +7,8 @@
  */
 
 import { CSS } from './theme.mjs';
+import { CSS_EXTRA, HERO_JS } from './theme-extra.mjs';
+import { SEARCH_CSS, SEARCH_MARKUP, SEARCH_JS, anchorHeadings } from './search.mjs';
 
 export const LANGS = ['en', 'de'];
 export const DEFAULT_LANG = 'en';
@@ -16,6 +18,7 @@ export const SITE = {
   github: 'https://github.com/echtlucky',
   repoAirlock: 'https://github.com/echtlucky/airlock',
   repoNexus: 'https://github.com/echtlucky/nexus-os',
+  repoSite: 'https://github.com/echtlucky/echtlucky.github.io',
   discussions: 'https://github.com/echtlucky/airlock/discussions',
 };
 
@@ -33,8 +36,17 @@ export const UI = {
   en: {
     tagline: 'Tools for people who use AI, and want to know what it is running.',
     nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill index', learn: 'Learn', forum: 'Forum' },
-    searchPlaceholder: 'Search skills',
-    searchHint: 'Search the skill index',
+    searchPlaceholder: 'Search',
+    searchHint: 'Search this site',
+    searchEverything: 'Search pages, skills and guides…',
+    typeToSearch: 'Start typing to search everything on this site.',
+    noResults: 'Nothing found. Try a different word.',
+    navigate: 'to navigate',
+    open: 'to open',
+    page: 'page',
+    section: 'section',
+    result: 'result',
+    resultsWord: 'results',
     themeLabel: 'Toggle light and dark',
     skipLink: 'Skip to content',
     footer: {
@@ -57,8 +69,17 @@ export const UI = {
   de: {
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
     nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill-Index', learn: 'Lernen', forum: 'Forum' },
-    searchPlaceholder: 'Skills durchsuchen',
-    searchHint: 'Den Skill-Index durchsuchen',
+    searchPlaceholder: 'Suchen',
+    searchHint: 'Diese Seite durchsuchen',
+    searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
+    typeToSearch: 'Tippen, um alles auf dieser Seite zu durchsuchen.',
+    noResults: 'Nichts gefunden. Probier ein anderes Wort.',
+    navigate: 'zum Blättern',
+    open: 'zum Öffnen',
+    page: 'Seite',
+    section: 'Abschnitt',
+    result: 'Treffer',
+    resultsWord: 'Treffer',
     themeLabel: 'Hell und dunkel umschalten',
     skipLink: 'Zum Inhalt springen',
     footer: {
@@ -143,9 +164,9 @@ function header(lang, current, t) {
     <a class="gh-logo" href="${href(lang, '')}">${LOGO}<span>${SITE.name}</span></a>
     <nav class="gh-nav" aria-label="Main">${nav}</nav>
     <div class="gh-actions">
-      <a class="gh-search" href="${href(lang, 'skills')}" title="${t.searchHint}">
+      <button type="button" class="gh-search" data-search-open title="${t.searchHint}">
         ${ICON_SEARCH}<span>${t.searchPlaceholder}</span><kbd>/</kbd>
-      </a>
+      </button>
       <div class="lang-switch">${langs}</div>
       <button class="icon-btn" id="themeBtn" type="button" title="${t.themeLabel}" aria-label="${t.themeLabel}">${ICON_THEME}</button>
       <a class="icon-btn" href="${SITE.github}" title="GitHub" aria-label="GitHub">${ICON_GH}</a>
@@ -213,6 +234,19 @@ document.addEventListener('keydown', function (e) {
   }
 });`;
 
+/** Only the strings the search dialog needs, so the payload stays small. */
+const searchStrings = (t) => ({
+  searchEverything: t.searchEverything,
+  typeToSearch: t.typeToSearch,
+  noResults: t.noResults,
+  navigate: t.navigate,
+  open: t.open,
+  page: t.page,
+  section: t.section,
+  result: t.result,
+  resultsWord: t.resultsWord,
+});
+
 /**
  * @param {{ lang: string, slug: string, title: string, description: string,
  *           body: string, script?: string, head?: string }} page
@@ -242,18 +276,21 @@ export function render(page) {
 <link rel="alternate" hreflang="${page.lang}" href="${href(page.lang, page.slug)}">
 ${alt}
 <script>${THEME_BOOT}</script>
-<style>${CSS}</style>
+<style>${CSS}${CSS_EXTRA}${SEARCH_CSS}</style>
 ${page.head ?? ''}
 </head>
 <body>
 <a href="#main" class="sr">${t.skipLink}</a>
 ${header(page.lang, page.slug, t)}
 <main id="main">
-${page.body}
+${anchorHeadings(page.body)}
 </main>
+${SEARCH_MARKUP(t)}
 ${footer(page.lang, t)}
 <script>
 ${THEME_TOGGLE}
+${SEARCH_JS(page.lang, searchStrings(t))}
+${HERO_JS}
 ${page.script ?? ''}
 </script>
 </body>

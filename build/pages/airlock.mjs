@@ -147,7 +147,8 @@ export function body(lang) {
   const t = T[lang];
 
   return `
-<section class="hero" style="border-top:3px solid var(--airlock)">
+<section class="hero hero-stage" style="border-top:3px solid var(--airlock)">
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="wrap stack">
     <span class="eyebrow accent-airlock">${t.eyebrow}</span>
     <h1>${t.h1}</h1>

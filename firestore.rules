@@ -1,0 +1,124 @@
+rules_version = '2';
+
+// Firestore security rules for the forum.
+//
+// The web config in content/firebase.json is public by design — it identifies
+// the project, it does not authorise anything. THIS FILE is the actual security
+// boundary, which is why it is written defensively:
+//
+//   * everything is readable, nothing is writable without a signed-in user
+//   * a user can only ever write their own uid into a document
+//   * lengths are bounded here, not only in the form, because a form is a
+//     suggestion and rules are enforcement
+//   * nothing is ever hard-deleted by a normal user, so a thread cannot vanish
+//     mid-argument; posts are tombstoned and stay auditable
+//
+// Deploy with:  firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Moderators are listed on their own user document by an administrator
+    // editing Firestore directly. There is deliberately no way to grant
+    // yourself this from the client.
+    function isModerator() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'moderator';
+    }
+
+    function textOk(field, minLen, maxLen) {
+      return field is string && field.size() >= minLen && field.size() <= maxLen;
+    }
+
+    // The client must stamp server time, so a post cannot claim to be from
+    // last year in order to sit at the top of a sorted list.
+    function freshTimestamp(field) {
+      return field == request.time;
+    }
+
+    // ── profiles ───────────────────────────────────────────────────────────
+    match /users/{uid} {
+      allow read: if true;
+
+      // A user may create and maintain their own profile, but may never set or
+      // change `role` — that is the whole point of the function above.
+      allow create: if isSelf(uid)
+        && textOk(request.resource.data.displayName, 1, 60)
+        && !('role' in request.resource.data);
+
+      allow update: if isSelf(uid)
+        && !('role' in request.resource.data.diff(resource.data).affectedKeys())
+        && textOk(request.resource.data.displayName, 1, 60);
+
+      allow delete: if false;
+    }
+
+    // ── threads ────────────────────────────────────────────────────────────
+    match /threads/{threadId} {
+      allow read: if true;
+
+      allow create: if signedIn()
+        && isSelf(request.resource.data.authorUid)
+        && textOk(request.resource.data.title, 6, 140)
+        && textOk(request.resource.data.body, 10, 8000)
+        && request.resource.data.category in ['help', 'skills', 'false-positives', 'misses', 'ideas', 'showcase']
+        && freshTimestamp(request.resource.data.createdAt)
+        && request.resource.data.replyCount == 0
+        && request.resource.data.deleted == false;
+
+      // The author may edit their own text or tombstone the thread. Reply count
+      // and last-activity move on every reply, so they are writable by any
+      // signed-in user — bounded to those two fields.
+      allow update: if signedIn() && (
+        isModerator()
+        || (isSelf(resource.data.authorUid)
+            && request.resource.data.authorUid == resource.data.authorUid
+            && request.resource.data.createdAt == resource.data.createdAt
+            && textOk(request.resource.data.title, 6, 140)
+            && textOk(request.resource.data.body, 10, 8000))
+        || request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['replyCount', 'lastActivity'])
+      );
+
+      // Nothing is hard-deleted from the client. Removing a thread means
+      // setting `deleted`, which keeps the record and the moderation trail.
+      allow delete: if false;
+
+      // ── replies ──────────────────────────────────────────────────────────
+      match /posts/{postId} {
+        allow read: if true;
+
+        allow create: if signedIn()
+          && isSelf(request.resource.data.authorUid)
+          && textOk(request.resource.data.body, 1, 8000)
+          && freshTimestamp(request.resource.data.createdAt)
+          && request.resource.data.deleted == false;
+
+        allow update: if signedIn() && (
+          isModerator()
+          || (isSelf(resource.data.authorUid)
+              && request.resource.data.authorUid == resource.data.authorUid
+              && request.resource.data.createdAt == resource.data.createdAt
+              && textOk(request.resource.data.body, 1, 8000))
+        );
+
+        allow delete: if false;
+      }
+    }
+
+    // Anything not matched above is denied. Adding a collection means adding a
+    // rule for it on purpose.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

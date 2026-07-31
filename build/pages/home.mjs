@@ -157,7 +157,8 @@ export function body(lang) {
   const t = T[lang];
 
   return `
-<section class="hero">
+<section class="hero hero-stage">
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="eyebrow">${t.eyebrow}</span>
     <h1>${t.h1}</h1>

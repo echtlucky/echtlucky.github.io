@@ -140,7 +140,8 @@ export function body(lang) {
   ].join('');
 
   return `
-<section class="hero" style="padding-bottom:24px">
+<section class="hero hero-stage" style="padding-bottom:24px">
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="wrap stack">
     <span class="eyebrow">${t.eyebrow}</span>
     <h1>${t.h1}</h1>

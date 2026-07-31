@@ -13,6 +13,7 @@
 export const TOKENS = {
   airlock: '#4EE296',
   nexus: '#38D9FF',
+  index: '#F5B942',
   danger: '#FF6146',
 };
 
@@ -33,6 +34,7 @@ export const CSS = `
   --header-border: #32383f;
   --airlock: #0f7a4f;
   --nexus: #0a7ea4;
+  --accent-idx: #9a6700;
   --danger: #cf222e;
   --ok: #1a7f37;
   --shadow: 0 1px 3px rgba(31,35,40,0.08);
@@ -61,6 +63,7 @@ export const CSS = `
     --header-border: #3d444d;
     --airlock: ${TOKENS.airlock};
     --nexus: ${TOKENS.nexus};
+    --accent-idx: ${TOKENS.index};
     --danger: ${TOKENS.danger};
     --ok: #3fb950;
     --shadow: 0 0 transparent;
@@ -72,7 +75,7 @@ export const CSS = `
   --border: #3d444d; --border-strong: #545d68;
   --fg: #f0f6fc; --fg-muted: #9198a1; --fg-subtle: #7d8590; --link: #4493f8;
   --header-bg: #151b23; --header-fg: #f0f6fc; --header-border: #3d444d;
-  --airlock: ${TOKENS.airlock}; --nexus: ${TOKENS.nexus}; --danger: ${TOKENS.danger}; --ok: #3fb950;
+  --airlock: ${TOKENS.airlock}; --nexus: ${TOKENS.nexus}; --accent-idx: ${TOKENS.index}; --danger: ${TOKENS.danger}; --ok: #3fb950;
   --shadow: 0 0 transparent;
 }
 :root[data-theme="light"] {
@@ -80,7 +83,7 @@ export const CSS = `
   --border: #d1d9e0; --border-strong: #b7c0c9;
   --fg: #1f2328; --fg-muted: #59636e; --fg-subtle: #818b98; --link: #0969da;
   --header-bg: #24292f; --header-fg: #ffffff; --header-border: #32383f;
-  --airlock: #0f7a4f; --nexus: #0a7ea4; --danger: #cf222e; --ok: #1a7f37;
+  --airlock: #0f7a4f; --nexus: #0a7ea4; --accent-idx: #9a6700; --danger: #cf222e; --ok: #1a7f37;
   --shadow: 0 1px 3px rgba(31,35,40,0.08);
 }
 

@@ -208,6 +208,592 @@
         "Edit",
         "Bash"
       ]
+    },
+    {
+      "id": "anthropics-skills",
+      "name": "anthropics/skills",
+      "author": "Anthropic",
+      "source": "anthropics/skills",
+      "url": "https://github.com/anthropics/skills",
+      "license": "Mixed — see note",
+      "tags": [
+        "official",
+        "documents",
+        "reference"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Anthropic’s own skill collection",
+        "de": "Anthropics eigene Skill-Sammlung"
+      },
+      "description": {
+        "en": "The first-party reference collection: document handling, canvas design, artifact building and more. Licensing is mixed — most are Apache-2.0, but the docx, pdf, pptx and xlsx skills are source-available and not open source.",
+        "de": "Die First-Party-Referenzsammlung: Dokumentverarbeitung, Canvas-Design, Artifact-Bau und mehr. Die Lizenzierung ist gemischt — das meiste ist Apache-2.0, aber die Skills docx, pdf, pptx und xlsx sind source-available und nicht Open Source."
+      },
+      "scan": {
+        "verdict": "review",
+        "findings": 1,
+        "invisible": 3,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "anthropic-plugins-official",
+      "name": "anthropics/claude-plugins-official",
+      "author": "Anthropic",
+      "source": "anthropics/claude-plugins-official",
+      "url": "https://github.com/anthropics/claude-plugins-official",
+      "license": "Apache-2.0",
+      "tags": [
+        "official",
+        "plugins",
+        "reference"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "The official plugin marketplace",
+        "de": "Der offizielle Plugin-Marktplatz"
+      },
+      "description": {
+        "en": "Anthropic’s curated plugin listing. Worth reading their own caveat: they state they cannot verify that third-party plugins work as intended or that they will not change.",
+        "de": "Anthropics kuratierte Plugin-Liste. Der eigene Vorbehalt ist lesenswert: Anthropic schreibt selbst, dass nicht überprüft werden kann, ob Plugins Dritter wie beabsichtigt funktionieren oder ob sie sich ändern."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "trailofbits-skills",
+      "name": "trailofbits/skills",
+      "author": "Trail of Bits",
+      "source": "trailofbits/skills",
+      "url": "https://github.com/trailofbits/skills",
+      "license": "CC-BY-SA-4.0",
+      "tags": [
+        "security",
+        "audit",
+        "coding"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Security audit skills from a professional firm",
+        "de": "Security-Audit-Skills von einer Fachfirma"
+      },
+      "description": {
+        "en": "CodeQL and Semgrep static analysis, variant analysis across a codebase, fix verification and differential review. Note the share-alike licence if you plan to redistribute.",
+        "de": "Statische Analyse mit CodeQL und Semgrep, Variantenanalyse über eine Codebasis, Fix-Verifikation und Differential-Review. Die Share-alike-Lizenz beachten, falls du weiterverteilen willst."
+      },
+      "scan": {
+        "verdict": "review",
+        "findings": 0,
+        "invisible": 17,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "microsoft-azure-skills",
+      "name": "microsoft/azure-skills",
+      "author": "Microsoft",
+      "source": "microsoft/azure-skills",
+      "url": "https://github.com/microsoft/azure-skills",
+      "license": "MIT",
+      "tags": [
+        "official",
+        "cloud",
+        "devops"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Azure deployment and diagnostics",
+        "de": "Azure-Deployment und Diagnose"
+      },
+      "description": {
+        "en": "First-party skills for deploying to Azure, diagnosing running services and querying with Kusto.",
+        "de": "First-Party-Skills fürs Deployment nach Azure, die Diagnose laufender Dienste und Abfragen mit Kusto."
+      },
+      "scan": {
+        "verdict": "review",
+        "findings": 1,
+        "invisible": 3,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "vercel-labs-skills",
+      "name": "vercel-labs/skills",
+      "author": "Vercel Labs",
+      "source": "vercel-labs/skills",
+      "url": "https://github.com/vercel-labs/skills",
+      "license": "MIT",
+      "tags": [
+        "official",
+        "tooling",
+        "installer"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "The skills installer CLI",
+        "de": "Das Installer-CLI für Skills"
+      },
+      "description": {
+        "en": "The `npx skills` command line installer rather than a skill collection itself — the thing most people use to put skills on their machine.",
+        "de": "Der Kommandozeilen-Installer `npx skills`, keine Skill-Sammlung — das Werkzeug, mit dem die meisten Leute Skills auf ihre Maschine bringen."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "network:egress"
+        ],
+        "filesScanned": 1,
+        "sampledOf": 1,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "vercel-agent-browser",
+      "name": "vercel-labs/agent-browser",
+      "author": "Vercel Labs",
+      "source": "vercel-labs/agent-browser",
+      "url": "https://github.com/vercel-labs/agent-browser",
+      "license": "Apache-2.0",
+      "tags": [
+        "browser",
+        "automation",
+        "tooling"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Browser automation for agents",
+        "de": "Browser-Automatisierung für Agenten"
+      },
+      "description": {
+        "en": "Lets an assistant drive a real browser. Note that it is a CLI distributed alongside skills rather than a pure skill, so it brings an executable with it.",
+        "de": "Lässt einen Assistenten einen echten Browser steuern. Beachte: Es ist ein CLI, das zusammen mit Skills verteilt wird, kein reiner Skill — es bringt also eine ausführbare Datei mit."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "obra-superpowers",
+      "name": "obra/superpowers",
+      "author": "obra",
+      "source": "obra/superpowers",
+      "url": "https://github.com/obra/superpowers",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "workflow",
+        "coding"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "A large community workflow collection",
+        "de": "Eine große Community-Workflow-Sammlung"
+      },
+      "description": {
+        "en": "One of the most widely installed community collections, covering planning, debugging and development workflow. Large surface area — worth scanning before installing wholesale.",
+        "de": "Eine der am weitesten verbreiteten Community-Sammlungen, mit Planung, Debugging und Entwicklungs-Workflow. Große Oberfläche — vor der Komplettinstallation lohnt ein Scan."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "mattpocock-skills",
+      "name": "mattpocock/skills",
+      "author": "Matt Pocock",
+      "source": "mattpocock/skills",
+      "url": "https://github.com/mattpocock/skills",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "coding",
+        "testing"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Engineering practice skills",
+        "de": "Skills für Entwicklungspraxis"
+      },
+      "description": {
+        "en": "Test-driven development, code review habits and TypeScript practice from a well-known educator in that space.",
+        "de": "Testgetriebene Entwicklung, Review-Gewohnheiten und TypeScript-Praxis von einem bekannten Vermittler in dem Feld."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "ui-ux-pro-max",
+      "name": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "author": "nextlevelbuilder",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "design",
+        "frontend"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "UI and UX design guidance",
+        "de": "UI- und UX-Design-Anleitung"
+      },
+      "description": {
+        "en": "Design systems, colour, typography and layout guidance for building interfaces — one of the most installed design skills.",
+        "de": "Designsysteme, Farbe, Typografie und Layout für den Bau von Oberflächen — einer der am häufigsten installierten Design-Skills."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "scientific-agent-skills",
+      "name": "K-Dense-AI/scientific-agent-skills",
+      "author": "K-Dense AI",
+      "source": "K-Dense-AI/scientific-agent-skills",
+      "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "science",
+        "data"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Scientific research capabilities",
+        "de": "Fähigkeiten für wissenschaftliches Arbeiten"
+      },
+      "description": {
+        "en": "Skills for scientific work and access to research databases. The commonly-cited K-Dense-AI/claude-scientific-skills URL redirects here; this is the canonical one.",
+        "de": "Skills für wissenschaftliche Arbeit und Zugriff auf Forschungsdatenbanken. Die oft zitierte URL K-Dense-AI/claude-scientific-skills leitet hierher um; das hier ist die kanonische."
+      },
+      "scan": {
+        "verdict": "review",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "claude-seo",
+      "name": "AgriciDaniel/claude-seo",
+      "author": "AgriciDaniel",
+      "source": "AgriciDaniel/claude-seo",
+      "url": "https://github.com/AgriciDaniel/claude-seo",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "seo",
+        "marketing"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Technical SEO and structured data",
+        "de": "Technisches SEO und strukturierte Daten"
+      },
+      "description": {
+        "en": "Technical SEO, schema markup and reporting — one of the few well-used skills aimed at marketing rather than engineering.",
+        "de": "Technisches SEO, Schema-Markup und Reporting — einer der wenigen gut genutzten Skills, die auf Marketing statt Entwicklung zielen."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "video-use",
+      "name": "browser-use/video-use",
+      "author": "browser-use",
+      "source": "browser-use/video-use",
+      "url": "https://github.com/browser-use/video-use",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "media",
+        "video"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Working with video",
+        "de": "Arbeiten mit Video"
+      },
+      "description": {
+        "en": "Video processing and understanding. The clearest entry in a category that is otherwise thin — most media skills have little usage behind them.",
+        "de": "Videoverarbeitung und -verständnis. Der deutlichste Eintrag in einer sonst dünnen Kategorie — die meisten Medien-Skills haben wenig Nutzung dahinter."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write"
+        ],
+        "filesScanned": 2,
+        "sampledOf": 2,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "hermes-agent",
+      "name": "NousResearch/hermes-agent",
+      "author": "Nous Research",
+      "source": "NousResearch/hermes-agent",
+      "url": "https://github.com/NousResearch/hermes-agent",
+      "license": "MIT",
+      "tags": [
+        "community",
+        "agent",
+        "reference"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "An agent framework with bundled skills",
+        "de": "Ein Agenten-Framework mit mitgelieferten Skills"
+      },
+      "description": {
+        "en": "An agent project rather than a pure skill collection, but it ships skills worth reading as reference implementations.",
+        "de": "Eher ein Agenten-Projekt als eine reine Skill-Sammlung, liefert aber Skills mit, die als Referenzimplementierungen lesenswert sind."
+      },
+      "scan": {
+        "verdict": "block",
+        "findings": 1,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress",
+          "network:fetch"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "awesome-claude-skills",
+      "name": "ComposioHQ/awesome-claude-skills",
+      "author": "Composio",
+      "source": "ComposioHQ/awesome-claude-skills",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "license": "None declared",
+      "tags": [
+        "list",
+        "community",
+        "reference"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "A large index of community skills",
+        "de": "Ein großer Index von Community-Skills"
+      },
+      "description": {
+        "en": "One of the biggest community lists. It has no licence file, so treat reuse of its contents carefully, and note that a list is not a verification.",
+        "de": "Eine der größten Community-Listen. Sie hat keine Lizenzdatei — Weiterverwendung der Inhalte also mit Vorsicht. Und: Eine Liste ist keine Prüfung."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "openai-plugins",
+      "name": "openai/plugins",
+      "author": "OpenAI",
+      "source": "openai/plugins",
+      "url": "https://github.com/openai/plugins",
+      "license": "None declared",
+      "tags": [
+        "official",
+        "plugins",
+        "reference"
+      ],
+      "runtime": [
+        "other"
+      ],
+      "title": {
+        "en": "OpenAI’s plugin collection",
+        "de": "OpenAIs Plugin-Sammlung"
+      },
+      "description": {
+        "en": "The successor to openai/skills, which is deprecated and now redirects here. Different runtime, listed for orientation across the ecosystem.",
+        "de": "Der Nachfolger von openai/skills, das eingestellt ist und hierher umleitet. Andere Laufzeit, gelistet zur Orientierung im Ökosystem."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "invisible": 2,
+        "reaches": [
+          "exec:shell",
+          "fs:write",
+          "network:egress"
+        ],
+        "filesScanned": 6,
+        "sampledOf": 6,
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      }
+    },
+    {
+      "id": "mcp-registry",
+      "name": "modelcontextprotocol/registry",
+      "author": "Model Context Protocol",
+      "source": "modelcontextprotocol/registry",
+      "url": "https://github.com/modelcontextprotocol/registry",
+      "license": "See repository",
+      "tags": [
+        "official",
+        "registry",
+        "mcp"
+      ],
+      "runtime": [
+        "other"
+      ],
+      "title": {
+        "en": "The official MCP registry",
+        "de": "Das offizielle MCP-Register"
+      },
+      "description": {
+        "en": "Verifies namespace ownership through GitHub, DNS or HTTP — identity rather than code. A different axis of trust from scanning, and a good one.",
+        "de": "Prüft Namespace-Eigentum über GitHub, DNS oder HTTP — Identität statt Code. Eine andere Vertrauensachse als Scannen, und eine gute."
+      },
+      "scan": null
     }
   ]
 }
