@@ -68,7 +68,8 @@ for (const lang of LANGS) {
 // Sitemap, robots, and the file that stops GitHub Pages running Jekyll over us
 // ---------------------------------------------------------------------------
 
-const ORIGIN = 'https://skillry.de';
+const SITE_CFG = JSON.parse(readFileSync(join(ROOT, 'content', 'site.json'), 'utf8'));
+const ORIGIN = SITE_CFG.origin;
 
 const urls = [];
 for (const lang of LANGS) {
@@ -93,10 +94,15 @@ ${urls.join('\n')}
 
 writeFileSync(join(OUT, 'search-index.json'), JSON.stringify(searchIndex), 'utf8');
 
-// GitHub Pages needs this file in the published output, not in the repo
-// root: the deploy replaces everything under dist/, so a CNAME left at the
-// root would be dropped on the next push and the domain would detach.
-writeFileSync(join(OUT, 'CNAME'), 'skillry.de\n', 'utf8');
+// GitHub Pages reads this out of the published artifact and starts
+// redirecting the github.io address to it the moment it appears. Emitting
+// it before DNS is ready takes the site down without anything having
+// failed: both addresses then serve the registrar's parking page. So it is
+// written only once customDomain is deliberately set, which is meant to
+// happen after DNS resolves, not before.
+if (SITE_CFG.customDomain) {
+  writeFileSync(join(OUT, 'CNAME'), `${SITE_CFG.customDomain}\n`, 'utf8');
+}
 
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 'utf8');
 
