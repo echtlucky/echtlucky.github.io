@@ -1,0 +1,115 @@
+/**
+ * Builds the whole site.
+ *
+ *   node build/site.mjs
+ *
+ * Every page is emitted once per language: English at the root, German under
+ * /de/. There is no framework and no dependency — a site this size does not
+ * need a build pipeline, it needs a loop.
+ */
+
+import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { render, LANGS, base, href, SITE } from './layout.mjs';
+
+import * as home from './pages/home.mjs';
+import * as airlock from './pages/airlock.mjs';
+import * as nexus from './pages/nexus.mjs';
+import * as skills from './pages/skills.mjs';
+import * as learn from './pages/learn.mjs';
+import * as forum from './pages/forum.mjs';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const OUT = join(ROOT, 'dist');
+
+const PAGES = [home, airlock, nexus, skills, learn, forum];
+
+// ---------------------------------------------------------------------------
+
+if (existsSync(OUT)) rmSync(OUT, { recursive: true, force: true });
+mkdirSync(OUT, { recursive: true });
+
+const written = [];
+
+for (const lang of LANGS) {
+  for (const page of PAGES) {
+    const meta = page.meta[lang];
+    const html = render({
+      lang,
+      slug: page.slug,
+      title: meta.title,
+      description: meta.description,
+      body: page.body(lang),
+      script: typeof page.script === 'function' ? page.script(lang) : '',
+    });
+
+    const dir = join(OUT, base(lang).replace(/^\//, ''), page.slug);
+    mkdirSync(dir, { recursive: true });
+    const file = join(dir, 'index.html');
+    writeFileSync(file, html, 'utf8');
+    written.push([href(lang, page.slug), Buffer.byteLength(html)]);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Sitemap, robots, and the file that stops GitHub Pages running Jekyll over us
+// ---------------------------------------------------------------------------
+
+const ORIGIN = 'https://echtlucky.github.io';
+
+const urls = [];
+for (const lang of LANGS) {
+  for (const page of PAGES) {
+    const loc = `${ORIGIN}${href(lang, page.slug)}`;
+    const alts = LANGS.map(
+      (l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}"/>`,
+    ).join('\n');
+    urls.push(`  <url>\n    <loc>${loc}</loc>\n${alts}\n  </url>`);
+  }
+}
+
+writeFileSync(
+  join(OUT, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.join('\n')}
+</urlset>
+`,
+  'utf8',
+);
+
+writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 'utf8');
+
+// GitHub Pages runs Jekyll by default, which silently ignores files starting
+// with an underscore. We have none, but relying on that is a trap for later.
+writeFileSync(join(OUT, '.nojekyll'), '', 'utf8');
+
+// A 404 that keeps the header, so a wrong URL is not a dead end.
+const notFound = render({
+  lang: 'en',
+  slug: '',
+  title: '404 — page not found · echtlucky',
+  description: 'That page does not exist.',
+  body: `<section class="hero"><div class="wrap stack">
+    <span class="eyebrow">404</span>
+    <h1>That page does not exist.</h1>
+    <p class="lede">The link may be old, or I may have moved something. Everything is reachable from the header above.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/">Home</a>
+      <a class="btn" href="/skills/">Skill index</a>
+      <a class="btn" href="${SITE.repoAirlock}">GitHub</a>
+    </div>
+  </div></section>`,
+});
+writeFileSync(join(OUT, '404.html'), notFound, 'utf8');
+
+// ---------------------------------------------------------------------------
+
+const total = written.reduce((n, [, bytes]) => n + bytes, 0);
+process.stdout.write(`built ${written.length} pages · ${(total / 1024).toFixed(0)} KB total\n`);
+for (const [url, bytes] of written) {
+  process.stdout.write(`  ${url.padEnd(18)} ${(bytes / 1024).toFixed(0).padStart(4)} KB\n`);
+}
+process.stdout.write('  + sitemap.xml, robots.txt, 404.html, .nojekyll\n');

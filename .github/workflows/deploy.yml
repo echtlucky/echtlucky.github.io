@@ -1,0 +1,68 @@
+name: build & deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The index claims a verdict for every entry. Checking that claim needs
+      # the real engine, so the tool repository is checked out alongside.
+      - name: Check out AIRLOCK
+        uses: actions/checkout@v4
+        continue-on-error: true
+        id: airlock
+        with:
+          repository: echtlucky/airlock
+          path: .airlock-src
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Validate the skill index
+        run: node build/validate.mjs
+
+      # Nobody may type their own verdict: every stored verdict is re-derived
+      # from the actual skill, and a mismatch fails the build.
+      - name: Re-derive every verdict
+        if: steps.airlock.outcome == 'success'
+        run: AIRLOCK_PATH=$GITHUB_WORKSPACE/.airlock-src node build/validate.mjs --verdicts
+
+      - name: Build
+        run: node build/site.mjs
+
+      - name: Check for dead internal links
+        run: node build/linkcheck.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

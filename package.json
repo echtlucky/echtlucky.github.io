@@ -1,0 +1,15 @@
+{
+  "name": "echtlucky-site",
+  "private": true,
+  "type": "module",
+  "description": "echtlucky.github.io — product site, skill index and learning material. Zero dependencies.",
+  "scripts": {
+    "build": "node build/site.mjs && node build/linkcheck.mjs",
+    "validate": "node build/validate.mjs",
+    "validate:verdicts": "node build/validate.mjs --verdicts",
+    "rescan": "node build/rescan.mjs",
+    "linkcheck": "node build/linkcheck.mjs",
+    "serve": "node build/serve.mjs 8080",
+    "check": "npm run validate && npm run build"
+  }
+}

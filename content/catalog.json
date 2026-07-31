@@ -1,0 +1,213 @@
+{
+  "note": "Verdicts in this file are produced by build/rescan.mjs running the real AIRLOCK engine, never typed by hand. An entry with no local checkout keeps verdict 'unscanned' and the index says so on its face.",
+  "updated": "2026-07-31",
+  "skills": [
+    {
+      "id": "airlock-review",
+      "name": "airlock-review",
+      "author": "echtlucky",
+      "source": "echtlucky/airlock",
+      "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-review",
+      "localPath": "skills/airlock-review/SKILL.md",
+      "license": "MIT",
+      "tags": [
+        "security",
+        "review",
+        "verification"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Review a skill before installing it",
+        "de": "Einen Skill prüfen, bevor er installiert wird"
+      },
+      "description": {
+        "en": "Scans a SKILL.md for hidden text, instruction override and credential reach, then explains the verdict in plain language. Use it on anything a stranger sent you.",
+        "de": "Prüft eine SKILL.md auf versteckten Text, Instruction Override und Zugriff auf Zugangsdaten und erklärt das Urteil im Klartext. Für alles, was dir jemand Fremdes geschickt hat."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "critical": 0,
+        "high": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell"
+        ],
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      },
+      "tools": [
+        "Bash",
+        "Read",
+        "Write"
+      ]
+    },
+    {
+      "id": "airlock-approve",
+      "name": "airlock-approve",
+      "author": "echtlucky",
+      "source": "echtlucky/airlock",
+      "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-approve",
+      "localPath": "skills/airlock-approve/SKILL.md",
+      "license": "MIT",
+      "tags": [
+        "security",
+        "signing",
+        "lockfile"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Approve a skill collection and sign it",
+        "de": "Eine Skill-Sammlung freigeben und signieren"
+      },
+      "description": {
+        "en": "Records your decision as a signed lockfile: a hash per file, all hashed into one root, signed with a local key. Turns 'I read this once' into something enforceable.",
+        "de": "Hält deine Entscheidung als signiertes Lockfile fest: ein Hash je Datei, alle in eine Wurzel gehasht, mit lokalem Schlüssel signiert. Macht aus „einmal gelesen“ etwas Durchsetzbares."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "critical": 0,
+        "high": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell"
+        ],
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      },
+      "tools": [
+        "Bash",
+        "Read"
+      ]
+    },
+    {
+      "id": "airlock-guard",
+      "name": "airlock-guard",
+      "author": "echtlucky",
+      "source": "echtlucky/airlock",
+      "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-guard",
+      "localPath": "skills/airlock-guard/SKILL.md",
+      "license": "MIT",
+      "tags": [
+        "security",
+        "monitoring",
+        "drift"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Check installed skills for drift",
+        "de": "Installierte Skills auf Drift prüfen"
+      },
+      "description": {
+        "en": "Tells you whether the skills running today are the ones you approved. Catches the case where the visible text is unchanged and only the invisible layer moved.",
+        "de": "Sagt dir, ob die Skills von heute noch die sind, die du freigegeben hast. Erwischt auch den Fall, in dem nur die unsichtbare Ebene sich bewegt hat."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "critical": 0,
+        "high": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell"
+        ],
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      },
+      "tools": [
+        "Bash"
+      ]
+    },
+    {
+      "id": "airlock-decode",
+      "name": "airlock-decode",
+      "author": "echtlucky",
+      "source": "echtlucky/airlock",
+      "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-decode",
+      "localPath": "skills/airlock-decode/SKILL.md",
+      "license": "MIT",
+      "tags": [
+        "forensics",
+        "unicode",
+        "utility"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Reveal hidden characters in any text",
+        "de": "Versteckte Zeichen in beliebigem Text aufdecken"
+      },
+      "description": {
+        "en": "Works on anything, not only skills — an issue comment, a commit message, a snippet from a web page. Decodes invisible payloads back into readable text.",
+        "de": "Funktioniert mit allem, nicht nur mit Skills — Issue-Kommentar, Commit-Nachricht, Textschnipsel aus dem Netz. Dekodiert unsichtbare Payloads zurück in lesbaren Text."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "critical": 0,
+        "high": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell"
+        ],
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      },
+      "tools": [
+        "Bash",
+        "Write",
+        "Read"
+      ]
+    },
+    {
+      "id": "airlock-author",
+      "name": "airlock-author",
+      "author": "echtlucky",
+      "source": "echtlucky/airlock",
+      "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-author",
+      "localPath": "skills/airlock-author/SKILL.md",
+      "license": "MIT",
+      "tags": [
+        "authoring",
+        "best-practice"
+      ],
+      "runtime": [
+        "claude-code"
+      ],
+      "title": {
+        "en": "Write a skill that passes review",
+        "de": "Einen Skill schreiben, der die Prüfung besteht"
+      },
+      "description": {
+        "en": "Declare what you reach for, avoid the phrasings that look like an injection, and know which escape hatch to use when a literal really is needed.",
+        "de": "Deklariere, wonach du greifst, vermeide Formulierungen, die wie eine Injection aussehen, und wisse, welche Ausnahme du nimmst, wenn ein Literal wirklich nötig ist."
+      },
+      "scan": {
+        "verdict": "pass",
+        "findings": 0,
+        "critical": 0,
+        "high": 0,
+        "invisible": 0,
+        "reaches": [
+          "exec:shell"
+        ],
+        "engine": "1.0.0",
+        "date": "2026-07-31"
+      },
+      "tools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash"
+      ]
+    }
+  ]
+}
