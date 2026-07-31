@@ -14,7 +14,7 @@ export const LANGS = ['en', 'de'];
 export const DEFAULT_LANG = 'en';
 
 export const SITE = {
-  name: 'echtlucky',
+  name: 'Skillry',
   github: 'https://github.com/echtlucky',
   repoAirlock: 'https://github.com/echtlucky/airlock',
   repoNexus: 'https://github.com/echtlucky/nexus-os',
@@ -63,7 +63,7 @@ export const UI = {
       learn: 'Learn about AI safety',
       security: 'Report a security issue',
       note: 'Built in the open. No trackers, no analytics, no cookies — this site sets nothing and stores nothing.',
-      rights: 'MIT licensed. Made by echtlucky.',
+      rights: 'MIT licensed. Made by Skillry.',
     },
   },
   de: {
@@ -96,7 +96,7 @@ export const UI = {
       learn: 'KI-Sicherheit verstehen',
       security: 'Sicherheitslücke melden',
       note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Cookies — diese Seite setzt nichts und speichert nichts.',
-      rights: 'MIT-lizenziert. Gemacht von echtlucky.',
+      rights: 'MIT-lizenziert. Gemacht von Skillry.',
     },
   },
 };

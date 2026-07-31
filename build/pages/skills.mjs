@@ -10,12 +10,12 @@ const CATALOG = JSON.parse(readFileSync(join(ROOT, 'content', 'catalog.json'), '
 
 export const meta = {
   en: {
-    title: 'Skill index — every entry carries a scan verdict · echtlucky',
+    title: 'Skill index — every entry carries a scan verdict · Skillry',
     description:
       'A searchable index of agent skills where every entry carries a verdict produced by running AIRLOCK over it, not typed by hand. Submit yours by pull request.',
   },
   de: {
-    title: 'Skill-Index — jeder Eintrag trägt ein Scan-Urteil · echtlucky',
+    title: 'Skill-Index — jeder Eintrag trägt ein Scan-Urteil · Skillry',
     description:
       'Ein durchsuchbarer Index für Agent-Skills, bei dem jeder Eintrag ein Urteil trägt, das durch einen echten AIRLOCK-Scan entstanden ist — nicht per Hand eingetippt. Eigene Skills per Pull Request einreichen.',
   },

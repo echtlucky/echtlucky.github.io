@@ -4,12 +4,12 @@ export const slug = 'airlock';
 
 export const meta = {
   en: {
-    title: 'AIRLOCK — supply-chain verification for agent skills · echtlucky',
+    title: 'AIRLOCK — supply-chain verification for agent skills · Skillry',
     description:
       'AIRLOCK reads an agent skill before your assistant does, decodes anything hidden back into text, and pins what you approved in a signed lockfile. Zero dependencies, fully offline, executes nothing.',
   },
   de: {
-    title: 'AIRLOCK — Supply-Chain-Verifikation für Agent-Skills · echtlucky',
+    title: 'AIRLOCK — Supply-Chain-Verifikation für Agent-Skills · Skillry',
     description:
       'AIRLOCK liest einen Agent-Skill, bevor dein Assistent es tut, dekodiert alles Versteckte zurück in Text und schreibt das Freigegebene in einem signierten Lockfile fest. Null Dependencies, komplett offline, führt nichts aus.',
   },

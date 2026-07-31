@@ -13,12 +13,12 @@ const CONFIGURED = Boolean(FB.projectId && FB.apiKey);
 
 export const meta = {
   en: {
-    title: 'Forum — ask, share and report · echtlucky',
+    title: 'Forum — ask, share and report · Skillry',
     description:
       'A forum for people using AI assistants: ask what something means, share a skill, report a false positive. Sign in with GitHub — no new password to invent.',
   },
   de: {
-    title: 'Forum — fragen, teilen, melden · echtlucky',
+    title: 'Forum — fragen, teilen, melden · Skillry',
     description:
       'Ein Forum für Leute, die KI-Assistenten benutzen: fragen was etwas bedeutet, einen Skill teilen, einen False Positive melden. Anmeldung mit GitHub — kein neues Passwort nötig.',
   },

@@ -68,7 +68,7 @@ for (const lang of LANGS) {
 // Sitemap, robots, and the file that stops GitHub Pages running Jekyll over us
 // ---------------------------------------------------------------------------
 
-const ORIGIN = 'https://echtlucky.github.io';
+const ORIGIN = 'https://skillry.de';
 
 const urls = [];
 for (const lang of LANGS) {
@@ -93,6 +93,11 @@ ${urls.join('\n')}
 
 writeFileSync(join(OUT, 'search-index.json'), JSON.stringify(searchIndex), 'utf8');
 
+// GitHub Pages needs this file in the published output, not in the repo
+// root: the deploy replaces everything under dist/, so a CNAME left at the
+// root would be dropped on the next push and the domain would detach.
+writeFileSync(join(OUT, 'CNAME'), 'skillry.de\n', 'utf8');
+
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ORIGIN}/sitemap.xml\n`, 'utf8');
 
 // GitHub Pages runs Jekyll by default, which silently ignores files starting
@@ -103,7 +108,7 @@ writeFileSync(join(OUT, '.nojekyll'), '', 'utf8');
 const notFound = render({
   lang: 'en',
   slug: '',
-  title: '404 — page not found · echtlucky',
+  title: '404 — page not found · Skillry',
   description: 'That page does not exist.',
   body: `<section class="hero"><div class="wrap stack">
     <span class="eyebrow">404</span>

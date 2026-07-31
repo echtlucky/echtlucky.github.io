@@ -4,12 +4,12 @@ export const slug = '';
 
 export const meta = {
   en: {
-    title: 'echtlucky — know what your AI is actually running',
+    title: 'Skillry — know what your AI is actually running',
     description:
       'Open tools for people who use AI: AIRLOCK verifies the skills your assistant loads, NEXUS puts your assistant, launcher and studio in one native app. Plus a searchable skill index and plain-language explanations.',
   },
   de: {
-    title: 'echtlucky — wissen, was deine KI wirklich ausführt',
+    title: 'Skillry — wissen, was deine KI wirklich ausführt',
     description:
       'Offene Werkzeuge für Leute, die KI benutzen: AIRLOCK prüft die Skills, die dein Assistent lädt, NEXUS bündelt Assistent, Launcher und Studio in einer nativen App. Dazu ein durchsuchbarer Skill-Index und Erklärungen im Klartext.',
   },

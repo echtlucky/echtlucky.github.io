@@ -4,12 +4,12 @@ export const slug = 'learn';
 
 export const meta = {
   en: {
-    title: 'Learn — how AI assistants can be tricked, in plain language · echtlucky',
+    title: 'Learn — how AI assistants can be tricked, in plain language · Skillry',
     description:
       'What an AI assistant actually loads, how text can hide instructions, what can go wrong, and what you can do about it. Two depths: plain language, or the technical detail.',
   },
   de: {
-    title: 'Lernen — wie KI-Assistenten ausgetrickst werden, im Klartext · echtlucky',
+    title: 'Lernen — wie KI-Assistenten ausgetrickst werden, im Klartext · Skillry',
     description:
       'Was ein KI-Assistent wirklich lädt, wie Text Anweisungen verstecken kann, was schiefgehen kann und was du dagegen tun kannst. Zwei Tiefen: Klartext oder technisches Detail.',
   },

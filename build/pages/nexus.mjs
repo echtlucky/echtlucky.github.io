@@ -4,12 +4,12 @@ export const slug = 'nexus';
 
 export const meta = {
   en: {
-    title: 'NEXUS — the control layer above your Windows · echtlucky',
+    title: 'NEXUS — the control layer above your Windows · Skillry',
     description:
       'NEXUS bundles the AI assistant, launcher, browser, code editor and broadcast studio into one native Windows app. Local first, provider-neutral, configurable down to a single file.',
   },
   de: {
-    title: 'NEXUS — die Schaltzentrale über deinem Windows · echtlucky',
+    title: 'NEXUS — die Schaltzentrale über deinem Windows · Skillry',
     description:
       'NEXUS bündelt KI-Assistent, Launcher, Browser, Code-Editor und Studio in einer nativen Windows-App. Lokal zuerst, anbieterneutral, bis auf eine Konfigurationsdatei steuerbar.',
   },

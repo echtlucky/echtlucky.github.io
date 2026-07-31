@@ -5,7 +5,7 @@
     {
       "id": "airlock-review",
       "name": "airlock-review",
-      "author": "echtlucky",
+      "author": "Skillry",
       "source": "echtlucky/airlock",
       "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-review",
       "localPath": "skills/airlock-review/SKILL.md",
@@ -47,7 +47,7 @@
     {
       "id": "airlock-approve",
       "name": "airlock-approve",
-      "author": "echtlucky",
+      "author": "Skillry",
       "source": "echtlucky/airlock",
       "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-approve",
       "localPath": "skills/airlock-approve/SKILL.md",
@@ -88,7 +88,7 @@
     {
       "id": "airlock-guard",
       "name": "airlock-guard",
-      "author": "echtlucky",
+      "author": "Skillry",
       "source": "echtlucky/airlock",
       "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-guard",
       "localPath": "skills/airlock-guard/SKILL.md",
@@ -128,7 +128,7 @@
     {
       "id": "airlock-decode",
       "name": "airlock-decode",
-      "author": "echtlucky",
+      "author": "Skillry",
       "source": "echtlucky/airlock",
       "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-decode",
       "localPath": "skills/airlock-decode/SKILL.md",
@@ -170,7 +170,7 @@
     {
       "id": "airlock-author",
       "name": "airlock-author",
-      "author": "echtlucky",
+      "author": "Skillry",
       "source": "echtlucky/airlock",
       "url": "https://github.com/echtlucky/airlock/tree/main/skills/airlock-author",
       "localPath": "skills/airlock-author/SKILL.md",
