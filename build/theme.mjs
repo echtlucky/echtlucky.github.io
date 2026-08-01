@@ -17,6 +17,64 @@ export const TOKENS = {
   danger: '#FF6146',
 };
 
+/**
+ * The two palettes, written once and used three times — the media query, and
+ * the two explicit overrides the theme toggle stamps onto <html>. They used to
+ * be three copies that had to be edited in lockstep, which is the kind of thing
+ * that stays right until exactly one of them is forgotten.
+ */
+const DARK = `
+  --bg: #0d1117;
+  --bg-subtle: #010409;
+  --surface: #161c24;
+  --surface-2: #212830;
+  --border: #30363d;
+  --border-strong: #545d68;
+  --fg: #f0f6fc;
+  --fg-muted: #9198a1;
+  --fg-subtle: #7d8590;
+  --link: #4493f8;
+  --header-bg: #10151c;
+  --header-fg: #f0f6fc;
+  --header-border: #30363d;
+  --airlock: ${TOKENS.airlock};
+  --nexus: ${TOKENS.nexus};
+  --accent-idx: ${TOKENS.index};
+  --danger: ${TOKENS.danger};
+  --ok: #3fb950;
+  --shadow: 0 1px 0 rgba(255,255,255,0.04);
+  --e1: 0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(1,4,9,0.6);
+  --e2: 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px -8px rgba(1,4,9,0.85);
+  --e3: 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px -16px rgba(1,4,9,0.95);
+  --sheen: inset 0 1px 0 rgba(255,255,255,0.045);
+`;
+
+const LIGHT = `
+  --bg: #ffffff;
+  --bg-subtle: #f6f8fa;
+  --surface: #ffffff;
+  --surface-2: #f6f8fa;
+  --border: #d8dee4;
+  --border-strong: #b7c0c9;
+  --fg: #1f2328;
+  --fg-muted: #59636e;
+  --fg-subtle: #818b98;
+  --link: #0969da;
+  --header-bg: #1c2128;
+  --header-fg: #ffffff;
+  --header-border: #32383f;
+  --airlock: #0f7a4f;
+  --nexus: #0a7ea4;
+  --accent-idx: #9a6700;
+  --danger: #cf222e;
+  --ok: #1a7f37;
+  --shadow: 0 1px 3px rgba(31,35,40,0.08);
+  --e1: 0 1px 2px rgba(31,35,40,0.06), 0 1px 3px rgba(31,35,40,0.05);
+  --e2: 0 2px 4px rgba(31,35,40,0.05), 0 8px 20px -6px rgba(31,35,40,0.10);
+  --e3: 0 4px 8px rgba(31,35,40,0.06), 0 20px 40px -12px rgba(31,35,40,0.16);
+  --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
+`;
+
 export const CSS = `
 :root {
   --bg: #ffffff;
@@ -39,53 +97,46 @@ export const CSS = `
   --ok: #1a7f37;
   --shadow: 0 1px 3px rgba(31,35,40,0.08);
 
+  /**
+   * Three levels of elevation rather than one flat shade.
+   *
+   * Each is two shadows: a tight one that reads as a contact edge, and a wide
+   * soft one that reads as distance. A single blurred shadow gives the grey
+   * halo that makes a light-mode page look washed out — the tight layer is what
+   * keeps the card's edge crisp while the soft layer does the lifting.
+   */
+  --e1: 0 1px 2px rgba(31,35,40,0.06), 0 1px 3px rgba(31,35,40,0.05);
+  --e2: 0 2px 4px rgba(31,35,40,0.05), 0 8px 20px -6px rgba(31,35,40,0.10);
+  --e3: 0 4px 8px rgba(31,35,40,0.06), 0 20px 40px -12px rgba(31,35,40,0.16);
+  /* A hairline of light along the top edge. Free depth, costs no layout. */
+  --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
+
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
   --w: 1280px;
-  --radius: 6px;
+  --radius: 8px;
+  --radius-lg: 14px;
+
+  /* Motion, named once so a single line can slow the whole site down. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --fast: 140ms;
+  --slow: 420ms;
 }
 
+/**
+ * Dark mode is not the light palette inverted.
+ *
+ * Shadows do almost nothing on a dark ground — there is no light to occlude —
+ * so depth there comes from the surface getting *lighter* as it rises, and
+ * from a hairline along the top edge. Keeping --e1..--e3 defined in both modes
+ * means components never have to ask which mode they are in.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1117;
-    --bg-subtle: #010409;
-    --surface: #151b23;
-    --surface-2: #212830;
-    --border: #3d444d;
-    --border-strong: #545d68;
-    --fg: #f0f6fc;
-    --fg-muted: #9198a1;
-    --fg-subtle: #7d8590;
-    --link: #4493f8;
-    --header-bg: #151b23;
-    --header-fg: #f0f6fc;
-    --header-border: #3d444d;
-    --airlock: ${TOKENS.airlock};
-    --nexus: ${TOKENS.nexus};
-    --accent-idx: ${TOKENS.index};
-    --danger: ${TOKENS.danger};
-    --ok: #3fb950;
-    --shadow: 0 0 transparent;
-  }
+  :root { ${DARK} }
 }
-
-:root[data-theme="dark"] {
-  --bg: #0d1117; --bg-subtle: #010409; --surface: #151b23; --surface-2: #212830;
-  --border: #3d444d; --border-strong: #545d68;
-  --fg: #f0f6fc; --fg-muted: #9198a1; --fg-subtle: #7d8590; --link: #4493f8;
-  --header-bg: #151b23; --header-fg: #f0f6fc; --header-border: #3d444d;
-  --airlock: ${TOKENS.airlock}; --nexus: ${TOKENS.nexus}; --accent-idx: ${TOKENS.index}; --danger: ${TOKENS.danger}; --ok: #3fb950;
-  --shadow: 0 0 transparent;
-}
-:root[data-theme="light"] {
-  --bg: #ffffff; --bg-subtle: #f6f8fa; --surface: #ffffff; --surface-2: #f6f8fa;
-  --border: #d1d9e0; --border-strong: #b7c0c9;
-  --fg: #1f2328; --fg-muted: #59636e; --fg-subtle: #818b98; --link: #0969da;
-  --header-bg: #24292f; --header-fg: #ffffff; --header-border: #32383f;
-  --airlock: #0f7a4f; --nexus: #0a7ea4; --accent-idx: #9a6700; --danger: #cf222e; --ok: #1a7f37;
-  --shadow: 0 1px 3px rgba(31,35,40,0.08);
-}
+:root[data-theme="dark"] { ${DARK} }
+:root[data-theme="light"] { ${LIGHT} }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
@@ -97,22 +148,51 @@ body {
   color: var(--fg);
   font-family: var(--sans);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Real punctuation and proportional-looking numerals in running text. */
+  font-variant-numeric: proportional-nums;
+  text-rendering: optimizeLegibility;
 }
 
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; }
+::selection { background: color-mix(in srgb, var(--airlock) 28%, transparent); color: var(--fg); }
+
+/**
+ * Links get an underline that sits below the baseline instead of through the
+ * descenders, and thickens on hover rather than appearing from nothing — the
+ * appearing kind makes the line jump by a pixel as you move across it.
+ */
+a {
+  color: var(--link);
+  text-decoration: none;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  transition: color var(--fast) var(--ease), text-decoration-color var(--fast) var(--ease);
+}
+a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 3px; }
 
-h1, h2, h3, h4 { margin: 0; line-height: 1.25; font-weight: 600; text-wrap: balance; letter-spacing: -0.012em; }
-h1 { font-size: clamp(1.9rem, 1.4rem + 2.2vw, 3rem); }
-h2 { font-size: clamp(1.4rem, 1.2rem + 0.9vw, 1.95rem); }
-h3 { font-size: 1.15rem; }
-p { margin: 0; }
-code, kbd, .mono { font-family: var(--mono); font-size: 0.875em; }
-code:not(pre code) { background: var(--surface-2); border: 1px solid var(--border); padding: 0.1em 0.35em; border-radius: 4px; }
+/**
+ * Display sizes want tighter tracking than body text: the same letter-spacing
+ * that steadies 16px makes 48px look loose. The scale steps by roughly 1.25
+ * and each level tightens a little further.
+ */
+h1, h2, h3, h4 { margin: 0; line-height: 1.18; font-weight: 650; text-wrap: balance; }
+h1 { font-size: clamp(2.1rem, 1.4rem + 2.8vw, 3.6rem); letter-spacing: -0.028em; line-height: 1.06; }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem); letter-spacing: -0.021em; }
+h3 { font-size: 1.18rem; letter-spacing: -0.011em; }
+h4 { font-size: 1rem; letter-spacing: -0.006em; }
+
+/* Avoids the single-word last line that makes a paragraph look unfinished. */
+p { margin: 0; text-wrap: pretty; }
+
+code, kbd, .mono { font-family: var(--mono); font-size: 0.875em; font-variant-ligatures: none; }
+code:not(pre code) {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border: 1px solid var(--border);
+  padding: 0.12em 0.38em; border-radius: 5px;
+}
 
 .wrap { max-width: var(--w); margin: 0 auto; padding: 0 24px; }
 .narrow { max-width: 68ch; }
@@ -200,11 +280,15 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 2rem; }
 .btn {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 18px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+  padding: 11px 20px; border-radius: var(--radius); font-size: 15px; font-weight: 600;
   border: 1px solid var(--border-strong); background: var(--surface); color: var(--fg);
-  cursor: pointer;
+  cursor: pointer; box-shadow: var(--e1), var(--sheen);
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease),
+              border-color var(--fast) var(--ease), background var(--fast) var(--ease);
 }
-.btn:hover { text-decoration: none; border-color: var(--fg-muted); background: var(--surface-2); }
+.btn:hover { text-decoration: none; border-color: var(--fg-muted); background: var(--surface-2); box-shadow: var(--e2), var(--sheen); transform: translateY(-1px); }
+/* Pressing has to move the thing down again, or the button feels stuck up. */
+.btn:active { transform: translateY(0); box-shadow: var(--e1); }
 .btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .btn-primary:hover { background: var(--fg-muted); border-color: var(--fg-muted); color: var(--bg); }
 
@@ -215,7 +299,7 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 
 .card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow);
+  border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--e1), var(--sheen);
   display: flex; flex-direction: column; gap: 0.7rem;
 }
 .card h3 { display: flex; align-items: center; gap: 9px; }

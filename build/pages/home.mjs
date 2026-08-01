@@ -18,7 +18,10 @@ export const meta = {
 const T = {
   en: {
     eyebrow: 'Open source · MIT · no accounts required',
-    h1: 'Know what your AI is actually running.',
+    // The one span that carries the site's three accents. It sits on the word
+    // the whole project is about, and nowhere else — a gradient used twice is
+    // decoration, used once it is emphasis.
+    h1: 'Know what your AI is <span class="lit">actually</span> running.',
     lede:
       'AI assistants load instructions written by strangers. Those instructions are plain text files, nothing checks them, and text can hide things you will never see on your screen. These are the tools I build so that stops being true.',
     ctaPrimary: 'Check your skills',
@@ -86,7 +89,7 @@ const T = {
 
   de: {
     eyebrow: 'Open Source · MIT · kein Konto nötig',
-    h1: 'Wissen, was deine KI wirklich ausführt.',
+    h1: 'Wissen, was deine KI <span class="lit">wirklich</span> ausführt.',
     lede:
       'KI-Assistenten laden Anweisungen, die Fremde geschrieben haben. Diese Anweisungen sind simple Textdateien, nichts prüft sie, und in Text kann man Dinge verstecken, die du auf deinem Bildschirm nie zu sehen bekommst. Das hier sind die Werkzeuge, die ich baue, damit das aufhört.',
     ctaPrimary: 'Deine Skills prüfen',
