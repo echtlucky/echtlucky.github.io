@@ -1,8 +1,8 @@
 /**
  * A deliberately small Markdown renderer.
  *
- * It covers exactly what the legal pages use: headings, paragraphs, lists,
- * tables, emphasis, inline code, links and blockquotes. Everything it does not
+ * It covers exactly what the legal pages use: headings, paragraphs, hard line
+ * breaks, lists, tables, emphasis, inline code, links and blockquotes. Everything it does not
  * understand is escaped and shown as text rather than passed through, which is
  * the right default for a project whose subject is text that turns out not to
  * be what it looked like.
@@ -19,6 +19,11 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ESC[c]);
 // any input. Built numerically — a literal invisible character in source is
 // exactly the thing this project exists to object to.
 const MARK = String.fromCodePoint(0xe000);
+
+// Hard line breaks are marked with the same sentinel before escaping, so the
+// document cannot smuggle one in. 'br' is not digits, so it cannot collide with
+// the numbered code-span markers below.
+const BREAK = `${MARK}br${MARK}`;
 
 /** Inline formatting, applied after escaping so no markup can be smuggled in. */
 function inline(raw) {
@@ -125,7 +130,15 @@ export function renderMarkdown(md) {
       para.push(lines[i]);
       i++;
     }
-    if (para.length) out.push(`<p>${inline(para.join(' '))}</p>`);
+    if (para.length) {
+      // A line ending in two spaces is a hard break, as in standard Markdown.
+      // A postal address is the reason this exists: "Name, street, town" is one
+      // paragraph that must not be reflowed into one line.
+      const joined = para
+        .map((l, n) => (n < para.length - 1 && /  $/.test(l) ? `${l.trimEnd()}${BREAK}` : l.trimEnd()))
+        .join(' ');
+      out.push(`<p>${inline(joined).split(`${BREAK} `).join('<br>')}</p>`);
+    }
   }
 
   closeList(list);
