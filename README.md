@@ -35,9 +35,26 @@ it to `LANGS` and filling in the strings — the loop does the rest.
 
 Every entry carries a verdict, and **no verdict in this repository was typed by
 hand**. `build/rescan.mjs` runs the actual AIRLOCK engine over each skill and
-writes back the result with its date and engine version. Continuous integration
-then re-derives every verdict and **fails if the file disagrees**, so a pull
-request cannot introduce an entry that claims to be clean.
+writes back the result with its date and engine version.
+
+Continuous integration re-derives those verdicts and **fails if the file
+disagrees**, so a pull request cannot introduce an entry that claims to be
+clean. Two honest qualifications, because a guarantee is worth what its
+exceptions are worth:
+
+- It currently covers **5 of the 21 entries** — the ones with a `localPath`
+  into a local AIRLOCK checkout. The other sixteen hold verdicts that
+  `build/fetch-scan.mjs` produced from a remote file at whatever the default
+  branch pointed at that day. Real verdicts, but not reproducible ones,
+  because nothing records the commit they came from. `npm run validate
+  --verdicts` prints the ratio rather than rounding it up.
+- Pinning every entry to a commit and a blob hash is the next piece of work,
+  and it is what will make the sentence above true without a footnote.
+
+The check itself no longer has a quiet way out: the AIRLOCK checkout in
+`.github/workflows/deploy.yml` used to be `continue-on-error`, with the verdict
+step conditional on it. A missing checkout therefore skipped the check and the
+build went green — a guarantee that stops applying exactly when it is needed.
 
 ### Submitting a skill
 

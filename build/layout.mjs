@@ -386,7 +386,7 @@ function footer(lang, t) {
       ${col(f.community, [
         [f.forum, href(lang, 'forum')],
         [f.discussions, SITE.discussions],
-        [f.submit, `${SITE.repoAirlock}/blob/main/CONTRIBUTING.md`],
+        [f.submit, `${SITE.repoSite}/blob/main/README.md#submitting-a-skill`],
         [f.security, `${SITE.repoAirlock}/security/advisories/new`],
       ])}
       ${col(f.about, [

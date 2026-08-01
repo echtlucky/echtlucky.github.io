@@ -21,10 +21,16 @@ jobs:
 
       # The index claims a verdict for every entry. Checking that claim needs
       # the real engine, so the tool repository is checked out alongside.
+      #
+      # This step used to carry `continue-on-error: true`, and the verdict step
+      # below was conditional on it having succeeded. Together those two lines
+      # made the central promise of this repository unenforceable in exactly
+      # the case where it matters: if the checkout ever failed — repository
+      # renamed, made private, GitHub having a bad afternoon — the check was
+      # skipped and the build went green. A guarantee that quietly stops
+      # applying is not a guarantee. It runs, or the build fails.
       - name: Check out AIRLOCK
         uses: actions/checkout@v4
-        continue-on-error: true
-        id: airlock
         with:
           repository: echtlucky/airlock
           path: .airlock-src
@@ -39,7 +45,6 @@ jobs:
       # Nobody may type their own verdict: every stored verdict is re-derived
       # from the actual skill, and a mismatch fails the build.
       - name: Re-derive every verdict
-        if: steps.airlock.outcome == 'success'
         run: AIRLOCK_PATH=$GITHUB_WORKSPACE/.airlock-src node build/validate.mjs --verdicts
 
       - name: Build
