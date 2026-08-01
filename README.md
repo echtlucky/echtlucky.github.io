@@ -55,12 +55,22 @@ AIRLOCK_PATH=../airlock npm run validate:verdicts  # and the verdicts
 
 ## How this site behaves
 
-No trackers, no analytics, no cookies, no fonts or scripts from anyone else.
-The only thing stored in your browser is the light/dark setting and which depth
-you picked in the Learn section — both local, neither ever sent anywhere.
+No trackers, no analytics, no cookies. The only thing stored in your browser is
+the light/dark setting and which depth you picked in the Learn section — both
+local, neither ever sent anywhere.
 
-The forum is GitHub Discussions, so the only account involved is one you already
-control. No password of yours is ever stored here.
+Every page except the forum is self-contained: no fonts, scripts or images from
+anyone else. The forum is the exception and says so. It loads the Firebase SDK
+from `gstatic.com` and talks to Firebase Authentication and Firestore, which
+means an IP address reaches Google there even without signing in. Reading needs
+no account; posting needs a confirmed email address. Firebase hashes the
+password — this codebase never sees it.
+
+`content/legal/` holds the Impressum and the privacy policy as Markdown, so they
+can be revised without touching code. A missing file renders as a visible
+placeholder rather than an empty page, and unfilled `{{TOKEN}}` values are marked
+loudly: a legal page that merely looks finished is worse than one that admits it
+is not.
 
 ## Licence
 

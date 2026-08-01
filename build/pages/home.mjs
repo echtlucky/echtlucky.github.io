@@ -78,8 +78,8 @@ const T = {
     trustEyebrow: 'How this site behaves',
     trustH: 'Nothing here watches you',
     trustPoints: [
-      ['No trackers, no analytics, no cookies', 'This page sets nothing and stores nothing except the light/dark setting you choose, which never leaves your browser.'],
-      ['No account needed to read anything', 'The forum runs on GitHub Discussions, so the only login is one you already control. No password of yours is ever stored here.'],
+      ['No trackers, no analytics, no cookies', 'This page sets nothing and stores nothing except two settings you choose yourself — light or dark, and the depth you picked in Learn. Neither ever leaves your browser.'],
+      ['No account needed to read anything', 'Reading the forum needs no account. Posting does: it runs on Firebase, with an email address you have to confirm. Firebase hashes the password — this codebase never sees it — and the privacy page names every party involved.'],
       ['Everything is checkable', 'Every number on this site comes from a script you can run yourself, and the ones that are self-measured say so.'],
     ],
   },
@@ -146,8 +146,8 @@ const T = {
     trustEyebrow: 'Wie sich diese Seite verhält',
     trustH: 'Hier beobachtet dich nichts',
     trustPoints: [
-      ['Keine Tracker, keine Analytics, keine Cookies', 'Diese Seite setzt nichts und speichert nichts außer der Hell/Dunkel-Einstellung, die du wählst — und die verlässt deinen Browser nie.'],
-      ['Kein Konto nötig, um irgendetwas zu lesen', 'Das Forum läuft über GitHub Discussions. Der einzige Login ist einer, den du ohnehin kontrollierst. Hier wird nie ein Passwort von dir gespeichert.'],
+      ['Keine Tracker, keine Analytics, keine Cookies', 'Diese Seite setzt nichts und speichert nichts außer zwei Einstellungen, die du selbst wählst — hell oder dunkel, und die Tiefe im Lernbereich. Beide verlassen deinen Browser nie.'],
+      ['Kein Konto nötig, um irgendetwas zu lesen', 'Zum Lesen des Forums brauchst du kein Konto. Zum Schreiben schon: es läuft über Firebase, mit einer E-Mail-Adresse, die du bestätigen musst. Das Passwort hasht Firebase — dieser Code sieht es nie — und die Datenschutzseite benennt jeden Beteiligten.'],
       ['Alles ist nachprüfbar', 'Jede Zahl auf dieser Seite kommt aus einem Skript, das du selbst laufen lassen kannst — und wo selbst gemessen wurde, steht das dabei.'],
     ],
   },
