@@ -33,14 +33,14 @@
  *     the idea; the miter ratio is 1.62, well inside the default limit.
  *   - It is a line, not a silhouette. Filling it produces a blob.
  */
-export const LOGO = `<svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.17 16.57A9.96 7.8 0 0 1 6.17 5.53A9.96 7.8 0 0 1 20.26 5.53L17.83 7.43A9.96 7.8 0 0 1 17.83 18.47A9.96 7.8 0 0 1 3.74 18.47Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter"/></svg>`;
+export const LOGO = `<svg class="mark" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6.17 16.57A9.96 7.8 0 0 1 6.17 5.53A9.96 7.8 0 0 1 20.26 5.53L17.83 7.43A9.96 7.8 0 0 1 17.83 18.47A9.96 7.8 0 0 1 3.74 18.47Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="miter" stroke-miterlimit="4"/></svg>`;
 
 /**
  * The favicon needs the same path with a literal colour — currentColor means
  * nothing inside a data: URI, where there is no cascade to inherit from.
  */
 export const LOGO_FAVICON = (hex) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M6.17 16.57A9.96 7.8 0 0 1 6.17 5.53A9.96 7.8 0 0 1 20.26 5.53L17.83 7.43A9.96 7.8 0 0 1 17.83 18.47A9.96 7.8 0 0 1 3.74 18.47Z" stroke="${hex}" stroke-width="2.1" stroke-linejoin="miter"/></svg>`;
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M6.17 16.57A9.96 7.8 0 0 1 6.17 5.53A9.96 7.8 0 0 1 20.26 5.53L17.83 7.43A9.96 7.8 0 0 1 17.83 18.47A9.96 7.8 0 0 1 3.74 18.47Z" stroke="${hex}" stroke-width="2.1" stroke-linejoin="miter" stroke-miterlimit="4"/></svg>`;
 
 /**
  * The wordmark.

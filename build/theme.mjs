@@ -261,10 +261,18 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
   .gh-nav { overflow-x: auto; scrollbar-width: none; }
   .gh-nav::-webkit-scrollbar { display: none; }
 }
-@media (max-width: 620px) {
-  .gh-header .wrap { height: 56px; gap: 10px; }
-  .gh-logo span { display: none; }
-}
+/*
+ * The rule that used to stand here hid the wordmark below 620px — from the days
+ * when it was the site name set in the same interface font as everything else,
+ * and therefore expendable. It is now a serif that carries the whole of the
+ * branding, and hiding it left every phone visitor looking at an unlabelled
+ * symbol. Sizing down is the answer; disappearing is not. What the header does
+ * at each width is decided in build/header.mjs.
+ *
+ * Note for anyone editing this file: it is one long template literal, so a
+ * backtick in a comment ends the stylesheet. That is exactly how this comment
+ * broke the build the first time it was written.
+ */
 
 /* ── hero ───────────────────────────────────────────────────────────────── */
 .hero { padding: clamp(56px, 9vw, 112px) 0 clamp(40px, 6vw, 72px); }

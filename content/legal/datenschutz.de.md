@@ -32,14 +32,19 @@ Beim Abruf verarbeitet GitHub technisch notwendige Verbindungsdaten, insbesonder
 
 ## 4. Was in Ihrem Browser gespeichert wird
 
-Diese Seite setzt keine Cookies. Sie legt zwei Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
+Diese Seite setzt keine Cookies. Sie legt bis zu drei Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
 
 | Schlüssel | Inhalt | Zweck |
 | --- | --- | --- |
 | `theme` | `light` oder `dark` | merkt sich die gewählte Darstellung |
 | `level` | die gewählte Tiefe im Lernbereich | zeigt beim nächsten Besuch dieselbe Stufe |
+| `skillry:who` | Ihr Anzeigename und ob Ihre E-Mail-Adresse bestätigt ist | zeigt in der Kopfleiste, dass Sie angemeldet sind |
 
-Beide Werte entstehen nur, wenn Sie den Umschalter tatsächlich benutzen. Sie werden **nicht** an mich oder an Dritte übertragen, enthalten keinen Personenbezug und lassen sich jederzeit über die Einstellungen Ihres Browsers löschen.
+Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden.
+
+`skillry:who` verdient eine Erklärung, weil er der Grund ist, warum die Kopfleiste Sie begrüßen kann, ohne dass irgendeine Seite mit Google spricht. Der Anmeldezustand liegt eigentlich bei Firebase; ihn dort abzufragen hieße, das Firebase-SDK auf **jeder** Seite zu laden — und damit wäre die Zusage aus Abschnitt 5, dass alle Seiten außer dem Forum nichts von fremden Servern laden, nicht mehr wahr. Stattdessen schreibt die Anmeldung diesen einen Wert lokal, und alle anderen Seiten lesen nur ihn. Er enthält kein Token und keine E-Mail-Adresse, er berechtigt zu nichts — wer ihn im Browser von Hand fälscht, bekommt einen fremden Namen in die Ecke des Bildschirms und von der Datenbank eine Ablehnung.
+
+Keiner der drei Werte wird an mich oder an Dritte übertragen, und alle lassen sich jederzeit über die Einstellungen Ihres Browsers löschen.
 
 **Rechtsgrundlage:** § 25 Abs. 2 Nr. 2 TDDDG — die Speicherung ist erforderlich, um eine von Ihnen ausdrücklich gewünschte Funktion bereitzustellen. Eine Einwilligung ist dafür nicht nötig, weshalb hier auch kein Banner steht.
 
