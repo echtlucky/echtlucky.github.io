@@ -6,12 +6,26 @@
  * build to `node build/site.mjs`.
  */
 
+import { readFileSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { CSS } from './theme.mjs';
 import { CSS_EXTRA, HERO_JS } from './theme-extra.mjs';
 import { SEARCH_CSS, SEARCH_MARKUP, SEARCH_JS, anchorHeadings } from './search.mjs';
 
 export const LANGS = ['en', 'de'];
 export const DEFAULT_LANG = 'en';
+
+/**
+ * The absolute origin, read from the same file the build reads it from.
+ * Canonical and og: URLs have to be absolute — a share card cannot resolve
+ * "/skills/" against anything.
+ */
+const SITE_CFG = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'content', 'site.json'), 'utf8'),
+);
+export const ORIGIN = String(SITE_CFG.origin || '').replace(/\/$/, '');
 
 export const SITE = {
   name: 'Skillry',
@@ -264,27 +278,38 @@ const searchStrings = (t) => ({
 export function render(page) {
   const t = UI[page.lang];
   const alt = LANGS.filter((l) => l !== page.lang)
-    .map((l) => `<link rel="alternate" hreflang="${l}" href="${href(l, page.slug)}">`)
-    .join('');
+    .map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}">`)
+    .join('\n');
 
-  const favicon = `data:image/svg+xml,${encodeURIComponent(
-    LOGO.replace('currentColor', '%23' + '4EE296').replace(/currentColor/g, '#4EE296'),
-  )}`;
+  // Every `currentColor` becomes the same literal hex, and encodeURIComponent
+  // turns each `#` into `%23` exactly once. Pre-encoding one of them here used
+  // to double-escape it, which left the outer hatch with an invalid stroke.
+  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO.replace(/currentColor/g, '#4EE296'))}`;
+
+  const canonical = `${ORIGIN}${href(page.lang, page.slug)}`;
 
   return `<!doctype html>
-<html lang="${page.lang}" ${page.lang === 'de' ? '' : ''}>
+<html lang="${page.lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${page.title}</title>
 <meta name="description" content="${page.description}">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0D1117" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<link rel="canonical" href="${canonical}">
 <meta property="og:title" content="${page.title}">
 <meta property="og:description" content="${page.description}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="${canonical}">
+<meta property="og:site_name" content="${SITE.name}">
+<meta property="og:locale" content="${page.lang === 'de' ? 'de_DE' : 'en_GB'}">
+<meta name="twitter:card" content="summary">
 <link rel="icon" href="${favicon}">
-<link rel="alternate" hreflang="${page.lang}" href="${href(page.lang, page.slug)}">
+<link rel="alternate" hreflang="${page.lang}" href="${ORIGIN}${href(page.lang, page.slug)}">
 ${alt}
+<link rel="alternate" hreflang="x-default" href="${ORIGIN}${href(DEFAULT_LANG, page.slug)}">
 <script>${THEME_BOOT}</script>
 <style>${CSS}${CSS_EXTRA}${SEARCH_CSS}</style>
 ${page.head ?? ''}

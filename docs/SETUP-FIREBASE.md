@@ -78,12 +78,19 @@ suggestion and a rule is enforcement.
 
 Firebase → **Authentication → Settings → Authorised domains** → add:
 
+- `skillry.de`
+- `www.skillry.de`
 - `echtlucky.github.io`
 - `localhost` (for local testing)
-- your custom domain, once it exists
 
 Sign-in silently fails on any domain not in this list. If you ever see the popup
 open and close with nothing happening, this is the first thing to check.
+
+> **This is the only place Firebase needs to hear about the domain.** It is an
+> allow-list of pages permitted to run a sign-in, not a DNS setting. Do **not**
+> also add `skillry.de` under **Hosting** — Firebase will then ask you to delete
+> the `185.199.*` records, which are GitHub Pages, and following that takes the
+> website offline. `docs/SETUP-DOMAIN.md` explains the whole split.
 
 ## 5. Get the config into the site
 
