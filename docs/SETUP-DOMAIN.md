@@ -1,119 +1,160 @@
-# Putting the site on your own domain
+# skillry.de — who serves what
 
-**GitHub does not sell domains.** You buy one from a registrar, then point it at
-GitHub Pages with two DNS records. GitHub does the HTTPS certificate for free and
-renews it automatically.
+This is the part that is easy to get wrong, because three different Google and
+GitHub screens all offer to "add your domain" and only one of them is right.
 
-Total time: fifteen minutes, most of it waiting for DNS.
-
----
-
-## 1. Buy the domain
-
-Any registrar works. Sensible ones, cheapest first:
-
-| Registrar | Notes |
-| :--- | :--- |
-| **Porkbun** | Cheap, no upsell theatre, free WHOIS privacy. `.dev` and `.io` are good value here. |
-| **Cloudflare Registrar** | Sells at cost, no markup ever. Requires moving DNS to Cloudflare — fine, and their DNS is fast. |
-| **Namecheap** | Well known, decent panel, occasional upsells to click past. |
-| **INWX / united-domains** | German, German-language support, better for a `.de`. |
-
-**Avoid** the domain add-ons bundled with cheap web hosting. Moving away from
-those later is reliably tedious.
-
-### Which extension
-
-- `.dev` — Google-run, **HTTPS enforced by the TLD itself**, reads as a developer
-  project. Around €12–15/year.
-- `.io` — the default for developer tools, though pricier at €30–40/year and with
-  a politically messy history worth being aware of.
-- `.com` — the one non-technical visitors will guess. Worth having if the name is
-  free.
-- `.de` — right if the audience is mostly German. It is not, so at most a
-  redirect.
-
-A reasonable move: buy the `.com` **and** the `.dev`, serve the `.dev`, redirect
-the `.com`. Two domains is still under €30 a year.
+**One sentence:** the website is served by **GitHub Pages**. Firebase is used for
+the forum's login and database only, and **Firebase Hosting is not used at all**.
 
 ---
 
-## 2. Add the DNS records
-
-At the registrar, open the DNS settings for the domain and add these.
-
-**For the apex domain** (`example.com`) — four A records, all four:
+## The records that are live, and why
 
 ```
-A    @    185.199.108.153
-A    @    185.199.109.153
-A    @    185.199.110.153
-A    @    185.199.111.153
+skillry.de        A      185.199.108.153   ┐
+skillry.de        A      185.199.109.153   │  GitHub Pages.
+skillry.de        A      185.199.110.153   │  All four, always.
+skillry.de        A      185.199.111.153   ┘
+
+www.skillry.de    CNAME  echtlucky.github.io.
+
+n8n.skillry.de    A      212.227.45.18        the VPS, unrelated to the site
 ```
 
-**For `www`** — one CNAME:
-
-```
-CNAME    www    echtlucky.github.io.
-```
-
-The trailing dot matters at some registrars and is ignored by the rest.
-
-> If you use **Cloudflare** DNS, set the proxy to **DNS only** (grey cloud) for
-> these records. Orange-cloud proxying in front of GitHub Pages causes redirect
-> loops during certificate issuance.
+Those four `185.199.*` addresses **are** GitHub Pages. They are correct. Nothing
+about them needs changing, and deleting them takes the website offline.
 
 ---
 
-## 3. Tell GitHub about it
+## Do not add skillry.de to Firebase Hosting
 
-1. Repository → **Settings** → **Pages**.
-2. **Custom domain** → type the domain → **Save**.
-3. Wait for the DNS check to go green. Usually minutes; occasionally an hour.
-4. Tick **Enforce HTTPS** as soon as it is selectable. If it is greyed out, the
-   certificate is still being issued — come back later, it is not broken.
+Firebase Hosting will happily accept `skillry.de` as a custom domain. It then
+shows a panel that says, in effect:
 
-GitHub writes a `CNAME` file into the repository when you save. Because this site
-builds from `dist/`, that file needs to be part of the build instead — otherwise
-the next deploy removes it. Add this to `build/site.mjs` near the other
-site-level files:
+> Add `A skillry.de → 199.36.158.100`
+> Remove `A skillry.de → 185.199.108.153` (and .109, .110, .111)
+
+That instruction is correct *for Firebase's purposes* and wrong for this project.
+Firebase is asking to take the domain away from GitHub Pages so it can serve the
+site itself — from an empty Hosting bucket, because nothing is ever deployed
+there. Following it would replace a working website with Firebase's 404 page.
+
+**If that dialog is open right now:** press *Close for now* / *Vorerst
+schließen*, then go to **Hosting → the site → the three dots next to
+`skillry.de` → Remove domain**. Removing an unverified custom domain from
+Firebase changes no DNS record — it only stops Firebase asking.
+
+This repository states the same thing in code: `firebase.json` declares
+`firestore` and no `hosting` block, precisely so that a stray `firebase deploy`
+cannot publish a competing copy of the site.
+
+### What Firebase actually needs from the domain
+
+Nothing, in DNS terms. Exactly one setting, in the console:
+
+**Authentication → Settings → Authorised domains** must list
+
+```
+skillry.de
+www.skillry.de
+```
+
+That list has nothing to do with DNS or Hosting. It is the allow-list of pages
+permitted to run a Firebase sign-in, and without it forum login fails with
+`auth/unauthorized-domain` on the real address while still working on
+`localhost`.
+
+---
+
+## The CNAME file, and the trap in it
+
+GitHub Pages decides which domain a site answers on by reading a file literally
+named `CNAME` from the **published artifact** — not from the repository, not from
+the settings page. This site builds into `dist/`, so `build/site.mjs` writes it:
 
 ```js
-writeFileSync(join(OUT, 'CNAME'), 'example.com\n', 'utf8');
+if (SITE_CFG.customDomain) {
+  writeFileSync(join(OUT, 'CNAME'), `${SITE_CFG.customDomain}\n`, 'utf8');
+}
 ```
 
-Then update `ORIGIN` in the same file so the sitemap points at the real domain.
+It is behind that `if` on purpose. The moment a `CNAME` file appears, GitHub
+starts 301-redirecting `echtlucky.github.io` to the domain named in it. If DNS
+does not point back yet, **both** addresses then serve the registrar's parking
+page, and the site is down without any build having failed.
+
+The order is therefore: DNS first → confirm it resolves → *then* set
+`customDomain` in `content/site.json`. Both values live there:
+
+```json
+{ "customDomain": "skillry.de", "origin": "https://skillry.de" }
+```
+
+`origin` feeds `sitemap.xml`, `robots.txt`, and every canonical and `og:url` tag.
+Setting one without the other produces a site that quietly advertises the wrong
+address to search engines.
 
 ---
 
-## 4. Things that break, and why
+## Deploying
+
+There is no manual upload step and no path to copy files to. Pushing to `main`
+is the deployment:
+
+```bash
+git push origin main
+```
+
+`.github/workflows/deploy.yml` then validates the skill index, re-derives every
+verdict against the real AIRLOCK engine, builds `dist/`, checks that no internal
+link is dead, and hands the folder to GitHub Pages. Roughly 30 seconds.
+
+```bash
+gh run watch --repo echtlucky/echtlucky.github.io
+```
+
+If the site looks stale after a push, the cause is almost always that the
+commits are still local. `git status` says "up to date" about the *working tree*,
+not about the remote:
+
+```bash
+git log --oneline origin/main..main   # anything listed here is not deployed
+```
+
+---
+
+## Symptoms and causes
 
 | Symptom | Cause |
 | :--- | :--- |
-| “Domain does not resolve to the GitHub Pages server” | DNS has not propagated. Wait. `nslookup example.com` should return the four addresses above. |
-| HTTPS box permanently greyed out | Usually a Cloudflare orange cloud, or an `AAAA` record left over from a previous host. |
-| Site works, then 404s after a deploy | The `CNAME` file is not in the build output — see step 3. |
-| `www` works, apex does not | Only the CNAME was added, not the four A records. |
-| Certificate warning after switching | Remove and re-add the custom domain in Settings to force re-issuance. |
+| Firebase says the domain needs verifying | It is being asked to host a site it does not host. Remove the domain from Firebase Hosting. |
+| Site is an old version | Commits not pushed. See `origin/main..main` above. |
+| `auth/unauthorized-domain` on login | Domain missing from **Authentication → Authorised domains**. |
+| Site 404s right after a deploy | `CNAME` missing from the artifact — `customDomain` is empty in `content/site.json`. |
+| `www` works, apex does not | Only the CNAME exists; all four A records are needed. |
+| HTTPS checkbox greyed out | Certificate still being issued, or a leftover `AAAA` record, or Cloudflare proxying (orange cloud). Pages needs grey cloud. |
+| Both addresses show a parking page | `CNAME` was published before DNS resolved. Remove `customDomain`, redeploy, fix DNS, put it back. |
 
-Check propagation from outside your own network — your machine caches DNS
-aggressively:
+Check from outside the local resolver — Windows caches aggressively:
 
 ```bash
-nslookup example.com 8.8.8.8
+nslookup skillry.de 1.1.1.1
 ```
 
 ---
 
-## 5. After it is live
+## Still open
 
-- Update `ORIGIN` in `build/site.mjs` so `sitemap.xml` and `robots.txt` are right.
-- Add the domain to Firebase → **Authentication → Settings → Authorised domains**,
-  or forum sign-in will stop working on the new address.
-- Update the OAuth app's homepage URL at
-  **https://github.com/settings/developers**.
-- Submit `https://example.com/sitemap.xml` to
-  **https://search.google.com/search-console**.
+- **Enforce HTTPS** is off. The certificate covers `skillry.de` and
+  `www.skillry.de` and is already approved, so this is one checkbox under
+  **Settings → Pages**, or:
 
-That last one is the only thing standing between the site and being findable at
-all. It is free and takes two minutes.
+  ```bash
+  gh api -X PUT repos/echtlucky/echtlucky.github.io/pages -f https_enforced=true
+  ```
+
+- `www.skillry.de` currently resolves to a single A record
+  (`185.199.108.153`) rather than a CNAME. It works, but it pins the site to one
+  of four servers and will not follow GitHub if those addresses ever change.
+  Replacing it at the registrar with `CNAME www → echtlucky.github.io.` is the
+  documented setup.
