@@ -191,7 +191,7 @@ export function body(lang) {
         ${t.howSteps.map(([h, p]) => `<div class="step"><div><h3>${h}</h3><p class="muted small">${p}</p></div></div>`).join('')}
       </div>
       <div class="btn-row">
-        <a class="btn btn-primary" href="${SITE.repoAirlock}/blob/main/CONTRIBUTING.md">${t.submit}</a>
+        <a class="btn btn-primary" href="${SITE.repoSite}/blob/main/README.md#submitting-a-skill">${t.submit}</a>
         <a class="btn" href="${href(lang, 'learn')}">${T[lang].eyebrow === 'Skill index' ? 'Learn the basics' : 'Grundlagen lernen'}</a>
       </div>
     </div>

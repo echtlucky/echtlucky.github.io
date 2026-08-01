@@ -43,7 +43,6 @@ for (const s of catalog.skills) {
   seen.add(s.id);
 
   if (s.url && !/^https:\/\//.test(s.url)) fail(id, 'url must be https');
-  if (s.rawUrl && !/^https:\/\//.test(s.rawUrl)) fail(id, 'rawUrl must be https');
 
   for (const lang of ['en', 'de']) {
     if (!s.title?.[lang]) fail(id, `title.${lang} is missing`);
@@ -59,13 +58,25 @@ for (const s of catalog.skills) {
     if (!s.scan.date || !s.scan.engine) fail(id, 'a scan must record its date and engine version');
   }
 
-  // A submission can only be verified if the skill can be reached.
-  if (!s.localPath && !s.rawUrl) {
-    warnings.push(`${id}: no localPath or rawUrl — it can never be scanned, so it stays "unscanned"`);
+  /*
+   * There used to be a warning here saying an entry without localPath or
+   * rawUrl "can never be scanned, so it stays unscanned". It contradicted the
+   * file it was validating: of the sixteen entries it fired on, fifteen carry
+   * a real scan block produced by build/fetch-scan.mjs. And `rawUrl` was a
+   * field no script ever read and no entry ever set — it existed only in this
+   * check and in the message above it.
+   *
+   * A validator that is wrong about its own data is worse than no validator:
+   * it teaches the person reading the output to ignore warnings.
+   */
+  if (s.scan === null || s.scan === undefined) {
+    warnings.push(`${id}: no verdict recorded — run "npm run rescan" or remove the entry`);
   }
 }
 
 // ── verdicts must be derived, not asserted ──────────────────────────────────
+
+let derived = 0;
 
 if (process.argv.includes('--verdicts')) {
   const AIRLOCK = process.env.AIRLOCK_PATH || join(ROOT, '..', 'airlock');
@@ -77,12 +88,20 @@ if (process.argv.includes('--verdicts')) {
     const { scanText } = await import(pathToFileURL(engineFile).href);
 
     for (const s of catalog.skills) {
+      // Only an entry with a local path can be re-derived today. The other
+      // sixteen hold verdicts that build/fetch-scan.mjs produced from a
+      // remote file at whatever the default branch pointed at that day —
+      // real verdicts, but not reproducible ones, because nothing records
+      // which commit they came from. Pinning every entry to a commit and a
+      // blob is the next piece of work; until it lands, this loop covers
+      // five of twenty-one and the summary below says so out loud.
       if (!s.localPath) continue;
       const file = join(AIRLOCK, s.localPath);
       if (!existsSync(file)) { warnings.push(`${s.id}: localPath not found, skipped`); continue; }
 
       const actual = scanText(readFileSync(file, 'utf8'), { filename: s.localPath }).verdict;
       const stored = s.scan?.verdict ?? 'unscanned';
+      derived++;
 
       if (stored !== actual) {
         fail(s.id, `stored verdict "${stored}" does not match a fresh scan ("${actual}"). Run: npm run rescan`);
@@ -98,7 +117,15 @@ for (const w of warnings) process.stdout.write(`  ! ${w}\n`);
 for (const e of errors) process.stdout.write(`  ✗ ${e}\n`);
 
 if (errors.length === 0) {
-  process.stdout.write(`  ✓ structure valid${process.argv.includes('--verdicts') ? ', every verdict re-derived and matching' : ''}\n`);
+  // The old summary said "every verdict re-derived and matching" whatever the
+  // loop above had actually managed to check. Saying five out of twenty-one is
+  // less impressive and is the only version that stays true when somebody
+  // reads it next to the code.
+  const total = catalog.skills.length;
+  const note = process.argv.includes('--verdicts')
+    ? `, ${derived} of ${total} verdicts re-derived and matching${derived < total ? ` (${total - derived} not yet pinned to a commit)` : ''}`
+    : '';
+  process.stdout.write(`  ✓ structure valid${note}\n`);
 }
 process.stdout.write('\n');
 
