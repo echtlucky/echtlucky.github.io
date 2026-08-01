@@ -2,8 +2,8 @@
   "_comment": "Site-level settings the build reads.",
 
   "_customDomain": "Leave EMPTY until DNS for the domain actually points at GitHub. Setting it earlier is a trap I walked into: GitHub Pages reads the CNAME file out of the published artifact and immediately 301-redirects the github.io address to it. If DNS is not ready, both addresses then serve whatever the registrar's parking page is, and the site is down without anything having failed. Order: DNS first, verify, then fill this in.",
-  "customDomain": "",
+  "customDomain": "skillry.de",
 
   "_origin": "Used for sitemap.xml and robots.txt. Follows customDomain once that is live.",
-  "origin": "https://echtlucky.github.io"
+  "origin": "https://skillry.de"
 }
