@@ -145,13 +145,14 @@ nslookup skillry.de 1.1.1.1
 
 ## Still open
 
-- **Enforce HTTPS** is off. The certificate covers `skillry.de` and
-  `www.skillry.de` and is already approved, so this is one checkbox under
-  **Settings → Pages**, or:
+- **Enforce HTTPS** is on. Turning it off again, if it ever has to be, is:
 
   ```bash
-  gh api -X PUT repos/echtlucky/echtlucky.github.io/pages -f https_enforced=true
+  gh api -X PUT repos/echtlucky/echtlucky.github.io/pages -F https_enforced=false
   ```
+
+  Note `-F`, not `-f`: `-f` sends the string `"true"` and the API rejects it
+  with a 422 that does not mention which flag was wrong.
 
 - `www.skillry.de` currently resolves to a single A record
   (`185.199.108.153`) rather than a CNAME. It works, but it pins the site to one
