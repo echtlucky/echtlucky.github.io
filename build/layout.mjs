@@ -11,8 +11,62 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CSS } from './theme.mjs';
-import { CSS_EXTRA, HERO_JS, MOTION_JS } from './theme-extra.mjs';
-import { SEARCH_CSS, SEARCH_MARKUP, SEARCH_JS, anchorHeadings } from './search.mjs';
+import { CSS_EXTRA, MOTION_JS } from './theme-extra.mjs';
+import { anchorHeadings } from './search.mjs';
+import { WORDMARK_CSS, LOGO_FAVICON } from './logo.mjs';
+import { header, HEADER_JS, HEADER_CSS } from './header.mjs';
+
+/**
+ * The names the header's client script reads. Kept as one explicit map rather
+ * than spreading `t` wholesale: the script indexes into it directly, so a
+ * missing key does not throw — it silently writes "undefined" onto a button.
+ */
+const headerStrings = (t) => ({
+  signIn: t.auth.signIn,
+  account: t.auth.account,
+  submitIn: t.auth.submitIn,
+  submitUp: t.auth.submitUp,
+  swapUp: t.auth.swapUp,
+  swapIn: t.auth.swapIn,
+  working: t.auth.working,
+  resetSent: t.auth.resetSent,
+  resendOk: t.auth.resendOk,
+  stillUnverified: t.auth.stillUnverified,
+  quickNew: t.quick.newPostShort,
+  quickVerify: t.auth.verifyShort,
+  actTheme: t.act.theme,
+  actLang: t.act.lang,
+  actNew: t.act.newPost,
+  actSignIn: t.act.signIn,
+  actSignOut: t.act.signOut,
+  noResults: t.find.noResults,
+  result: t.find.result,
+  resultsWord: t.find.resultsWord,
+  errMail: t.auth.errMail,
+  errShort: t.auth.errShort,
+  errName: t.auth.errName,
+  errWrong: t.auth.errWrong,
+  errInUse: t.auth.errInUse,
+  errWeak: t.auth.errWeak,
+  errMany: t.auth.errMany,
+  errNet: t.auth.errNet,
+  errGeneric: t.auth.errGeneric,
+});
+
+const VT_JS = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'vt.js'), 'utf8');
+
+/**
+ * The sign-in panel is only rendered where there is something to sign in to.
+ * With an empty apiKey the header shows navigation and search and no account
+ * button at all — better than a button that opens a form which cannot work.
+ */
+const FIREBASE_CFG = JSON.parse(
+  readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '..', 'content', 'firebase.json'),
+    'utf8',
+  ),
+);
+const FIREBASE_READY = Boolean(FIREBASE_CFG.apiKey && FIREBASE_CFG.projectId);
 
 export const LANGS = ['en', 'de'];
 export const DEFAULT_LANG = 'en';
@@ -46,8 +100,141 @@ export const href = (lang, slug) => `${base(lang)}/${slug ? `${slug}/` : ''}` ||
 // Chrome strings
 // ---------------------------------------------------------------------------
 
+/**
+ * Everything the new header says, in both languages.
+ *
+ * It is a long list because the header now does four jobs that used to live
+ * elsewhere or nowhere: navigation, search, sign-in and quick actions. Written
+ * out in full rather than assembled from fragments — a header that renders
+ * "undefined" on a button is a bug nobody notices in review and everybody
+ * notices in production.
+ */
+const HEADER_STRINGS = {
+  en: {
+    menu: { open: 'Open menu', close: 'Close', all: 'Everything on this site', onPage: 'On this page' },
+    find: {
+      placeholder: 'Search or jump to…',
+      aria: 'Search pages, sections, skills and actions',
+      navigate: 'to move',
+      open: 'to open',
+      noResults: 'Nothing matches that.',
+      result: 'result',
+      resultsWord: 'results',
+      page: 'Page',
+      section: 'Section',
+      skill: 'Skill',
+      action: 'Action',
+      here: 'On this page',
+    },
+    quick: { newPost: 'Write a forum post', newPostShort: 'New post' },
+    act: {
+      theme: 'Switch light and dark',
+      lang: 'Switch to German',
+      newPost: 'Write a forum post',
+      newPostShort: 'New post',
+      signIn: 'Sign in',
+      signOut: 'Sign out',
+    },
+    auth: {
+      signIn: 'Sign in',
+      account: 'Account',
+      why: 'An account is an email address and a password. Firebase stores the password, hashed — this site never sees it.',
+      name: 'Display name',
+      email: 'Email address',
+      password: 'Password',
+      submitIn: 'Sign in',
+      submitUp: 'Create account',
+      swapUp: 'No account yet?',
+      swapIn: 'Already have one?',
+      forgot: 'Forgotten password',
+      working: 'One moment…',
+      lazyNote: 'Signing in loads Firebase from Google. Until you press the button, this page has contacted nobody.',
+      verifyH: 'One step left',
+      verifyP: 'Confirm the address in the email we sent, then reload. Reading works already; posting needs the confirmation.',
+      verifyShort: 'Confirm email',
+      resend: 'Send again',
+      recheck: 'I have confirmed it',
+      resendOk: 'Sent.',
+      stillUnverified: 'Still not confirmed.',
+      resetSent: 'If that address exists, a reset link is on its way.',
+      myPosts: 'My posts',
+      signOut: 'Sign out',
+      errMail: 'That does not look like an email address.',
+      errShort: 'At least eight characters.',
+      errName: 'A name with at least two characters.',
+      errWrong: 'Email address or password is wrong.',
+      errInUse: 'That address already has an account.',
+      errWeak: 'Firebase considers that password too weak.',
+      errMany: 'Too many attempts. Try again in a few minutes.',
+      errNet: 'No connection to Firebase.',
+      errGeneric: 'That did not work.',
+    },
+  },
+  de: {
+    menu: { open: 'Menü öffnen', close: 'Schließen', all: 'Alles auf dieser Seite', onPage: 'Auf dieser Seite' },
+    find: {
+      placeholder: 'Suchen oder springen…',
+      aria: 'Seiten, Abschnitte, Skills und Aktionen durchsuchen',
+      navigate: 'zum Blättern',
+      open: 'zum Öffnen',
+      noResults: 'Dazu passt nichts.',
+      result: 'Treffer',
+      resultsWord: 'Treffer',
+      page: 'Seite',
+      section: 'Abschnitt',
+      skill: 'Skill',
+      action: 'Aktion',
+      here: 'Auf dieser Seite',
+    },
+    quick: { newPost: 'Forumsbeitrag schreiben', newPostShort: 'Neuer Beitrag' },
+    act: {
+      theme: 'Hell und dunkel umschalten',
+      lang: 'Auf Englisch umschalten',
+      newPost: 'Forumsbeitrag schreiben',
+      newPostShort: 'Neuer Beitrag',
+      signIn: 'Anmelden',
+      signOut: 'Abmelden',
+    },
+    auth: {
+      signIn: 'Anmelden',
+      account: 'Konto',
+      why: 'Ein Konto ist eine E-Mail-Adresse und ein Passwort. Firebase speichert das Passwort gehasht — diese Seite sieht es nie.',
+      name: 'Anzeigename',
+      email: 'E-Mail-Adresse',
+      password: 'Passwort',
+      submitIn: 'Anmelden',
+      submitUp: 'Konto anlegen',
+      swapUp: 'Noch kein Konto?',
+      swapIn: 'Schon eins?',
+      forgot: 'Passwort vergessen',
+      working: 'Einen Moment…',
+      lazyNote: 'Die Anmeldung lädt Firebase von Google. Bis du den Knopf drückst, hat diese Seite mit niemandem gesprochen.',
+      verifyH: 'Ein Schritt fehlt',
+      verifyP: 'Bestätige die Adresse in der Mail, die wir geschickt haben, und lade neu. Lesen geht schon; zum Schreiben braucht es die Bestätigung.',
+      verifyShort: 'E-Mail bestätigen',
+      resend: 'Nochmal senden',
+      recheck: 'Habe ich bestätigt',
+      resendOk: 'Gesendet.',
+      stillUnverified: 'Immer noch nicht bestätigt.',
+      resetSent: 'Falls es die Adresse gibt, ist ein Link unterwegs.',
+      myPosts: 'Meine Beiträge',
+      signOut: 'Abmelden',
+      errMail: 'Das sieht nicht nach einer E-Mail-Adresse aus.',
+      errShort: 'Mindestens acht Zeichen.',
+      errName: 'Ein Name mit mindestens zwei Zeichen.',
+      errWrong: 'E-Mail-Adresse oder Passwort stimmt nicht.',
+      errInUse: 'Zu dieser Adresse gibt es schon ein Konto.',
+      errWeak: 'Firebase hält dieses Passwort für zu schwach.',
+      errMany: 'Zu viele Versuche. In ein paar Minuten nochmal.',
+      errNet: 'Keine Verbindung zu Firebase.',
+      errGeneric: 'Das hat nicht geklappt.',
+    },
+  },
+};
+
 export const UI = {
   en: {
+    ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
     nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill index', learn: 'Learn', forum: 'Forum' },
     searchPlaceholder: 'Search',
@@ -84,6 +271,7 @@ export const UI = {
     },
   },
   de: {
+    ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
     nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill-Index', learn: 'Lernen', forum: 'Forum' },
     searchPlaceholder: 'Suchen',
@@ -125,12 +313,12 @@ export const UI = {
 // Marks
 // ---------------------------------------------------------------------------
 
-/** The site mark: a stylised airlock hatch, reused as the favicon. */
-export const LOGO = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-  <rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.6"/>
-  <circle cx="12" cy="12" r="5.4" stroke="currentColor" stroke-width="1.6"/>
-  <path d="M12 6.6v10.8M6.6 12h10.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-</svg>`;
+/*
+ * The mark moved to build/logo.mjs. What stood here was a stylised airlock
+ * hatch — a rounded square, a circle and a cross, three shapes stacked into a
+ * pictogram of one of the two products. It described AIRLOCK, not Skillry, and
+ * it was assembled rather than drawn.
+ */
 
 /**
  * Flags as inline SVG, not emoji.
@@ -168,32 +356,14 @@ const NAV = [
   { slug: 'forum', key: 'forum' },
 ];
 
-function header(lang, current, t) {
-  const nav = NAV.map(
-    (n) =>
-      `<a href="${href(lang, n.slug)}"${current === n.slug ? ' aria-current="page"' : ''}>${t.nav[n.key]}</a>`,
-  ).join('');
-
-  const langs = LANGS.map((l) => {
-    const name = l === 'en' ? 'English' : 'Deutsch';
-    return `<a href="${href(l, current)}" hreflang="${l}" aria-current="${l === lang}" title="${name}">${FLAGS[l]}<span class="sr">${name}</span></a>`;
-  }).join('');
-
-  return `<header class="gh-header">
-  <div class="wrap">
-    <a class="gh-logo" href="${href(lang, '')}">${LOGO}<span>${SITE.name}</span></a>
-    <nav class="gh-nav" aria-label="Main">${nav}</nav>
-    <div class="gh-actions">
-      <button type="button" class="gh-search" data-search-open title="${t.searchHint}">
-        ${ICON_SEARCH}<span>${t.searchPlaceholder}</span><kbd>/</kbd>
-      </button>
-      <div class="lang-switch">${langs}</div>
-      <button class="icon-btn" id="themeBtn" type="button" title="${t.themeLabel}" aria-label="${t.themeLabel}">${ICON_THEME}</button>
-      <a class="icon-btn" href="${SITE.github}" title="GitHub" aria-label="GitHub">${ICON_GH}</a>
-    </div>
-  </div>
-</header>`;
-}
+/*
+ * The header now lives in build/header.mjs. It grew from a bar with five links
+ * into navigation, search, sign-in and quick actions at once, which is more
+ * than a function in a layout file should carry — and the GitHub icon that
+ * used to sit top right is gone from here entirely. It is still in the footer,
+ * where a link away from the site belongs; the top right corner is where
+ * people look for their account.
+ */
 
 function footer(lang, t) {
   const f = t.footer;
@@ -281,10 +451,11 @@ export function render(page) {
     .map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}">`)
     .join('\n');
 
-  // Every `currentColor` becomes the same literal hex, and encodeURIComponent
-  // turns each `#` into `%23` exactly once. Pre-encoding one of them here used
-  // to double-escape it, which left the outer hatch with an invalid stroke.
-  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO.replace(/currentColor/g, '#4EE296'))}`;
+  // The mark drawn with a literal colour: `currentColor` inherits from nothing
+  // inside a data: URI. encodeURIComponent turns the single `#` into `%23`
+  // exactly once — pre-encoding it here is what used to double-escape it and
+  // leave the stroke invalid.
+  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_FAVICON('#4EE296'))}`;
 
   const canonical = `${ORIGIN}${href(page.lang, page.slug)}`;
 
@@ -311,22 +482,30 @@ export function render(page) {
 ${alt}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}${href(DEFAULT_LANG, page.slug)}">
 <script>${THEME_BOOT}</script>
-<style>${CSS}${CSS_EXTRA}${SEARCH_CSS}</style>
+<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}</style>
 ${page.head ?? ''}
 </head>
 <body>
 <a href="#main" class="sr">${t.skipLink}</a>
-${header(page.lang, page.slug, t)}
+${header(page.lang, page.slug, t, { auth: FIREBASE_READY })}
 <main id="main">
 ${anchorHeadings(page.body)}
 </main>
-${SEARCH_MARKUP(t)}
 ${footer(page.lang, t)}
 <script>
 ${THEME_TOGGLE}
-${SEARCH_JS(page.lang, searchStrings(t))}
-${HERO_JS}
+${HEADER_JS({
+  lang: page.lang,
+  strings: headerStrings(t),
+  fb: FIREBASE_READY ? FIREBASE_CFG : null,
+  urls: {
+    forum: href(page.lang, 'forum'),
+    other: href(page.lang === 'de' ? 'en' : 'de', page.slug),
+    index: '/search-index.json',
+  },
+})}
 ${MOTION_JS}
+${VT_JS}
 ${page.script ?? ''}
 </script>
 </body>
