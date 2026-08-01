@@ -686,7 +686,11 @@ export const HEADER_CSS = `
 
 @media (max-width: 720px) {
   :root { --hdr-h: 56px; }
-  .gh-word { display: none; }
+  /* The name stays. A phone showing only the symbol shows an unlabelled mark,
+     and this one is deliberately not self-explanatory — it needs the word
+     beside it far more than a padlock would. It only goes below 420px, where
+     there is genuinely no room for both it and the search. */
+  .gh-word { font-size: 16px; letter-spacing: 0.006em; }
   .gh-quick span { display: none; }
   .gh-quick { padding: 0 9px; }
   .lang-switch { display: none; }          /* lives in the menu panel instead */
@@ -717,6 +721,8 @@ export const HEADER_CSS = `
 }
 
 /* Keyboard users get the panel too — hover is not the only way in. */
+@media (max-width: 420px) { .gh-word { display: none; } }
+
 @media (hover: none) { .gh-caret { opacity: 0.75; } }
 `;
 

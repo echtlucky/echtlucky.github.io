@@ -32,14 +32,19 @@ When a page is requested, GitHub processes the technically necessary connection 
 
 ## 4. What is stored in your browser
 
-This site sets no cookies. It writes two values into your browser's `localStorage`:
+This site sets no cookies. It writes up to three values into your browser's `localStorage`:
 
 | Key | Content | Purpose |
 | --- | --- | --- |
 | `theme` | `light` or `dark` | remembers the appearance you picked |
 | `level` | the depth you chose in the Learn section | shows the same level on your next visit |
+| `skillry:who` | your display name, and whether your email address is confirmed | lets the header show that you are signed in |
 
-Both are written only if you actually use the toggle. They are **not** transmitted to me or to anyone else, contain nothing personally identifying, and can be cleared at any time in your browser settings.
+The first two are written only if you actually use the toggle. The third appears only when you sign in, and goes away when you sign out.
+
+`skillry:who` deserves an explanation, because it is the reason the header can greet you without any page talking to Google. The signed-in state really lives at Firebase; asking Firebase would mean loading its SDK on **every** page — and the promise in section 5, that every page but the forum fetches nothing from anyone else, would stop being true. So signing in writes this one value locally, and every other page reads only that. It holds no token and no email address, and it authorises nothing: forge it by hand in your browser and you get somebody else's name in the corner of your screen and a refusal from the database.
+
+None of the three is transmitted to me or to anyone else, and all can be cleared at any time in your browser settings.
 
 **Legal basis:** § 25 (2) no. 2 TDDDG — the storage is necessary to provide a function you explicitly asked for. No consent is required, which is why there is no banner here.
 
