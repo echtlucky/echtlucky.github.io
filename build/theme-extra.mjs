@@ -36,8 +36,9 @@ export const CSS_EXTRA = `
 }
 
 /* ── stat band ──────────────────────────────────────────────────────────── */
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.stats > div { background: var(--surface); padding: 18px 20px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--e1); }
+.stats > div { background: var(--surface); padding: 20px 22px; transition: background var(--fast) var(--ease); }
+.stats > div:hover { background: var(--surface-2); }
 .stats .n { font-family: var(--mono); font-size: clamp(1.4rem, 1.1rem + 1vw, 2rem); font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1.1; }
 .stats .l { font-size: 0.78rem; color: var(--fg-muted); margin-top: 0.35rem; }
 .stats .n.a { color: var(--airlock); }
@@ -45,20 +46,51 @@ export const CSS_EXTRA = `
 .stats .n.i { color: var(--accent-idx); }
 
 /* ── cards with presence ────────────────────────────────────────────────── */
-.card { transition: border-color 140ms ease, transform 140ms ease; }
-.card.lift:hover { border-color: var(--border-strong); transform: translateY(-2px); }
-@media (prefers-reduced-motion: reduce) { .card, .card.lift:hover { transition: none; transform: none; } }
-
-.card.product { position: relative; overflow: hidden; }
-.card.product::before {
-  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+.card {
+  transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease),
+              box-shadow var(--fast) var(--ease);
 }
+.card.lift:hover, .card.product:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+  box-shadow: var(--e3), var(--sheen);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .card.lift:hover, .card.product:hover { transition: none; transform: none; }
+}
+
+/**
+ * A product card carries its accent twice: as the hairline along the top, and
+ * as a faint wash bleeding down from it. The wash is what stops the accent
+ * reading as a stripe stuck onto a white box.
+ */
+.card.product { position: relative; overflow: hidden; border-top: 1px solid var(--border); }
+.card.product::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; }
+.card.product::after {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 160px; z-index: -1;
+  pointer-events: none;
+}
+.card.product > * { position: relative; }
 .card.product.airlock::before { background: linear-gradient(90deg, var(--airlock), transparent 85%); }
-.card.product.nexus::before { background: linear-gradient(90deg, var(--nexus), transparent 85%); }
-.card.product.index::before { background: linear-gradient(90deg, var(--accent-idx), transparent 85%); }
-.card.product { border-top: 1px solid var(--border); }
+.card.product.nexus::before   { background: linear-gradient(90deg, var(--nexus), transparent 85%); }
+.card.product.index::before   { background: linear-gradient(90deg, var(--accent-idx), transparent 85%); }
+.card.product.airlock::after { background: linear-gradient(180deg, color-mix(in srgb, var(--airlock) 9%, transparent), transparent); }
+.card.product.nexus::after   { background: linear-gradient(180deg, color-mix(in srgb, var(--nexus) 9%, transparent), transparent); }
+.card.product.index::after   { background: linear-gradient(180deg, color-mix(in srgb, var(--accent-idx) 9%, transparent), transparent); }
 
 .accent-index { color: var(--accent-idx); }
+
+/* ── arriving on scroll ─────────────────────────────────────────────────── */
+/*
+ * Set by the script below, never in the markup: if JavaScript does not run,
+ * nothing is ever hidden, and the page reads exactly as it does now. Hiding
+ * first in CSS and revealing in JS is how a no-JS visitor gets a blank page.
+ */
+.reveal { opacity: 0; transform: translateY(14px); }
+.reveal.in { opacity: 1; transform: none; transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+}
 
 /* ── section heading with a rule ────────────────────────────────────────── */
 .head-rule { display: flex; align-items: baseline; gap: 16px; }
@@ -129,7 +161,109 @@ footer.site::before {
   background: linear-gradient(90deg, var(--airlock), var(--nexus) 45%, var(--accent-idx) 80%, transparent);
   opacity: 0.75;
 }
+
+/* ── header, once the page has moved ────────────────────────────────────── */
+/*
+ * At the top the header sits flush with the hero. Once anything scrolls under
+ * it, it earns a shadow — so the bar reads as being in front of the page
+ * rather than painted onto it, and only when there is something to be in front
+ * of.
+ */
+.gh-header { transition: box-shadow 200ms var(--ease), background 200ms var(--ease); }
+.gh-header.stuck { box-shadow: 0 6px 24px -10px rgba(0,0,0,0.45); }
+
+/* ── reading progress ───────────────────────────────────────────────────── */
+.progress {
+  position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
+  background: linear-gradient(90deg, var(--airlock), var(--nexus) 60%, var(--accent-idx));
+  transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .progress { display: none; } }
 `;
+
+/**
+ * Two small behaviours, one observer and one scroll handler between them.
+ *
+ * The reveal deliberately marks elements from script rather than from the
+ * markup: anything hidden by a stylesheet and shown by JavaScript is a blank
+ * page for anyone whose JavaScript did not arrive.
+ */
+export const MOTION_JS = `
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- header shadow + reading progress -----------------------------------
+  var header = document.querySelector('.gh-header');
+  var bar = null;
+  if (!reduce) {
+    bar = document.createElement('div');
+    bar.className = 'progress';
+    document.body.appendChild(bar);
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var y = window.scrollY || 0;
+      if (header) header.classList.toggle('stuck', y > 8);
+      if (bar) {
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+      }
+      ticking = false;
+    });
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // --- reveal on approach --------------------------------------------------
+  if (reduce || !('IntersectionObserver' in window)) return;
+
+  var targets = document.querySelectorAll('main section > .wrap > *, main .grid > *, main .stats');
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+
+  var hidden = [];
+  targets.forEach(function (el, i) {
+    // Anything already on screen at load stays put: animating the first view
+    // means the page arrives empty and then assembles itself, which reads as
+    // slow however fast it is.
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.9) return;
+    el.classList.add('reveal');
+    el.style.transitionDelay = (i % 3) * 60 + 'ms';
+    io.observe(el);
+    hidden.push(el);
+  });
+
+  /**
+   * The safety net, and the reason this is worth ten lines.
+   *
+   * Everything above hides content and relies on one callback to bring it
+   * back. If that callback never arrives — an embedded view that reports a
+   * viewport it does not lay out to, a browser that throttles observers in a
+   * background tab, an extension that breaks the API — the page keeps text
+   * that is present, indexed and read aloud by a screen reader, but invisible.
+   *
+   * A visible page with no animation is a worse-looking page. An invisible one
+   * is a broken site. So after eight seconds, whatever is still hidden simply
+   * appears.
+   */
+  setTimeout(function () {
+    hidden.forEach(function (el) {
+      if (!el.classList.contains('in')) {
+        el.style.transitionDelay = '0ms';
+        el.classList.add('in');
+      }
+    });
+  }, 8000);
+})();`;
 
 /**
  * The hero background: glyphs resolving out of noise, left to right.

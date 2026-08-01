@@ -11,7 +11,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CSS } from './theme.mjs';
-import { CSS_EXTRA, HERO_JS } from './theme-extra.mjs';
+import { CSS_EXTRA, HERO_JS, MOTION_JS } from './theme-extra.mjs';
 import { SEARCH_CSS, SEARCH_MARKUP, SEARCH_JS, anchorHeadings } from './search.mjs';
 
 export const LANGS = ['en', 'de'];
@@ -326,6 +326,7 @@ ${footer(page.lang, t)}
 ${THEME_TOGGLE}
 ${SEARCH_JS(page.lang, searchStrings(t))}
 ${HERO_JS}
+${MOTION_JS}
 ${page.script ?? ''}
 </script>
 </body>
