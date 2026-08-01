@@ -47,7 +47,14 @@ for (const page of pages) {
     if (/^(https?:|mailto:|data:|#)/.test(url)) { external.add(url.split('/').slice(0, 3).join('/')); continue; }
 
     checked++;
-    const target = url.endsWith('/') ? join(OUT, url, 'index.html') : join(OUT, url);
+    // A query string picks a view inside a page, not a different file — the
+    // header links to /forum/?cat=help and /forum/?new=1, all of which are the
+    // same index.html reading location.search. Resolving the path with the
+    // query still attached looks for a directory that never existed.
+    const path = url.split('?')[0];
+    if (!path) continue; // "?new=1" on its own means this same page
+
+    const target = path.endsWith('/') ? join(OUT, path, 'index.html') : join(OUT, path);
     if (!existsSync(target)) broken.push(`${rel} → ${url}`);
   }
 }

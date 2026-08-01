@@ -101,8 +101,7 @@ export function body(lang) {
   const t = T[lang];
 
   return `
-<section class="hero hero-stage" style="border-top:3px solid var(--nexus)">
-  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+<section class="hero hero-stage nexus" style="border-top:3px solid var(--nexus)">
   <div class="wrap stack">
     <span class="eyebrow accent-nexus">${t.eyebrow}</span>
     <h1>${t.h1}</h1>

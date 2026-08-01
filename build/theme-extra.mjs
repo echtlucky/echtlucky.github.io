@@ -19,16 +19,65 @@ export const CSS_EXTRA = `
 .band-tight { padding-block: clamp(32px, 5vw, 56px); }
 
 /* ── hero ───────────────────────────────────────────────────────────────── */
+/*
+ * The hero background is the mark at page scale.
+ *
+ * What was here before was a canvas of glyphs raining out of noise: forty
+ * lines of JavaScript, a requestAnimationFrame loop on every page of the site,
+ * and a picture of "hacking" rather than of anything this project does. It
+ * also lost the argument it was making — code falling down a screen is what a
+ * film uses to mean "computer", which is the exact opposite of a tool whose
+ * whole claim is that it shows you what is really there.
+ *
+ * This is the same idea as the logo, drawn across the whole section: a page of
+ * text seen from far enough away that only the lines remain, cut along one
+ * diagonal, and the far side slid sideways. Nothing is hidden and nothing is
+ * missing — the lines simply stop agreeing with each other halfway across.
+ *
+ * Two elements, no script, no animation loop, and it costs the same on a
+ * phone as on a workstation.
+ */
 .hero-stage { position: relative; overflow: hidden; isolation: isolate; }
-.hero-stage canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  z-index: -1; opacity: 0.5; pointer-events: none;
-}
+
+.hero-stage::before,
 .hero-stage::after {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(120% 90% at 12% 0%, transparent 30%, var(--bg) 78%);
+  content: ''; position: absolute; inset: -10% -5%; z-index: -1; pointer-events: none;
+  /* Lines of "text": 2px of ink every 15px, never quite reaching the edges. */
+  background-image: repeating-linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--fg) 12%, transparent) 0 2px,
+    transparent 2px 15px
+  );
+  /* Fades out towards the bottom right, so the headline always sits on quiet
+     ground and the displacement is discovered rather than announced. */
+  -webkit-mask-image: radial-gradient(115% 85% at 8% 12%, #000 12%, transparent 72%);
+  mask-image: radial-gradient(115% 85% at 8% 12%, #000 12%, transparent 72%);
+  opacity: 0.55;
 }
-@media (prefers-reduced-motion: reduce) { .hero-stage canvas { display: none; } }
+
+/* The far side of the fault: the same lines, clipped to the other half of a
+   45° cut, and moved. 13px is not arbitrary — it is just under the 15px line
+   pitch, so the halves land almost but never quite back in register. */
+.hero-stage::after {
+  transform: translate(13px, -13px);
+  -webkit-clip-path: polygon(115% -15%, 115% 115%, -15% 115%);
+  clip-path: polygon(115% -15%, 115% 115%, -15% 115%);
+}
+.hero-stage::before {
+  -webkit-clip-path: polygon(-15% -15%, 115% -15%, -15% 115%);
+  clip-path: polygon(-15% -15%, 115% -15%, -15% 115%);
+}
+
+/* A product page tints its own fault in its own accent. */
+.hero-stage.airlock::after { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--airlock) 26%, transparent) 0 2px, transparent 2px 15px); }
+.hero-stage.nexus::after   { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--nexus) 26%, transparent) 0 2px, transparent 2px 15px); }
+.hero-stage.index::after   { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--accent-idx) 26%, transparent) 0 2px, transparent 2px 15px); }
+
+/* Motion here would be decoration; there is none, so nothing to disable. The
+   contrast still comes down for anyone who asked for less. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-stage::before, .hero-stage::after { opacity: 0.32; }
+}
 
 .hero h1 .lit {
   background: linear-gradient(96deg, var(--airlock), var(--nexus) 58%, var(--accent-idx));
@@ -172,6 +221,46 @@ footer.site::before {
 .gh-header { transition: box-shadow 200ms var(--ease), background 200ms var(--ease); }
 .gh-header.stuck { box-shadow: 0 6px 24px -10px rgba(0,0,0,0.45); }
 
+/* ── moving between pages ───────────────────────────────────────────────── */
+/*
+ * Two lines of CSS turn a multi-page static site into one that cross-fades
+ * between its pages, in every browser that has shipped view transitions — no
+ * router, no client-side navigation, no framework. The browser holds the old
+ * page's pixels, fetches the new one, and animates between them.
+ *
+ * What matters is what does NOT move. The header carries a name, so it is one
+ * continuous element across the navigation rather than something that fades
+ * out and back in; the same goes for the mark. Everything else is content and
+ * may cross-fade freely. Naming too much is the classic mistake — every named
+ * element is an animation the browser must reconcile, and a page where six
+ * things slide independently reads as a slideshow.
+ */
+@view-transition { navigation: auto; }
+
+.gh-header { view-transition-name: hdr; }
+.gh-logo .mark { view-transition-name: mark; }
+
+::view-transition-old(root) { animation: vt-out 90ms var(--ease) both; }
+::view-transition-new(root) { animation: vt-in 260ms var(--ease) both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* The header is a continuous object: it must not fade at all, or the join
+   shows as a flicker exactly where the eye is resting. */
+::view-transition-old(hdr), ::view-transition-new(hdr) { animation: none; mix-blend-mode: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+/*
+ * The fallback for browsers without view transitions: vt.js fades the outgoing
+ * page out before following the link. Nothing is hidden until a click actually
+ * happens, so a visitor whose JavaScript never ran sees an ordinary page.
+ */
+html[data-leaving] main { opacity: 0; transform: translateY(-6px); }
+html[data-leaving] main { transition: opacity 120ms var(--ease), transform 120ms var(--ease); }
+
 /* ── reading progress ───────────────────────────────────────────────────── */
 .progress {
   position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
@@ -265,105 +354,4 @@ export const MOTION_JS = `
   }, 8000);
 })();`;
 
-/**
- * The hero background: glyphs resolving out of noise, left to right.
- *
- * It is the same motion the command-line tool uses for its wordmark, and it is
- * the only animation on the site — the page is about text that is not what it
- * appears to be, so the background quietly performs that instead of a generic
- * particle field.
- */
-export const HERO_JS = `
-(function () {
-  var canvas = document.getElementById('heroCanvas');
-  if (!canvas) return;
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var ctx = canvas.getContext('2d');
-  var NOISE = '01#$%&*+=<>/|¦{}[]()^~\\\\'.split('');
-  var CHARS = 'abcdefghijklmnopqrstuvwxyz.,:;-_/'.split('');
-  var COLS = [];
-  var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var cell = 15;
-  var rows = 0, cols = 0, t = 0, raf = 0;
-
-  function palette() {
-    var s = getComputedStyle(document.documentElement);
-    return {
-      dim: s.getPropertyValue('--fg-subtle').trim() || '#7d8590',
-      hot: s.getPropertyValue('--airlock').trim() || '#4EE296',
-      red: s.getPropertyValue('--danger').trim() || '#FF6146',
-    };
-  }
-  var P = palette();
-
-  function size() {
-    var r = canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.floor(r.width * dpr));
-    canvas.height = Math.max(1, Math.floor(r.height * dpr));
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    cols = Math.ceil(r.width / cell);
-    rows = Math.ceil(r.height / cell);
-    COLS = [];
-    for (var i = 0; i < cols; i++) {
-      COLS.push({ speed: 0.25 + ((i * 37) % 60) / 120, phase: ((i * 53) % 100) / 100 });
-    }
-  }
-
-  // Deterministic per-cell glyph: no Math.random, so the field never flickers
-  // incoherently between frames.
-  function glyph(x, y, frame, set) {
-    var h = (x * 73856093) ^ (y * 19349663) ^ (frame * 83492791);
-    return set[Math.abs(h) % set.length];
-  }
-
-  function draw() {
-    var w = canvas.width / dpr, h = canvas.height / dpr;
-    ctx.clearRect(0, 0, w, h);
-    ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
-    ctx.textBaseline = 'top';
-
-    for (var x = 0; x < cols; x++) {
-      var c = COLS[x];
-      var front = ((t * c.speed * 0.02) + c.phase) % 1.6;
-      var frontRow = front * rows;
-
-      for (var y = 0; y < rows; y++) {
-        var d = frontRow - y;
-        if (d < 0 || d > 14) continue;
-
-        var frame = Math.floor(t / 4);
-        if (d < 2.5) {
-          ctx.fillStyle = P.hot;
-          ctx.globalAlpha = 0.5;
-          ctx.fillText(glyph(x, y, frame, NOISE), x * cell, y * cell);
-        } else {
-          ctx.globalAlpha = Math.max(0, 0.26 - (d - 2.5) * 0.022);
-          ctx.fillStyle = (x + y) % 23 === 0 ? P.red : P.dim;
-          ctx.fillText(glyph(x, y, 0, CHARS), x * cell, y * cell);
-        }
-      }
-    }
-    ctx.globalAlpha = 1;
-    t++;
-    raf = requestAnimationFrame(draw);
-  }
-
-  var ro = new ResizeObserver(size);
-  ro.observe(canvas);
-  size();
-  draw();
-
-  // Stop when off screen; a background animation nobody is looking at is just
-  // a battery drain.
-  new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { if (!raf) { P = palette(); raf = requestAnimationFrame(draw); } }
-      else { cancelAnimationFrame(raf); raf = 0; }
-    });
-  }).observe(canvas);
-
-  document.getElementById('themeBtn')?.addEventListener('click', function () {
-    setTimeout(function () { P = palette(); }, 30);
-  });
-})();`;
