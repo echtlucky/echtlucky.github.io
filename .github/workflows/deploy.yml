@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The index claims a verdict for every entry. Checking that claim needs
       # the real engine, so the tool repository is checked out alongside.
@@ -30,12 +30,12 @@ jobs:
       # skipped and the build went green. A guarantee that quietly stops
       # applying is not a guarantee. It runs, or the build fails.
       - name: Check out AIRLOCK
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: echtlucky/airlock
           path: .airlock-src
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
 
@@ -53,7 +53,7 @@ jobs:
       - name: Check for dead internal links
         run: node build/linkcheck.mjs
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: github.ref == 'refs/heads/main'
         with:
           path: dist
@@ -70,4 +70,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
