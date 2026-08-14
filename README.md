@@ -1,8 +1,8 @@
 # echtlucky.github.io
 
 The product site: [AIRLOCK](https://github.com/echtlucky/airlock), NEXUS, a
-searchable skill index, and plain-language material about how AI assistants get
-tricked.
+searchable skill index, plain-language material about how AI assistants get
+tricked, and the published contract for the Skillry licence API.
 
 **Zero dependencies.** No framework, no bundler, no `npm install`. A site this
 size does not need a build pipeline, it needs a loop.
