@@ -74,6 +74,24 @@ export const SITEMAP = {
       ],
     },
   },
+  scripts: {
+    accent: 'index',
+    lede: {
+      en: 'Every FiveM resource with the version it declares — and a basket that ends in a message, not at a till.',
+      de: 'Jede FiveM-Ressource mit der Fassung, die sie deklariert — und ein Warenkorb, der in einer Nachricht endet, nicht an einer Kasse.',
+    },
+    cta: { en: 'Open the scripts', de: 'Zu den Skripten' },
+    extra: {
+      en: 'Nearby',
+      de: 'In der Nähe',
+      items: [
+        { l: { en: 'The basket', de: 'Der Warenkorb' }, h: (lang) => `${href(lang, 'scripts')}#korb` },
+        { l: { en: 'What the licence check does', de: 'Was die Lizenzprüfung leistet' }, h: (lang) => href(lang, 'api') },
+        { l: { en: 'Questions about a script', de: 'Fragen zu einem Skript' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt' }, h: (lang) => href(lang, 'impressum') },
+      ],
+    },
+  },
   skills: {
     accent: 'index',
     lede: {
@@ -154,6 +172,7 @@ export const SITEMAP = {
 export const NAV = [
   { slug: 'airlock', key: 'airlock' },
   { slug: 'nexus', key: 'nexus' },
+  { slug: 'scripts', key: 'scripts' },
   { slug: 'skills', key: 'skills' },
   { slug: 'learn', key: 'learn' },
   { slug: 'api', key: 'api' },

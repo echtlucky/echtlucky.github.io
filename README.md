@@ -1,8 +1,9 @@
 # echtlucky.github.io
 
-The product site: [AIRLOCK](https://github.com/echtlucky/airlock), NEXUS, a
-searchable skill index, plain-language material about how AI assistants get
-tricked, and the published contract for the Skillry licence API.
+The product site: [AIRLOCK](https://github.com/echtlucky/airlock), NEXUS, the
+Skillry FiveM scripts, a searchable skill index, plain-language material about
+how AI assistants get tricked, and the published contract for the Skillry
+licence API.
 
 **Zero dependencies.** No framework, no bundler, no `npm install`. A site this
 size does not need a build pipeline, it needs a loop.
@@ -21,12 +22,18 @@ build/
   theme.mjs       design tokens and the stylesheet
   pages/          one module per page, content in both languages
   rescan.mjs      re-derives skill index verdicts from the real engine
-  validate.mjs    structure + "nobody types their own verdict"
+  validate.mjs    structure, "nobody types their own verdict", and the
+                  script catalogue's price and image rules
   linkcheck.mjs   every internal link must resolve
 content/
   catalog.json    the skill index
+  scripts.json    the FiveM script catalogue behind /scripts/
 dist/             generated, not committed
 ```
+
+A page module exports `slug`, `meta`, `body(lang)`, and optionally `script(lang)`
+and `head(lang)`. `head` is where a page keeps CSS nobody else needs — the shop
+layout has no business loading on the Impressum.
 
 English lives at the root, German under `/de/`. Adding a language means adding
 it to `LANGS` and filling in the strings — the loop does the rest.
@@ -69,6 +76,39 @@ build went green — a guarantee that stops applying exactly when it is needed.
 npm run validate                                   # structure
 AIRLOCK_PATH=../airlock npm run validate:verdicts  # and the verdicts
 ```
+
+## The scripts page
+
+`/scripts/` lists every FiveM resource in `content/scripts.json` and carries a
+basket. Three rules hold it together, and all three are about what it may not
+do.
+
+**No script source reaches the browser.** The page renders a name, a version, a
+sentence and the dependencies each resource declares — no Lua, no config, not
+one excerpt. That is not caution, it is the situation: whatever a browser loads,
+anybody can read, and minifying is a threshold of minutes. The protection that
+holds is Cfx.re Asset Escrow and the licence check, both written out on
+`/api/`. The page says so in those words rather than implying otherwise.
+
+**No invented facts.** Every version is the `version` from that resource's own
+`fxmanifest.lua`. Every count on the page — how many scripts, how many priced,
+how many with a recording — is derived from the file at build time, so a
+sentence cannot rot into a lie when the data changes. `price` is `null`
+everywhere today and the page therefore shows no price at all; fill the field in
+and it appears on the card and in the basket. `npm run validate` rejects a price
+that is a string, zero or negative, and rejects an image without `w` and `h`,
+because a picture without dimensions makes the page jump while it loads.
+
+**No checkout.** The basket collects a selection, keeps it in `localStorage`,
+and ends in a message the visitor sends themselves — Discord once
+`handoff.discord` holds an invite, otherwise the address from the site notice,
+plus a copy button. There is no payment step and no payment provider. It exists
+on that one page and is deliberately absent from the site header.
+
+The page reads without JavaScript: every script and description is in the HTML
+and `<details>` opens on its own. JavaScript adds the grid/list switch, opening
+a card from a `#produkt-…` link, and the basket — and the controls for those are
+hidden by a `<noscript>` stylesheet rather than shown and dead.
 
 ## How this site behaves
 
