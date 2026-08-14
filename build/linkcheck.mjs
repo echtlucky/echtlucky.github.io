@@ -42,17 +42,29 @@ for (const page of pages) {
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
   const rel = page.replace(OUT, '').replace(/\\/g, '/');
 
-  for (const m of html.matchAll(/href="([^"#]+)"/g)) {
+  /*
+   * The pattern used to be href="([^"#]+)" — which does not merely strip the
+   * fragment, it refuses to match any link that has one at all. Every
+   * /scripts/#produkt-… permalink and every menu entry pointing at a section
+   * was therefore never checked, and a typo in the part before the # would have
+   * shipped in silence. Matching the whole value and cutting the fragment off
+   * afterwards is what the old comment always claimed was happening.
+   */
+  for (const m of html.matchAll(/href="([^"]+)"/g)) {
     const url = m[1];
-    if (/^(https?:|mailto:|data:|#)/.test(url)) { external.add(url.split('/').slice(0, 3).join('/')); continue; }
+    // A bare fragment stays on the page it is written on. It is not a host, and
+    // counting it as one is how "8 external hosts" quietly became ten.
+    if (url.startsWith('#')) continue;
+    if (/^(https?:|mailto:|data:)/.test(url)) { external.add(url.split('/').slice(0, 3).join('/')); continue; }
 
     checked++;
     // A query string picks a view inside a page, not a different file — the
     // header links to /forum/?cat=help and /forum/?new=1, all of which are the
     // same index.html reading location.search. Resolving the path with the
-    // query still attached looks for a directory that never existed.
-    const path = url.split('?')[0];
-    if (!path) continue; // "?new=1" on its own means this same page
+    // query still attached looks for a directory that never existed. A fragment
+    // is the same story one level down: it names a place inside the file.
+    const path = url.split('#')[0].split('?')[0];
+    if (!path) continue; // "?new=1" or "#korb" on its own means this same page
 
     const target = path.endsWith('/') ? join(OUT, path, 'index.html') : join(OUT, path);
     if (!existsSync(target)) broken.push(`${rel} → ${url}`);

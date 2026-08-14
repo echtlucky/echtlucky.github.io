@@ -1,12 +1,15 @@
 /**
- * Validates the skill index.
+ * Validates the two content files the build reads.
  *
- * Two jobs, and the second one is the point of the whole index:
+ * The skill index, where the second job is the point of the whole index:
  *
  *   1. Structure — required fields, no duplicate ids, sane links.
  *   2. Nobody may type their own verdict. Continuous integration re-derives
  *      every verdict from the actual skill and fails if the file disagrees, so
  *      a pull request cannot introduce an entry that claims to be clean.
+ *
+ * And the script catalogue, where the checks exist to keep two promises the
+ * page makes: no invented price, and no picture without its dimensions.
  *
  *   node build/validate.mjs
  *   AIRLOCK_PATH=... node build/validate.mjs --verdicts
@@ -110,9 +113,85 @@ if (process.argv.includes('--verdicts')) {
   }
 }
 
+// ── the script catalogue ────────────────────────────────────────────────────
+
+const shop = JSON.parse(readFileSync(join(ROOT, 'content', 'scripts.json'), 'utf8'));
+const shopErrors = [];
+const bad = (id, msg) => shopErrors.push(`${id}: ${msg}`);
+
+const RESOURCE = /^[a-z0-9][a-z0-9_-]*$/;
+const SEMVER = /^\d+\.\d+\.\d+$/;
+
+if (!Array.isArray(shop.products) || shop.products.length === 0) {
+  shopErrors.push('(products): must be a non-empty array');
+} else {
+  const ids = new Set();
+
+  for (const p of shop.products) {
+    const id = p.id ?? '(no id)';
+
+    if (!p.id || !RESOURCE.test(p.id)) bad(id, 'id must be the resource folder name, lowercase');
+    if (ids.has(p.id)) bad(id, 'duplicate id');
+    ids.add(p.id);
+
+    if (!SEMVER.test(String(p.version ?? ''))) bad(id, 'version must be the x.y.z from fxmanifest.lua');
+
+    for (const lang of ['en', 'de']) {
+      if (!p.title?.[lang]) bad(id, `title.${lang} is missing`);
+      if (!p.summary?.[lang]) bad(id, `summary.${lang} is missing`);
+      else if (p.summary[lang].length > 320) bad(id, `summary.${lang} is over 320 characters`);
+    }
+
+    if (p.requires !== undefined && !Array.isArray(p.requires)) bad(id, 'requires must be an array');
+
+    /*
+     * A price is either absent or a real number. The string "19,99" would render
+     * as a currency amount and sort as nothing, and 0 is a price nobody meant to
+     * set — both are the kind of number a reader would take for real, which is
+     * the one thing the page promises not to show.
+     */
+    if (p.price !== null && p.price !== undefined) {
+      if (typeof p.price !== 'number' || !Number.isFinite(p.price) || p.price <= 0) {
+        bad(id, 'price must be null or a positive number, never a string');
+      }
+    }
+
+    if (p.media !== undefined) {
+      if (!Array.isArray(p.media)) bad(id, 'media must be an array');
+      else
+        for (const m of p.media) {
+          if (m.type !== 'image' && m.type !== 'video') bad(id, 'media.type must be "image" or "video"');
+          if (!m.src || !m.src.startsWith('/')) bad(id, 'media.src must be a root-relative path');
+          // Without both, the page jumps while the file loads. The rule is
+          // easier to keep here than to remember.
+          if (!Number.isInteger(m.w) || !Number.isInteger(m.h) || m.w <= 0 || m.h <= 0) {
+            bad(id, 'media needs integer w and h, or the layout shifts on load');
+          }
+          if (m.type === 'image' && !m.alt?.en) bad(id, 'an image needs alt text in both languages');
+        }
+    }
+  }
+}
+
+if (shop.handoff?.discord && !/^https:\/\//.test(shop.handoff.discord)) {
+  shopErrors.push('(handoff): discord must be an https invite, or empty');
+}
+if (!shop.handoff?.email || !shop.handoff.email.includes('@')) {
+  shopErrors.push('(handoff): no email address, and with an empty discord field the basket would have nowhere to go');
+}
+
+errors.push(...shopErrors);
+
 // ── report ──────────────────────────────────────────────────────────────────
 
-process.stdout.write(`\nskill index — ${catalog.skills.length} entries\n\n`);
+const priced = (shop.products ?? []).filter((p) => typeof p.price === 'number').length;
+const shot = (shop.products ?? []).filter((p) => Array.isArray(p.media) && p.media.length).length;
+
+process.stdout.write(
+  `\nskill index — ${catalog.skills.length} entries` +
+    ` · script catalogue — ${(shop.products ?? []).length} products,` +
+    ` ${priced} priced, ${shot} with a recording\n\n`,
+);
 for (const w of warnings) process.stdout.write(`  ! ${w}\n`);
 for (const e of errors) process.stdout.write(`  ✗ ${e}\n`);
 

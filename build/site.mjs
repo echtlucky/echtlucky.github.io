@@ -20,6 +20,7 @@ import * as airlock from './pages/airlock.mjs';
 import * as nexus from './pages/nexus.mjs';
 import * as skills from './pages/skills.mjs';
 import * as learn from './pages/learn.mjs';
+import * as scripts from './pages/scripts.mjs';
 import * as api from './pages/api.mjs';
 import * as forum from './pages/forum.mjs';
 import { impressum, privacy } from './pages/legal.mjs';
@@ -29,7 +30,7 @@ const OUT = join(ROOT, 'dist');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
-const PAGES = [home, airlock, nexus, skills, learn, api, forum, impressum, privacy];
+const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 
@@ -49,6 +50,12 @@ for (const lang of LANGS) {
       description: meta.description,
       body: page.body(lang),
       script: typeof page.script === 'function' ? page.script(lang) : '',
+      // Page-owned <head> content, the same opt-in shape as `script`. It exists
+      // for CSS that only one page needs: the alternative is the house habit of
+      // appending to theme-extra.mjs, which ships every page's stylesheet to
+      // every page. One page's shop layout has no business loading on the
+      // Impressum.
+      head: typeof page.head === 'function' ? page.head(lang) : '',
     });
 
     const dir = join(OUT, base(lang).replace(/^\//, ''), page.slug);

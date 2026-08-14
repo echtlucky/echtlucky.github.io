@@ -1,0 +1,475 @@
+{
+  "_format": "The FiveM script catalogue behind /scripts/. One object per resource in \"products\". Required: id, version, title.de, title.en, summary.de, summary.en. Optional: requires, doc, price, media.",
+
+  "_id": "The resource folder name, exactly as it is on disk and in server.cfg. It is also the page anchor: id \"skillry_phone\" becomes #produkt-skillry-phone, so a link to a single product keeps working as long as the resource keeps its name.",
+
+  "_summary": "Taken from the resource's own fxmanifest.lua description and transcribed into proper orthography (the manifests write ae/oe/ue because a FiveM console is not reliably UTF-8). The English is a translation of that same sentence, not a second piece of copy.",
+
+  "_version": "The version from fxmanifest.lua, verbatim. Nothing on the page derives a status from it — the number is shown and the reader draws their own conclusion, which is why anything below 1.0.0 is labelled as unfinished on the page itself and nowhere in this file.",
+
+  "_price": "null means no price is set, and the page then shows no price at all. A number here is read as a value in \"currency\" and appears on the card and in the basket. Do not put a placeholder number in this field: a number somebody takes for real is worse than no number.",
+
+  "_media": "[] means there is no screenshot or recording of this resource yet, and the page then shows an empty frame that says so. An entry is { \"type\": \"image\" | \"video\", \"src\": \"/bilder/…\", \"w\": 1600, \"h\": 900, \"alt\": { \"de\": \"…\", \"en\": \"…\" } }. Width and height are required so the page does not jump while the file loads. What must never go in here: a rendering of a screen nobody has photographed. An honest gap is the correct content for a missing screenshot.",
+
+  "_requires": "Other resources this one declares in its fxmanifest. Shown so a buyer can see before ordering that a script drags a second one along.",
+
+  "_doc": "Optional slug of a page on this site that documents the resource in full. Rendered as an internal link, so build/linkcheck.mjs fails if the page ever goes away.",
+
+  "_handoff": "Where the basket is taken from. There is no checkout and no payment on this site. Set \"discord\" to the invite and the Discord button appears; while it is empty the page offers the email address from the site notice and a copy button, and nothing pretends a channel exists that does not.",
+
+  "updated": "2026-08-14",
+  "currency": "EUR",
+
+  "handoff": {
+    "discord": "",
+    "email": "lucassteckel04@gmail.com"
+  },
+
+  "products": [
+    {
+      "id": "skillry_admin",
+      "version": "1.1.0",
+      "requires": ["oxmysql"],
+      "title": { "de": "Verwaltung über Discord", "en": "Administration over Discord" },
+      "summary": {
+        "de": "Verwaltung über Discord: kicken, Ruhepause, Sperren, Screenshot — und der Türsteher, der sie durchsetzt.",
+        "en": "Administration over Discord: kick, time out, ban, screenshot — and the doorman on the server that enforces them."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_ankunft",
+      "version": "0.3.0",
+      "requires": [],
+      "title": { "de": "Die Ankunft", "en": "The arrival" },
+      "summary": {
+        "de": "Die Ankunft: der Anflug, die Taxifahrt, die ersten Schritte per Handy.",
+        "en": "The arrival: the approach by air, the taxi ride, the first steps taken on a phone."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_arbeit",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Arbeit", "en": "Work" },
+      "summary": {
+        "de": "Zehn Wege, an Geld zu kommen. Sieben legale, drei nicht.",
+        "en": "Ten ways to come by money. Seven of them legal, three not."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_autohaus",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Autohaus", "en": "Car dealership" },
+      "summary": {
+        "de": "Der Ort, an dem man ein Auto kauft. Rund achtzig Fahrzeuge aus dem Grundspiel, kein Download.",
+        "en": "The place where you buy a car. Around eighty vehicles from the base game, nothing to download."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_bank",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Bank", "en": "Bank" },
+      "summary": {
+        "de": "Banken auf der ganzen Insel: Blips, Schalter zum Ein- und Auszahlen, Überweisungen mit Rückfrage, Automaten in der Stadt und ein Kontoauszug, in dem jede Buchung ihren Grund nennt.",
+        "en": "Banks across the whole island: blips, counters for paying in and out, transfers with a confirmation step, cash machines around the city, and a statement in which every entry names its reason."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_charakter",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Charaktere", "en": "Characters" },
+      "summary": {
+        "de": "Mehrere Charaktere je Spieler: Auswahl, Erstellung und Startpunkt.",
+        "en": "Several characters per player: selection, creation and starting point."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_chat",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Chat", "en": "Chat" },
+      "summary": {
+        "de": "Der Chat: links unten, dezent, verblassend. Rollenspiel-Kanäle mit Reichweite und Vorschläge, die der Server filtert.",
+        "en": "The chat: bottom left, understated, fading out. Roleplay channels with a range, and suggestions the server filters."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_fahrschule",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Fahrschule", "en": "Driving school" },
+      "summary": {
+        "de": "Theorieprüfung, praktische Prüfung mit Prüfer, und ein Führerschein, den man sich verdient hat.",
+        "en": "A theory test, a practical test with an examiner, and a licence you have earned."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_garage",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Garage", "en": "Garage" },
+      "summary": {
+        "de": "Fahrzeuge einparken und herausholen — die Zeile in der Datenbank ist die Wahrheit.",
+        "en": "Park vehicles and take them out again — the row in the database is the truth."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_haus",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Wohnen", "en": "Housing" },
+      "summary": {
+        "de": "Eine Tür, die einem gehört. Mieten oder kaufen.",
+        "en": "A door of your own. Rent it or buy it."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_hud",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "HUD", "en": "HUD" },
+      "summary": {
+        "de": "HUD-Paket: Kombiinstrument an echten Fahrzeugdaten, Gurt mit Piepen und Herausschleudern, Todesbildschirm, Ankündigungen für alle.",
+        "en": "The HUD package: an instrument cluster fed by real vehicle data, a seatbelt that beeps and throws you out, a death screen, and announcements everybody sees."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_jobs",
+      "version": "0.1.0",
+      "requires": ["skillry_ui", "oxmysql"],
+      "title": { "de": "Fraktionen", "en": "Factions" },
+      "summary": {
+        "de": "Der Fraktionsbaukasten: Fraktionen im Spiel anlegen, Ränge als Tabelle, Marken am Boden durch Hinstellen setzen, Chefmenü mit Fraktionskonto und Lohnzahlung, und die Naht zum Discord-Bewerbungssystem.",
+        "en": "The faction construction kit: create factions in the game, ranks as a table, markers placed on the ground by standing where you want them, a boss menu with a faction account and payroll, and the seam to the Discord application system."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_karte",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Karte", "en": "Map" },
+      "summary": {
+        "de": "Die Karte des Servers an einer Stelle — eigene Blips, fremde entfernen, und die eigene Werkstatt.",
+        "en": "The server's map in one place — your own blips, other people's removed, and a workshop of your own."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_kofferraum",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Kofferraum", "en": "Boot" },
+      "summary": {
+        "de": "Die Klinke am Kofferraum. Öffnet ox_inventory — mit Schlüssel oder mit Werkzeug.",
+        "en": "The handle on the boot. Opens ox_inventory — with a key, or with a tool."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_ladebildschirm",
+      "version": "1.1.0",
+      "requires": [],
+      "title": { "de": "Ladebildschirm", "en": "Loading screen" },
+      "summary": {
+        "de": "Der erste Bildschirm des Servers — und der einzige, den jeder sieht.",
+        "en": "The server's first screen — and the only one everybody sees."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_lichtbild",
+      "version": "1.0.0",
+      "requires": [],
+      "title": { "de": "Lichtbild", "en": "Portrait" },
+      "summary": {
+        "de": "Das Lichtbild: ein Porträt je Charakter, automatisch aufgenommen und überall abrufbar.",
+        "en": "The portrait: one photograph per character, taken automatically and available everywhere."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_lizenz",
+      "version": "0.1.0",
+      "requires": [],
+      "doc": "api",
+      "title": { "de": "Lizenzprüfung", "en": "Licence check" },
+      "summary": {
+        "de": "Lizenzprüfung gegen eine eigene API — eine Schwelle gegen das Weiterverkaufen, kein Schloss. Standardmäßig aus.",
+        "en": "A licence check against an API of your own — a threshold against resale, not a lock. Off by default."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_logs",
+      "version": "1.0.0",
+      "requires": [],
+      "title": { "de": "Protokolle", "en": "Logs" },
+      "summary": {
+        "de": "Was im Spiel passiert, auf dem Weg nach Discord — ein Thread je Bereich.",
+        "en": "What happens in the game, on its way to Discord — one thread per area."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_minispiele",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Minispiele", "en": "Minigames" },
+      "summary": {
+        "de": "Schloss knacken, Terminal, Kabel — die Geschicklichkeitsspiele, die andere Skripte aufrufen.",
+        "en": "Picking a lock, a terminal, cables — the skill games other scripts call into."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_notruf",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Notruf", "en": "Emergency call" },
+      "summary": {
+        "de": "Der Notruf mit Leitstelle. Wer 110 wählt, wird gefragt — und was ankommt, ist das, was er gesagt hat.",
+        "en": "The emergency call, with a dispatcher. Dial 110 and you are asked questions — and what arrives is what you said."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_pause",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Pausenmenü", "en": "Pause menu" },
+      "summary": {
+        "de": "Ein eigenes Pausenmenü: wer man gerade ist, was man einstellen kann, der Weg ins Team und der Weg hinaus.",
+        "en": "A pause menu of its own: who you currently are, what you can change, the way into the team and the way out."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_phone",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Handy", "en": "Phone" },
+      "summary": {
+        "de": "Das Handy — Nummern, Nachrichten, Anrufe und Teilen in der Nähe.",
+        "en": "The phone — numbers, messages, calls, and sharing with people nearby."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_rennen",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Rennen", "en": "Racing" },
+      "summary": {
+        "de": "Die Kartbahn: Strecke, Zeitmessung, Bestenliste. Heute erst die Strecke.",
+        "en": "The kart track: the course, the timing, the leaderboard. Today, only the course."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_ruhe",
+      "version": "1.0.0",
+      "requires": [],
+      "title": { "de": "Ruhe", "en": "Quiet" },
+      "summary": {
+        "de": "Los Santos ohne Publikum: keine Fußgänger, kein Verkehr, keine Streifenwagen.",
+        "en": "Los Santos with no audience: no pedestrians, no traffic, no patrol cars."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_spuren",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Spuren", "en": "Traces" },
+      "summary": {
+        "de": "Taten hinterlassen Spuren. Hülsen, Blut, Reifenabrieb — sichern, auswerten, zuordnen.",
+        "en": "Deeds leave traces. Casings, blood, tyre rubber — collect them, examine them, match them."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_szenen",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Szenen", "en": "Scenes" },
+      "summary": {
+        "de": "Bühnenbilder aus vorhandenen Spielobjekten, zur Laufzeit gesetzt. Kein Download.",
+        "en": "Stage sets built from objects already in the game, placed at runtime. Nothing to download."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_tablet",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Tablet", "en": "Tablet" },
+      "summary": {
+        "de": "Das Tablet. Drei Spalten, Notizen und Bilder — kein zweites Handy.",
+        "en": "The tablet. Three columns, notes and pictures — not a second phone."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_tanken",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Tanken", "en": "Refuelling" },
+      "summary": {
+        "de": "Tanken an jeder Zapfsäule der Karte — selbst mit Schlauch und gehaltener Taste, oder sitzen bleiben und einen Tankwart kommen lassen.",
+        "en": "Refuelling at every pump on the map — yourself, with the hose and a held key, or stay in the seat and let an attendant come to you."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_taxi",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Taxi", "en": "Taxi" },
+      "summary": {
+        "de": "Marlon holt dich ab. Die Nummer aus dem Vorspann, angeschlossen.",
+        "en": "Marlon comes to pick you up. The number from the opening credits, actually connected."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_ui",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Oberfläche", "en": "Shared interface" },
+      "summary": {
+        "de": "Die gemeinsame Oberfläche aller Skillry-Skripte — Meldungen, Ankündigungen, HUD, Kombiinstrument und Schnellzugriff.",
+        "en": "The interface every Skillry script shares — notifications, announcements, HUD, instrument cluster and the quick-access wheel."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_voice",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Sprache", "en": "Voice" },
+      "summary": {
+        "de": "Sprechen auf Entfernung mit drei Stufen, Fahrzeugdämpfung und Funkkanälen nach Beruf. Die Übertragung liegt hinter einer austauschbaren Schicht.",
+        "en": "Proximity speech at three levels, muffling inside vehicles, and radio channels by profession. The transport itself sits behind a layer you can swap out."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_wache",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Wache", "en": "Watch" },
+      "summary": {
+        "de": "Serverseitige Überwachung: Modelle, Explosionen, Schaden, Sprung, Rüstung.",
+        "en": "Server-side monitoring: models, explosions, damage, position jumps, armour."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_werkbank",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Werkbank", "en": "Workbench" },
+      "summary": {
+        "de": "Werkzeuge für die, die hier bauen. Nur mit dem Recht dev.werkzeuge.",
+        "en": "Tools for the people building the server. Only with the dev.werkzeuge permission."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_wetter",
+      "version": "0.1.0",
+      "requires": [],
+      "title": { "de": "Wetter", "en": "Weather" },
+      "summary": {
+        "de": "Das Wetter im Spiel folgt dem echten Wetter einer echten Stadt — Los Angeles oder NRW, über Open-Meteo und ohne Schlüssel.",
+        "en": "The weather in the game follows the real weather of a real city — Los Angeles or North Rhine-Westphalia, over Open-Meteo and without a key."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_wheel",
+      "version": "1.0.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Schnellzugriff", "en": "Quick-access wheel" },
+      "summary": {
+        "de": "Der Schnellzugriff mit Inhalt — Fahrzeug, Emotes, Interaktion und der Beruf.",
+        "en": "The quick-access wheel, with something in it — vehicle, emotes, interaction and the job."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_wirtschaft",
+      "version": "0.1.0",
+      "requires": ["oxmysql"],
+      "title": { "de": "Wirtschaft", "en": "Economy" },
+      "summary": {
+        "de": "Die Schicht unter allem, was Geld, Ware oder Erfahrung bewegt: eine Tür für jede Geldbewegung, ein Wertbuch mit Grund, ein Erfahrungskonto je Charakter und ein Preis, der abgefragt wird statt in einer Konfiguration zu stehen.",
+        "en": "The layer underneath everything that moves money, goods or experience: one door for every movement of money, a ledger that records the reason, an experience account per character, and a price that is asked for rather than written into a config file."
+      },
+      "price": null,
+      "media": []
+    },
+    {
+      "id": "skillry_zeitung",
+      "version": "0.1.0",
+      "requires": ["skillry_ui"],
+      "title": { "de": "Zeitung", "en": "Newspaper" },
+      "summary": {
+        "de": "Die Zeitung von Los Santos — was passiert ist, steht am nächsten Morgen am Kiosk.",
+        "en": "The Los Santos newspaper — what happened is on the newsstand the next morning."
+      },
+      "price": null,
+      "media": []
+    }
+  ]
+}
