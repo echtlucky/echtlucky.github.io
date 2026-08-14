@@ -237,7 +237,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill index', learn: 'Learn', forum: 'Forum' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -274,7 +274,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill-Index', learn: 'Lernen', forum: 'Forum' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',

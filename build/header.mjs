@@ -110,6 +110,23 @@ export const SITEMAP = {
       ],
     },
   },
+  api: {
+    accent: 'nexus',
+    lede: {
+      en: 'The licence check a FiveM server talks to: the whole contract, and what it cannot do.',
+      de: 'Die Lizenzprüfung, mit der ein FiveM-Server spricht: der ganze Vertrag, und was er nicht kann.',
+    },
+    cta: { en: 'Read the contract', de: 'Den Vertrag lesen' },
+    extra: {
+      en: 'Nearby',
+      de: 'In der Nähe',
+      items: [
+        { l: { en: 'Questions about the API', de: 'Fragen zur API' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Ideas and requests', de: 'Ideen und Wünsche' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt' }, h: (lang) => href(lang, 'impressum') },
+      ],
+    },
+  },
   forum: {
     accent: 'index',
     lede: {
@@ -139,6 +156,7 @@ export const NAV = [
   { slug: 'nexus', key: 'nexus' },
   { slug: 'skills', key: 'skills' },
   { slug: 'learn', key: 'learn' },
+  { slug: 'api', key: 'api' },
   { slug: 'forum', key: 'forum' },
 ];
 
@@ -666,11 +684,16 @@ export const HEADER_CSS = `
 
 /* ── narrow ─────────────────────────────────────────────────────────────── */
 /*
- * 1120, not 980: at 1000px the five items plus a usable field plus the actions
- * do not fit, and "does not fit" in a flex row means silent clipping. The bar
- * gives up the nav while there is still room for everything else.
+ * 1200, not 980: at 1000px the nav items plus a usable field plus the actions
+ * do not fit, and "does not fit" in a flex row means silent clipping — nothing
+ * in the bar shrinks, so the overflow simply pushes the actions off the right
+ * edge. The bar gives up the nav while there is still room for everything else.
+ *
+ * It was 1120 while there were five items. API is the sixth, and the German
+ * labels are the long ones; 1120 left the bar about eighty pixels short of its
+ * own content, which is exactly the failure this breakpoint exists to prevent.
  */
-@media (max-width: 1120px) {
+@media (max-width: 1200px) {
   .gh-nav { display: none; }
   .gh-find { margin-left: auto; }   /* the nav's auto margin went with it */
   .gh-burger {
