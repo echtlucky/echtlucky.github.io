@@ -30,6 +30,7 @@
  */
 
 import { href, SITE } from '../layout.mjs';
+import { grainOn } from '../grain.mjs';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -465,6 +466,15 @@ const CSS = `
 
 /* Shown only when JavaScript did not run; see the noscript block below. */
 .sh-nojs { display: none; }
+
+/*
+ * A shop item is built exactly like a .card — --surface, one border, the same
+ * radius and the same elevation — so it gets the same material. It is asked for
+ * here rather than declared in build/grain.mjs because .sh-item exists on this
+ * page and nowhere else, and a selector for it in the site-wide stylesheet
+ * would be loaded by the Impressum to no purpose.
+ */
+${grainOn('.sh-item')}
 `;
 
 /**
