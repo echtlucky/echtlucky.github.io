@@ -431,5 +431,11 @@ footer.site ul { list-style: none; margin: 0; padding: 0; display: flex; flex-di
 footer.site a { color: var(--fg-muted); font-size: 0.9rem; }
 footer.site a:hover { color: var(--fg); }
 footer.site .base { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; color: var(--fg-subtle); font-size: 0.84rem; }
+/* Der Rockstar-Hinweis bekommt eine eigene Zeile, sonst teilt er sich den
+   Streifen mit einem Absatz, der dreimal so lang ist, und wird zur Randnotiz.
+   **Und er wird ausdruecklich nicht kleiner gesetzt als der Rest**: die Cfx.re
+   Platform License Agreement verlangt ihn deutlich sichtbar, und ein Hinweis in
+   Achtelpunkt erfuellt eine Pflicht nur dem Buchstaben nach. */
+footer.site .base .disclaimer { flex-basis: 100%; letter-spacing: .01em; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;
