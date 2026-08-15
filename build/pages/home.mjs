@@ -1,4 +1,5 @@
 import { href, SITE } from '../layout.mjs';
+import { HERO_WAVE_HTML, HERO_WAVE_CSS, HERO_WAVE_JS } from '../hero-wave.mjs';
 
 export const slug = '';
 
@@ -160,7 +161,8 @@ export function body(lang) {
   const t = T[lang];
 
   return `
-<section class="hero hero-stage">
+<section class="hero hero-stage hero-swell">
+  ${HERO_WAVE_HTML}
   <div class="wrap">
     <span class="eyebrow">${t.eyebrow}</span>
     <h1>${t.h1}</h1>
@@ -267,4 +269,17 @@ $ airlock scan pdf-helper
   </div>
 </section>
 `;
+}
+
+/*
+ * The swell belongs to this page and nowhere else, so it loads on this page and
+ * nowhere else — the same reason the shop layout does not load on the Impressum.
+ * Seven other heroes share the .hero-stage class and none of them pay for it.
+ */
+export function head() {
+  return `<style>${HERO_WAVE_CSS}</style>`;
+}
+
+export function script() {
+  return HERO_WAVE_JS;
 }
