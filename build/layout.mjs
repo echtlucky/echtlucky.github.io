@@ -269,6 +269,17 @@ export const UI = {
       privacy: 'Privacy',
       note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum is entirely self-contained; the forum talks to Firebase, and the privacy page says exactly what that means.',
       rights: 'MIT licensed. Made by Skillry.',
+      // Required by the Cfx.re Creator Platform License Agreement, §2.3: any
+      // site, product listing or storefront touching FiveM must carry an
+      // operator contact and a disclaimer of this kind. The contact is the
+      // site notice, linked in the column above.
+      //
+      // The sentence stays in English in both languages on purpose. It is a
+      // formula quoted from an English contract; a translation would read
+      // better and mean something slightly different, and this is the one
+      // line on the page where "slightly different" is the wrong outcome.
+      rockstar: 'SKILLRY IS NOT APPROVED, SPONSORED, OR ENDORSED BY ROCKSTAR GAMES. '
+        + 'Grand Theft Auto and Rockstar Games are trademarks of Take-Two Interactive Software, Inc.',
     },
   },
   de: {
@@ -306,6 +317,9 @@ export const UI = {
       privacy: 'Datenschutz',
       note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum ist vollständig in sich geschlossen; das Forum spricht mit Firebase, und die Datenschutzseite sagt genau, was das heißt.',
       rights: 'MIT-lizenziert. Gemacht von Skillry.',
+      // Wörtlich dieselbe englische Formel wie oben — die Begründung steht dort.
+      rockstar: 'SKILLRY IS NOT APPROVED, SPONSORED, OR ENDORSED BY ROCKSTAR GAMES. '
+        + 'Grand Theft Auto and Rockstar Games are trademarks of Take-Two Interactive Software, Inc.',
     },
   },
 };
@@ -403,6 +417,10 @@ function footer(lang, t) {
     <div class="base">
       <span>${f.rights}</span>
       <span>${f.note}</span>
+      <!-- Auf jeder Seite und nicht nur auf /scripts/: die Pflicht haengt an
+           der Website, nicht an der einzelnen Unterseite, und eine Zeile, die
+           je nach Weg da ist oder nicht, ist eine, die irgendwann fehlt. -->
+      <span class="disclaimer">${f.rockstar}</span>
     </div>
   </div>
 </footer>`;
