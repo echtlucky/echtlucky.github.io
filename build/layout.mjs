@@ -15,6 +15,7 @@ import { CSS_EXTRA, MOTION_JS } from './theme-extra.mjs';
 import { anchorHeadings } from './search.mjs';
 import { WORDMARK_CSS, LOGO_FAVICON } from './logo.mjs';
 import { SCENE_CSS, sceneFor } from './scenes.mjs';
+import { GRAIN_CSS } from './grain.mjs';
 import { header, HEADER_JS, HEADER_CSS } from './header.mjs';
 
 /**
@@ -502,7 +503,7 @@ export function render(page) {
 ${alt}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}${href(DEFAULT_LANG, page.slug)}">
 <script>${THEME_BOOT}</script>
-<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}</style>
+<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}${GRAIN_CSS}</style>
 ${page.head ?? ''}
 </head>
 <body>
