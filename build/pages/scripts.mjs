@@ -42,6 +42,38 @@ const DATA = JSON.parse(readFileSync(join(ROOT, 'content', 'scripts.json'), 'utf
 
 const PRODUCTS = DATA.products;
 const N = PRODUCTS.length;
+/**
+ * Die Spiele, die es hier tatsaechlich gibt — aus den Daten, nicht von Hand.
+ *
+ * Das Feld `spiel` steht in `content/scripts.json` noch nirgends; alle 37
+ * Eintraege sind FiveM-Ressourcen und damit GTA V. Die Vorgabe steht deshalb
+ * hier im Code. Sobald ein Produkt sein `spiel` mitbringt, taucht das Spiel von
+ * selbst als Knopf auf — dieselbe Zeile, ein Knopf mehr.
+ *
+ * **Ein Spiel ohne Eintraege bekommt keinen Knopf.** Ein Filter, der auf eine
+ * leere Liste fuehrt, ist kein Filter, sondern eine Sackgasse; dieselbe Regel
+ * gilt im Menue in `build/header.mjs`.
+ */
+const SPIEL_NAMEN = {
+  gta5: { en: 'GTA V', de: 'GTA V' },
+  gta6: { en: 'GTA VI', de: 'GTA VI' },
+  egal: { en: 'Game-independent', de: 'Spielunabhängig' },
+};
+const SPIEL_VON = (p) => p.spiel ?? 'gta5';
+const SPIEL_ANZAHL = PRODUCTS.reduce((z, p) => {
+  const g = SPIEL_VON(p);
+  z[g] = (z[g] ?? 0) + 1;
+  return z;
+}, Object.create(null));
+
+/** „Alle" zuerst, danach jedes Spiel mit Eintraegen in fester Reihenfolge. */
+const SPIELE = [
+  { key: 'alle', l: { en: 'All', de: 'Alle' }, n: PRODUCTS.length },
+  ...Object.keys(SPIEL_NAMEN)
+    .filter((k) => SPIEL_ANZAHL[k])
+    .map((k) => ({ key: k, l: SPIEL_NAMEN[k], n: SPIEL_ANZAHL[k] })),
+];
+
 const N_PRICED = PRODUCTS.filter((p) => typeof p.price === 'number').length;
 const N_SHOT = PRODUCTS.filter((p) => Array.isArray(p.media) && p.media.length > 0).length;
 const N_STABLE = PRODUCTS.filter((p) => !/^0\./.test(String(p.version))).length;
@@ -75,6 +107,8 @@ const T = {
       'The Skillry FiveM resources, listed one by one with the version each of them declares. Put together whatever interests you — the basket collects the selection and hands it to a human being. Nothing is paid for here, nothing is downloaded here, and <strong>the source of a script that is for sale never reaches this browser</strong>.',
     countLine: `${plural(N, 'script', 'scripts')} · data last touched ${DATA.updated}`,
 
+    filterLabel: 'Filter by game',
+    countPattern: '{n} of {all} scripts',
     viewLabel: 'View',
     viewGrid: 'Grid',
     viewList: 'List',
@@ -166,6 +200,8 @@ const T = {
       'Die FiveM-Ressourcen von Skillry, einzeln aufgelistet, jede mit der Fassung, die sie deklariert. Leg zusammen, was dich interessiert — der Warenkorb sammelt die Auswahl und übergibt sie an einen Menschen. Hier wird nichts bezahlt, hier wird nichts heruntergeladen, und <strong>der Quelltext eines verkauften Skripts erreicht diesen Browser nie</strong>.',
     countLine: `${plural(N, 'Skript', 'Skripte')} · Daten zuletzt angefasst ${DATA.updated}`,
 
+    filterLabel: 'Nach Spiel filtern',
+    countPattern: '{n} von {all} Skripten',
     viewLabel: 'Ansicht',
     viewGrid: 'Raster',
     viewList: 'Liste',
@@ -320,7 +356,15 @@ function card(p, t, lang) {
         .join(' ')}</p>`
     : '';
 
-  return `<li class="sh-item" id="${id}">
+  /*
+   * `data-spiel` an jeder Karte, und der Filter liest nur dieses Merkmal.
+   *
+   * Nicht der Filter kennt die Produkte, sondern die Karte kennt ihr Spiel.
+   * Damit ist ein neues Spiel eine Zeile in `content/scripts.json` und keine
+   * Aenderung am Filter — dieselbe Bauart wie bei den Bereitstellern in
+   * `skillry-lizenz/src/bereitstellung.js`.
+   */
+  return `<li class="sh-item" id="${id}" data-spiel="${esc(p.spiel ?? 'gta5')}">
   <details class="sh-d">
     <summary class="sh-sum">
       <span class="sh-h">
@@ -351,7 +395,38 @@ function card(p, t, lang) {
 
 const CSS = `
 .sh-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
-.sh-tools .sh-count { margin-left: auto; }
+.sh-tools .sh-count { margin-left: auto; font-variant-numeric: tabular-nums; }
+
+/* ── Die Filterknoepfe ────────────────────────────────────────────────────── */
+
+/*
+ * Sie sehen aus wie die Ansichtsumschaltung daneben, weil sie dasselbe tun:
+ * beide aendern, WIE die Liste erscheint, und nicht, was sie enthaelt. Zwei
+ * verschiedene Formen fuer zwei gleichartige Griffe waeren zwei Erfindungen.
+ */
+.sh-filter { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--border); border-radius: 999px; }
+.sh-spiel {
+  border: 0; background: none; color: var(--fg-muted); cursor: pointer;
+  font: inherit; font-size: 0.84rem; padding: 5px 12px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  transition: background var(--kurz) var(--ease), color var(--kurz) var(--ease);
+}
+.sh-spiel:hover { color: var(--fg); background: var(--surface-2); }
+/* Der gewaehlte Filter traegt die Marke — dieselbe Rolle wie der aktive Punkt
+   in der Navigation: hier passiert gerade etwas. */
+.sh-spiel[aria-pressed="true"] {
+  background: var(--marke-flaeche); color: var(--marke-auf-flaeche); font-weight: 600;
+}
+.sh-spiel em {
+  font-style: normal; font-size: 0.85em; font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+.sh-spiel[aria-pressed="true"] em { opacity: 1; }
+
+@media (max-width: 560px) {
+  .sh-tools { flex-wrap: wrap; }
+  .sh-tools .sh-count { margin-left: 0; width: 100%; }
+}
 
 .sh-list { list-style: none; margin: 0; padding: 0; }
 .sh-list[data-view="grid"] { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
@@ -525,7 +600,15 @@ export function body(lang) {
         <button type="button" class="sh-view" data-view="grid" aria-pressed="true">${esc(t.viewGrid)}</button>
         <button type="button" class="sh-view" data-view="list" aria-pressed="false">${esc(t.viewList)}</button>
       </div>
-      <p class="small muted sh-count">${esc(t.countWord)}</p>
+      <!--
+        Der Filter steht neben der Ansicht und nicht darueber: beide aendern,
+        WIE die Liste erscheint, und nicht, was sie enthaelt. Nur was
+        Eintraege hat, bekommt einen Knopf — genau wie im Menue.
+      -->
+      <div class="sh-filter js-only" role="group" aria-label="${esc(t.filterLabel)}">
+        ${SPIELE.map((g) => `<button type="button" class="sh-spiel" data-spiel="${g.key}" aria-pressed="${g.key === 'alle'}">${esc(g.l[lang])}<em>${g.n}</em></button>`).join('')}
+      </div>
+      <p class="small muted sh-count" id="shCount" role="status">${esc(t.countWord)}</p>
     </div>
     <ul class="sh-list" id="shList" data-view="grid">
       ${PRODUCTS.map((p) => card(p, t, lang)).join('\n')}
@@ -631,6 +714,7 @@ export function script(lang) {
     head: t.textHead,
     subject: t.mailSubject,
     discordHint: t.discordHint,
+    zaehlMuster: t.countPattern,
   };
 
   const json = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
@@ -649,6 +733,72 @@ export function script(lang) {
 
   var list = document.getElementById('shList');
   if (!list) return;
+
+  // ── Der Filter nach Spiel ────────────────────────────────────────────────
+  //
+  // Er versteckt Karten, er entfernt sie nicht. Der Warenkorb, die Anker und
+  // die Ansichtsumschaltung arbeiten unveraendert weiter — sie sehen dieselben
+  // Elemente wie vorher, nur teilweise unsichtbar. Ein Filter, der die Liste
+  // neu baut, muesste all das nachziehen.
+  var KARTEN = [].slice.call(list.querySelectorAll('.sh-item'));
+  var KNOEPFE = [].slice.call(document.querySelectorAll('.sh-spiel'));
+  var zaehler = document.getElementById('shCount');
+  var spielJetzt = 'alle';
+
+  function spielSetzen(wahl, inAdresse) {
+    if (wahl !== 'alle' && !KARTEN.some(function (k) { return k.dataset.spiel === wahl; })) wahl = 'alle';
+    spielJetzt = wahl;
+
+    var sichtbar = 0;
+    for (var i = 0; i < KARTEN.length; i++) {
+      var passt = wahl === 'alle' || KARTEN[i].dataset.spiel === wahl;
+      KARTEN[i].hidden = !passt;
+      if (passt) sichtbar++;
+    }
+    for (var j = 0; j < KNOEPFE.length; j++) {
+      KNOEPFE[j].setAttribute('aria-pressed', String(KNOEPFE[j].dataset.spiel === wahl));
+    }
+    // Die Zahl ist die Rueckmeldung des Filters. Das role="status" am Absatz
+    // sorgt dafuer, dass ein Vorleseprogramm sie mitbekommt, ohne dass der
+    // Fokus springt.
+    if (zaehler) {
+      zaehler.textContent = L.zaehlMuster
+        .replace('{n}', String(sichtbar)).replace('{all}', String(KARTEN.length));
+    }
+
+    if (inAdresse) {
+      var u = new URL(location.href);
+      if (wahl === 'alle') u.searchParams.delete('spiel'); else u.searchParams.set('spiel', wahl);
+      // replaceState und nicht pushState: ein Filter ist keine Station,
+      // durch die man sich zurueckklickt. Wer den Zurueck-Knopf drueckt, will
+      // von dieser Seite weg und nicht durch seine letzten fuenf Filter.
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    }
+  }
+
+  for (var b = 0; b < KNOEPFE.length; b++) {
+    KNOEPFE[b].addEventListener('click', function () { spielSetzen(this.dataset.spiel, true); });
+  }
+
+  /*
+   * Ein Anker schlaegt den Filter.
+   *
+   * Wer einem Dauerlink auf ein einzelnes Skript folgt, waehrend ein Filter
+   * gesetzt ist, der es ausblendet, landet auf einer Seite, die seine Zeile
+   * nicht zeigt — und haelt den Link fuer kaputt. Also: passt der Anker nicht
+   * zum Filter, gewinnt der Anker.
+   */
+  function ankerRetten() {
+    if (!location.hash) return;
+    var ziel = document.getElementById(location.hash.slice(1));
+    if (!ziel || !ziel.classList.contains('sh-item') || !ziel.hidden) return;
+    spielSetzen('alle', true);
+    ziel.scrollIntoView({ block: 'center' });
+  }
+
+  spielSetzen(new URL(location.href).searchParams.get('spiel') || 'alle', false);
+  ankerRetten();
+  window.addEventListener('hashchange', ankerRetten);
 
   var BY = {};
   for (var i = 0; i < ITEMS.length; i++) BY[ITEMS[i].i] = ITEMS[i];
