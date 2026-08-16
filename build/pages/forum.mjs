@@ -51,6 +51,8 @@ const T = {
     h1: 'Ask anything. Beginner questions are the point.',
     lede:
       'A place to ask what something means, recommend a skill, report a false positive, or say that a rule got it wrong. Nothing here assumes you already know the vocabulary.',
+    leisteSub: 'ask · share · report',
+    leisteNav: 'Forum areas',
     signIn: 'Sign in',
     signInGithub: 'Continue with GitHub',
     orEmail: 'or with an email address',
@@ -130,6 +132,8 @@ const T = {
     h1: 'Frag alles. Einsteigerfragen sind der Sinn davon.',
     lede:
       'Ein Ort, um zu fragen was etwas bedeutet, einen Skill zu empfehlen, einen False Positive zu melden oder zu sagen, dass eine Regel danebenlag. Nichts hier setzt voraus, dass du das Vokabular schon kennst.',
+    leisteSub: 'fragen · teilen · melden',
+    leisteNav: 'Bereiche des Forums',
     signIn: 'Anmelden',
     signInGithub: 'Weiter mit GitHub',
     orEmail: 'oder mit einer E-Mail-Adresse',
@@ -216,6 +220,70 @@ const T = {
  * Unten und mittig, weil dort der Blick nach dem Absenden ohnehin nicht ist —
  * eine Meldung, die den Text verdeckt, um den es geht, ist keine Hilfe.
  */
+/**
+ * Die zweite Leiste.
+ *
+ * ══ Warum sie unter dem Kopf klebt und nicht mitscrollt ═══════════════════
+ *
+ * Ein Thema kann lang sein. Wer unten in einer Antwort steht und zurueck zur
+ * Uebersicht will, scrollt sonst erst wieder ganz nach oben — und genau das
+ * ist der Moment, in dem man stattdessen den Zurueck-Knopf des Browsers
+ * nimmt und die Seite verlaesst.
+ *
+ * Der Abstand von oben ist `--hdr-h` und keine getippte Zahl: der Kopf der
+ * Seite aendert seine Hoehe an einem Haltepunkt, und zwei Zahlen, die
+ * dieselbe Hoehe beschreiben, gehen irgendwann auseinander.
+ */
+export const LEISTE_CSS = `
+.fo-leiste {
+  position: sticky; top: var(--hdr-h, 62px); z-index: 40;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  /* Ohne das schimmert beim Scrollen der Text darunter durch die Leiste. */
+  backdrop-filter: saturate(1.4) blur(6px);
+}
+.fo-leiste-in {
+  display: flex; align-items: center; gap: 20px; min-height: 54px;
+  padding-block: 8px; flex-wrap: wrap;
+}
+.fo-heim { display: flex; flex-direction: column; gap: 1px; flex: none; color: var(--fg); }
+.fo-heim:hover { text-decoration: none; color: var(--marke); }
+.fo-heim strong { font-family: var(--anzeige); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; }
+.fo-heim-sub { font-size: 0.72rem; color: var(--fg-subtle); letter-spacing: 0.04em; }
+
+/*
+ * Die Reiter sind LINKS und keine Knoepfe: jeder hat eine eigene Adresse, die
+ * sich teilen und in einem neuen Fenster oeffnen laesst. Das Skript faengt den
+ * Klick ab und tauscht nur den Inhalt — faellt es aus, funktionieren sie
+ * trotzdem, nur mit einem Seitenwechsel.
+ */
+.fo-reiter-reihe {
+  display: flex; gap: 2px; overflow-x: auto; flex: 1 1 auto;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.fo-reiter-reihe::-webkit-scrollbar { display: none; }
+.fo-reiter {
+  padding: 7px 13px; border-radius: 999px; white-space: nowrap;
+  color: var(--fg-muted); font-size: 0.88rem; font-weight: 500;
+  transition: background var(--kurz) var(--ease), color var(--kurz) var(--ease);
+}
+.fo-reiter:hover { text-decoration: none; color: var(--fg); background: var(--surface-2); }
+/* Der gewaehlte Bereich traegt die Marke — dieselbe Rolle wie der aktive Punkt
+   in der Navigation und der gewaehlte Filter auf der Skripteseite. */
+.fo-reiter[aria-current="page"] {
+  background: var(--marke-flaeche); color: var(--marke-auf-flaeche); font-weight: 650;
+}
+.fo-leiste-tat { flex: none; margin-left: auto; }
+.fo-neu { padding: 8px 16px; font-size: 0.9rem; }
+
+@media (max-width: 720px) {
+  .fo-leiste-in { gap: 10px; }
+  .fo-heim-sub { display: none; }
+  .fo-reiter-reihe { order: 3; width: 100%; }
+  .fo-leiste-tat { margin-left: auto; }
+}
+`;
+
 export const MELDE_CSS = `
 .fo-melde {
   position: fixed; left: 50%; bottom: 20px; z-index: 60;
@@ -236,7 +304,7 @@ export const MELDE_CSS = `
 
 /** Nur das Blatt dieser Seite — der Rest kommt aus der Designsprache. */
 export function head() {
-  return `<style>${MELDE_CSS}</style>`;
+  return `<style>${LEISTE_CSS}${MELDE_CSS}</style>`;
 }
 
 export function body(lang) {
@@ -270,15 +338,51 @@ export function body(lang) {
   </div>
 </section>`;
 
+  /*
+   * Die Kategorien als Reiter in der zweiten Leiste. Sie sind Links und keine
+   * Knoepfe: jeder hat eine eigene Adresse, die man teilen und in einem neuen
+   * Fenster oeffnen kann. Das Skript faengt den Klick ab und tauscht nur den
+   * Inhalt — aber wenn es nicht laedt, funktionieren sie trotzdem.
+   */
+  const reiter = [{ id: '', label: t.allCats }]
+    .concat(CATEGORIES.map((c) => ({ id: c.id, label: c[lang] })))
+    .map((c) => `<a class="fo-reiter" href="${href(lang, 'forum')}${c.id ? '?cat=' + c.id : ''}" data-cat="${c.id}">${c.label}</a>`)
+    .join('');
+
   return `
-<section class="hero hero-stage">
-  <div class="wrap stack">
-    <span class="eyebrow">${t.eyebrow}</span>
-    <h1>${t.h1}</h1>
-    <p class="lede">${t.lede}</p>
-    <p class="small muted">${t.whyAccount}</p>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  Eine zweite Leiste statt eines Aufmachers
+  ═══════════════════════════════════════════════════════════════════════════
+
+  Hier stand ein Hero: Augenbraue, grosse Ueberschrift, Vorspann, ein Absatz
+  ueber Konten. Vier Bloecke, bevor das erste Thema zu sehen war — auf einer
+  Seite, zu der man kommt, um Themen zu lesen.
+
+  Ein Forum ist kein Prospekt. Wer es aufruft, ist entweder hier, um etwas zu
+  lesen, oder um etwas zu schreiben; beides steht jetzt sofort da. Der Satz
+  ueber Konten ist nicht verschwunden, er steht weiter unten, wo man ihn liest,
+  wenn man ihn braucht.
+
+  Die Leiste sitzt unter dem Kopf der Seite und traegt, was das Forum ausmacht:
+  wo man ist, welche Bereiche es gibt, und der Knopf zum Schreiben. Sie bleibt
+  beim Scrollen stehen — wer in einem langen Thema liest, kommt ohne Rueckweg
+  zurueck zur Uebersicht.
+
+  KEINE RUECKSTRICHE IN DIESEM KOMMENTAR — er steht in einem Template-Literal.
+-->
+<div class="fo-leiste">
+  <div class="wrap fo-leiste-in">
+    <a class="fo-heim" href="${href(lang, 'forum')}">
+      <strong>${t.eyebrow}</strong>
+      <span class="fo-heim-sub">${t.leisteSub}</span>
+    </a>
+    <nav class="fo-reiter-reihe" aria-label="${t.leisteNav}">${reiter}</nav>
+    <div class="fo-leiste-tat">
+      <button type="button" class="btn btn-primary fo-neu js-only" id="foNeu">${t.newThread}</button>
+    </div>
   </div>
-</section>
+</div>
 
 ${board}
 
@@ -359,7 +463,11 @@ export function script(lang) {
     '  var authBar = document.getElementById("authBar");',
     '  if (!root) return;',
     '',
-    '  var db, auth, fb, fbApp, user = null, cat = "", authReady = null;',
+    '  var db, auth, fb, fbApp, user = null, authReady = null;',
+    '  /* Der Bereich kommt aus der Adresse und nicht aus einer leeren Zeichenkette.',
+    '     Vorher fing die Seite immer bei "Alle" an, auch wenn der Link ?cat=ideas',
+    '     hiess — jeder geteilte Bereichslink landete auf der Gesamtliste. */',
+    '  var cat = new URLSearchParams(location.search).get("cat") || "";',
   '',
   '  // Firebase Auth writes a persistence store to the device the moment it is',
   '  // initialised. Loading it for everybody who merely reads the forum would',
@@ -542,22 +650,50 @@ export function script(lang) {
   '  }',
   '',
     '  // ── list ────────────────────────────────────────────────────────────',
-    '  function renderList() {',
-    '    var chips = [{ id: "", label: L.allCats }].concat(CATS).map(function (c) {',
-    '      return "<button class=\\"chip\\" data-cat=\\"" + esc(c.id) + "\\" aria-pressed=\\"" + (c.id === cat) + "\\">" + esc(c.label) + "</button>";',
-    '    }).join("");',
     '',
-    '    root.innerHTML =',
-    '      "<div class=\\"filters\\">" + chips +',
-    '      (user ? "<button class=\\"btn btn-primary\\" id=\\"newBtn\\" style=\\"margin-left:auto\\">" + esc(L.newThread) + "</button>"',
-    '            : "<span class=\\"small muted\\" style=\\"margin-left:auto\\">" + esc(L.signInToPost) + "</span>") +',
-    '      "</div><div id=\\"composer\\"></div><div class=\\"skill-list\\" id=\\"threads\\"><p class=\\"muted\\">" + esc(L.loading) + "</p></div>";',
-    '',
-    '    [].forEach.call(root.querySelectorAll(".chip"), function (c) {',
-    '      c.addEventListener("click", function () { cat = c.dataset.cat; renderList(); });',
+    '  /*',
+    '   * Die Reiter stehen jetzt in der zweiten Leiste und nicht mehr in der',
+    '   * Liste. Zwei Reihen mit denselben Kategorien uebereinander waren eine zu',
+    '   * viel — und die obere bleibt beim Scrollen stehen, die untere nicht.',
+    '   *',
+    '   * Sie sind Links mit echten Adressen. Der Klick wird abgefangen und nur',
+    '   * der Inhalt getauscht; faellt das Skript aus, laedt der Link die Seite',
+    '   * neu und der Bereich stimmt trotzdem.',
+    '   */',
+    '  function reiterSetzen() {',
+    '    [].forEach.call(document.querySelectorAll(".fo-reiter"), function (a) {',
+    '      if (a.dataset.cat === cat) a.setAttribute("aria-current", "page");',
+    '      else a.removeAttribute("aria-current");',
     '    });',
-    '    var nb = document.getElementById("newBtn");',
-    '    if (nb) nb.addEventListener("click", composer);',
+    '  }',
+    '  [].forEach.call(document.querySelectorAll(".fo-reiter"), function (a) {',
+    '    a.addEventListener("click", function (e) {',
+    '      /* Nur den einfachen Klick abfangen. Wer mit Strg oder der mittleren',
+    '         Taste klickt, will einen neuen Tab — den nimmt man ihm nicht weg. */',
+    '      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;',
+    '      e.preventDefault();',
+    '      cat = a.dataset.cat;',
+    '      var u = new URL(location.href);',
+    '      if (cat) u.searchParams.set("cat", cat); else u.searchParams.delete("cat");',
+    '      u.searchParams.delete("t");',
+    '      history.pushState(null, "", u.pathname + u.search);',
+    '      renderList();',
+    '    });',
+    '  });',
+    '',
+    '  var neuKnopf = document.getElementById("foNeu");',
+    '  if (neuKnopf) neuKnopf.addEventListener("click", function () {',
+    '    if (!user) { melde(L.signInToPost, "fehler"); return; }',
+    '    if (threadId()) { location.search = cat ? "?cat=" + cat : ""; return; }',
+    '    composer();',
+    '  });',
+    '',
+    '  function renderList() {',
+    '    reiterSetzen();',
+    '    if (neuKnopf) neuKnopf.hidden = false;',
+    '    root.innerHTML =',
+    '      (user ? "" : "<p class=\\"small muted\\" style=\\"text-align:right;margin-bottom:10px\\">" + esc(L.signInToPost) + "</p>") +',
+    '      "<div id=\\"composer\\"></div><div class=\\"skill-list\\" id=\\"threads\\"><p class=\\"muted\\">" + esc(L.loading) + "</p></div>";',
     '',
     '    var col = fb.collection(db, "threads");',
     '    var q = cat',
@@ -706,7 +842,21 @@ export function script(lang) {
     '    });',
     '  }',
     '',
-    '  function route() { var id = threadId(); if (id) renderThread(id); else renderList(); }',
+    '  function route() {',
+    '    cat = new URLSearchParams(location.search).get("cat") || cat;',
+    '    var id = threadId();',
+    '    if (id) {',
+    '      /* Im Thema heisst der Knopf etwas anderes, also verschwindet er.',
+    '         Ein "Neues Thema" ueber einer Antwort ist ein Angebot am falschen',
+    '         Ort — man will antworten, nicht ein zweites Thema aufmachen. */',
+    '      if (neuKnopf) neuKnopf.hidden = true;',
+    '      renderThread(id);',
+    '    } else renderList();',
+    '  }',
+    '  /* Vor und Zurueck im Browser muessen wirken: die Reiter schreiben jetzt',
+    '     in die Geschichte (pushState), und ohne diesen Horcher fuehrte der',
+    '     Zurueck-Knopf zwar die Adresse zurueck, aber nicht den Inhalt. */',
+    '  window.addEventListener("popstate", route);',
     '',
     '  // ── boot ────────────────────────────────────────────────────────────',
     '  var BASE = "https://www.gstatic.com/firebasejs/" + SDK + "/";',
