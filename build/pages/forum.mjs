@@ -205,6 +205,40 @@ const T = {
   },
 };
 
+/**
+ * Die Meldeleiste — der Ersatz für `alert()`.
+ *
+ * Sie gehört zur Seite und nicht zum Browser: dieselbe Kurve, dieselbe Dauer,
+ * dieselben Farben wie alles andere. Und sie hält nichts an — `alert()`
+ * blockiert den ganzen Ablauf, bis jemand klickt, und wer gerade eine Antwort
+ * getippt hat, will nicht erst einen Knopf suchen.
+ *
+ * Unten und mittig, weil dort der Blick nach dem Absenden ohnehin nicht ist —
+ * eine Meldung, die den Text verdeckt, um den es geht, ist keine Hilfe.
+ */
+export const MELDE_CSS = `
+.fo-melde {
+  position: fixed; left: 50%; bottom: 20px; z-index: 60;
+  transform: translate(-50%, 12px);
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 11px 18px;
+  border: 1px solid var(--border-strong); border-radius: 999px;
+  background: var(--surface); color: var(--fg);
+  box-shadow: var(--e2);
+  font-size: 0.92rem; line-height: 1.4; text-align: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--kurz) var(--ease), transform var(--mittel) var(--ease);
+}
+.fo-melde[data-da="1"] { opacity: 1; transform: translate(-50%, 0); }
+.fo-melde[data-art="fehler"] { border-color: var(--danger); }
+.fo-melde[data-art="gut"] { border-color: var(--marke-rand); }
+`;
+
+/** Nur das Blatt dieser Seite — der Rest kommt aus der Designsprache. */
+export function head() {
+  return `<style>${MELDE_CSS}</style>`;
+}
+
 export function body(lang) {
   const t = T[lang];
   const cats = CATEGORIES.map(
@@ -291,6 +325,35 @@ export function script(lang) {
     '  var L = ' + JSON.stringify(t) + ';',
     '  var CATS = ' + JSON.stringify(CATEGORIES.map((c) => ({ id: c.id, label: c[lang] }))) + ';',
     '  var MODS = ' + JSON.stringify(FB.moderatorUids || []) + ';',
+    '',
+    '',
+    '  /*',
+    '   * ── Meldungen statt melde() ─────────────────────────────────────────',
+    '   *',
+    '   * `melde()` ist ein Fenster des Browsers: es traegt seinen eigenen',
+    '   * Rahmen, seine eigene Schrift und den Titel "skillry.de enthaelt" davor.',
+    '   * Auf einer Seite, die gerade eine Designsprache bekommen hat, ist das',
+    '   * der einzige Ort, an dem sie aufhoert. Ausserdem haelt es den ganzen',
+    '   * Ablauf an, bis jemand klickt.',
+    '   *',
+    '   * Die Leiste hier gehoert zur Seite: sie erscheint unten, verschwindet',
+    '   * von selbst, und `role="status"` sorgt dafuer, dass ein',
+    '   * Vorleseprogramm sie mitbekommt, ohne dass der Fokus springt.',
+    '   */',
+    '  var meldBox = null, meldZeit = null;',
+    '  function melde(text, art) {',
+    '    if (!meldBox) {',
+    '      meldBox = document.createElement("div");',
+    '      meldBox.className = "fo-melde";',
+    '      meldBox.setAttribute("role", "status");',
+    '      document.body.appendChild(meldBox);',
+    '    }',
+    '    meldBox.textContent = String(text);',
+    '    meldBox.dataset.art = art || "info";',
+    '    meldBox.dataset.da = "1";',
+    '    clearTimeout(meldZeit);',
+    '    meldZeit = setTimeout(function () { meldBox.dataset.da = "0"; }, art === "fehler" ? 7000 : 4000);',
+    '  }',
     '',
     '  var root = document.getElementById("forumRoot");',
     '  var authBar = document.getElementById("authBar");',
@@ -390,7 +453,7 @@ export function script(lang) {
   '        \'<button class="btn" id="signOutBtn">\' + esc(L.signOut) + \'</button></div></div>\';',
   '      document.getElementById("resendBtn").addEventListener("click", function (e) {',
   '        fb.sendEmailVerification(user).then(function () { e.currentTarget.textContent = L.verifySent; })',
-  '          .catch(function (err) { alert(authError(err)); });',
+  '          .catch(function (err) { melde(authError(err), "fehler"); });',
   '      });',
   '      document.getElementById("recheckBtn").addEventListener("click", function () {',
   '        user.reload().then(function () { user = auth.currentUser; renderAuth(); route(); });',
@@ -413,10 +476,17 @@ export function script(lang) {
   '      \'<button class="btn" id="ghBtn" style="width:100%;justify-content:center">\' + esc(L.signInGithub) + \'</button>\' +',
   '      \'<p class="small muted center" style="margin:12px 0">\' + esc(L.orEmail) + \'</p>\' +',
   '      (up ? field("auName", "text", L.nameLabel, L.namePlaceholder) : "") +',
+  '      /* EIN <form> UM DIE FELDER. Chrome meldet sonst "Password field is not',
+  '       * contained in a form" — und das ist keine Formalie: ein Passwortfeld',
+  '       * ausserhalb eines Formulars wird von Passwortspeichern nicht',
+  '       * zuverlaessig erkannt, weder beim Ausfuellen noch beim Anbieten zu',
+  '       * speichern. Wer sich hier anmeldet, tippt sein Passwort sonst jedes',
+  '       * Mal von Hand. Und die Eingabetaste sendet wieder ab. */',
+  '      \'<form id="auForm" novalidate>\' +',
   '      field("auMail", "email", L.emailLabel, "") +',
   '      field("auPass", "password", L.passwordLabel, "") +',
-  '      \'<div class="btn-row"><button class="btn btn-primary" id="goBtn">\' + esc(up ? L.signUp : L.signIn) + \'</button>\' +',
-  '      \'<button class="btn" id="swapBtn">\' + esc(up ? L.haveAccount : L.needAccount) + \'</button></div>\' +',
+  '      \'<div class="btn-row"><button class="btn btn-primary" id="goBtn" type="submit">\' + esc(up ? L.signUp : L.signIn) + \'</button>\' +',
+  '      \'<button class="btn" id="swapBtn" type="button">\' + esc(up ? L.haveAccount : L.needAccount) + \'</button></div></form>\' +',
   '      (up ? "" : \'<p class="small"><a href="#" id="resetLink">\' + esc(L.forgot) + \'</a></p>\') +',
   '      \'</div>\';',
   '',
@@ -428,7 +498,7 @@ export function script(lang) {
   '      fb.signInWithPopup(auth, new fb.GithubAuthProvider()).catch(function (err) {',
   '        e.currentTarget.disabled = false;',
   '        // A closed popup is somebody changing their mind, not a failure.',
-  '        if ((err && err.code || "").indexOf("popup-closed") === -1) alert(authError(err));',
+  '        if ((err && err.code || "").indexOf("popup-closed") === -1) melde(authError(err), "fehler");',
   '      });',
   '      });',
   '    });',
@@ -437,22 +507,27 @@ export function script(lang) {
   '    if (reset) reset.addEventListener("click", function (ev) {',
   '      ev.preventDefault();',
   '      var mail = document.getElementById("auMail").value.trim();',
-  '      if (!mail) { alert(L.emailInvalid); return; }',
+  '      if (!mail) { melde(L.emailInvalid, "fehler"); return; }',
   '      // Always the same message, whether or not the address exists — the form',
   '      // must not become a way to test which emails are registered.',
   '      ensureAuth().then(function () {',
   '        return fb.sendPasswordResetEmail(auth, mail).catch(function () {});',
-  '      }).then(function () { alert(L.resetSent); });',
+  '      }).then(function () { melde(L.resetSent, "gut"); });',
   '    });',
   '',
-  '    document.getElementById("goBtn").addEventListener("click", function (e) {',
-  '      var btn = e.currentTarget;',
+  '    /* Am FORMULAR und nicht am Knopf: so greift auch die Eingabetaste, und',
+  '       preventDefault haelt den Browser davon ab, die Seite neu zu laden. */',
+  '    document.getElementById("auForm").addEventListener("submit", function (e) {',
+  '      e.preventDefault();',
+  '      /* currentTarget ist jetzt das Formular. Der Knopf, der gesperrt und',
+  '         beschriftet wird, muss deshalb gesucht werden. */',
+  '      var btn = document.getElementById("goBtn");',
   '      var mail = document.getElementById("auMail").value.trim();',
   '      var pass = document.getElementById("auPass").value;',
   '      var name = up ? (document.getElementById("auName").value || "").trim() : "";',
-  '      if (mail.indexOf("@") < 1) { alert(L.emailInvalid); return; }',
-  '      if (pass.length < 8) { alert(L.pwTooShort); return; }',
-  '      if (up && name.length < 2) { alert(L.nameLabel); return; }',
+  '      if (mail.indexOf("@") < 1) { melde(L.emailInvalid, "fehler"); return; }',
+  '      if (pass.length < 8) { melde(L.pwTooShort, "fehler"); return; }',
+  '      if (up && name.length < 2) { melde(L.nameLabel, "fehler"); return; }',
   '      btn.disabled = true;',
   '      ensureAuth().then(function () {',
   '      var work = up',
@@ -461,7 +536,7 @@ export function script(lang) {
   '              .then(function () { return fb.sendEmailVerification(cred.user); });',
   '          })',
   '        : fb.signInWithEmailAndPassword(auth, mail, pass);',
-  '      work.catch(function (err) { btn.disabled = false; alert(authError(err)); });',
+  '      work.catch(function (err) { btn.disabled = false; melde(authError(err), "fehler"); });',
   '      });',
   '    });',
   '  }',
@@ -530,15 +605,29 @@ export function script(lang) {
     '      var btn = e.currentTarget;',
     '      var title = document.getElementById("nt").value.trim();',
     '      var bodyTxt = document.getElementById("nb2").value.trim();',
-    '      if (title.length < 6 || bodyTxt.length < 10) { alert(L.errTooShort); return; }',
+    '      if (title.length < 6 || bodyTxt.length < 10) { melde(L.errTooShort, "fehler"); return; }',
     '      btn.disabled = true; btn.textContent = L.posting;',
     '      fb.addDoc(fb.collection(db, "threads"), {',
     '        title: title, body: bodyTxt, category: document.getElementById("nc").value,',
     '        authorUid: user.uid, authorName: user.displayName || "anon", authorAvatar: user.photoURL || "",',
     '        createdAt: fb.serverTimestamp(), lastActivity: fb.serverTimestamp(),',
     '        replyCount: 0, deleted: false',
-    '      }).then(function (ref) { location.search = "?t=" + ref.id; })',
-    '        .catch(function () { btn.disabled = false; btn.textContent = L.post; alert(L.errGeneric); });',
+    '      }).then(',
+    '        /*',
+    '         * ZWEI ARGUMENTE UND KEIN .catch DAHINTER.',
+    '         *',
+    '         * Vorher stand hier `.then(erfolg).catch(fehler)`. Damit faengt der',
+    '         * Fehlerzweig auch alles, was im ERFOLGSZWEIG schiefgeht — und dort',
+    '         * steht eine Navigation. Das Thema war angelegt, die Liste zeigte es',
+    '         * bereits, und darueber stand "Das hat nicht geklappt". Wer das',
+    '         * liest, schickt es ein zweites Mal.',
+    '         *',
+    '         * Mit zwei Argumenten sieht der Fehlerzweig nur, was addDoc selbst',
+    '         * meldet.',
+    '         */',
+    '        function (ref) { location.search = "?t=" + ref.id; },',
+    '        function () { btn.disabled = false; btn.textContent = L.post; melde(L.errGeneric, "fehler"); }',
+    '      );',
     '    });',
     '  }',
     '',
@@ -570,11 +659,25 @@ export function script(lang) {
     '        fb.addDoc(fb.collection(db, "threads", id, "posts"), {',
     '          body: txt, authorUid: user.uid, authorName: user.displayName || "anon",',
     '          authorAvatar: user.photoURL || "", createdAt: fb.serverTimestamp(), deleted: false',
-    '        }).then(function () {',
-    '          document.getElementById("rb").value = "";',
-    '          btn.disabled = false; btn.textContent = L.reply;',
-    '          return fb.updateDoc(ref, { replyCount: (d.replyCount || 0) + 1, lastActivity: fb.serverTimestamp() });',
-    '        }).catch(function () { btn.disabled = false; btn.textContent = L.reply; alert(L.errGeneric); });',
+    '        }).then(',
+    '          function () {',
+    '            document.getElementById("rb").value = "";',
+    '            btn.disabled = false; btn.textContent = L.reply;',
+    '            /*',
+    '             * Der Zaehler wird NACHGEZOGEN und nicht mitgemeldet.',
+    '             *',
+    '             * Vorher hing er in derselben Kette: schlug das Hochzaehlen fehl',
+    '             * — etwa weil die Regeln es nicht erlauben —, stand da "Das hat',
+    '             * nicht geklappt", obwohl die Antwort laengst gespeichert war.',
+    '             * Eine Zahl, die danebenliegt, ist ein kleiner Fehler; eine',
+    '             * Meldung, die eine gelungene Antwort fuer misslungen erklaert,',
+    '             * ist ein grosser.',
+    '             */',
+    '            fb.updateDoc(ref, { replyCount: (d.replyCount || 0) + 1, lastActivity: fb.serverTimestamp() })',
+    '              .catch(function () {});',
+    '          },',
+    '          function () { btn.disabled = false; btn.textContent = L.reply; melde(L.errGeneric, "fehler"); }',
+    '        );',
     '      });',
     '',
     '      fb.onSnapshot(fb.query(fb.collection(db, "threads", id, "posts"), fb.orderBy("createdAt", "asc")), function (ps) {',
@@ -596,7 +699,7 @@ export function script(lang) {
     '            ev.preventDefault();',
     '            if (!confirm(L.confirmDelete)) return;',
     '            fb.updateDoc(fb.doc(db, "threads", id, "posts", a.dataset.del), { deleted: true, body: "" })',
-    '              .catch(function () { alert(L.errGeneric); });',
+    '              .catch(function () { melde(L.errGeneric, "fehler"); });',
     '          });',
     '        });',
     '      });',
