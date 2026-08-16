@@ -31,7 +31,7 @@ const DARK = `
   --surface: #161c24;
   --surface-2: #212830;
   --border: #30363d;
-  --border-strong: #545d68;
+  --border-strong: #656c76;
   --fg: #f0f6fc;
   --fg-muted: #9198a1;
   --fg-subtle: #7d8590;
@@ -57,7 +57,26 @@ const LIGHT = `
   --surface: #ffffff;
   --surface-2: #f6f8fa;
   --border: #d8dee4;
-  --border-strong: #b7c0c9;
+  /*
+   * Die Kante eines BEDIENELEMENTS — Feld, Knopf, Griff. Nach WCAG 1.4.11
+   * braucht sie 3:1 gegen ihren Grund, sonst ist nicht zu erkennen, wo das
+   * Element aufhoert. Nachgemessen mit den alten Werten:
+   *
+   *     hell   #b7c0c9 auf #ffffff   1.84:1
+   *     dunkel #545d68 auf #0d1117   2.83:1
+   *
+   * Beide zu schwach. Die neuen Werte stehen so schon im Kundenportal, wo
+   * derselbe Fehler frueher aufgefallen ist — hier war er noch drin, obwohl
+   * beide aus derselben Ueberlegung stammen sollen.
+   *
+   *     hell   #8c959f auf #ffffff   3.04:1
+   *     dunkel #656c76 auf #0d1117   3.57:1
+   *
+   * Nicht zu verwechseln mit --border: das ist die Kante einer FLAECHE
+   * (Karte, Trennlinie). Fuer die gilt die Regel nicht, und eine Karte mit
+   * 3:1-Rand sieht aus wie ein Formularfeld.
+   */
+  --border-strong: #8c959f;
   --fg: #1f2328;
   --fg-muted: #59636e;
   --fg-subtle: #818b98;
@@ -86,7 +105,7 @@ ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
   --surface: #ffffff;
   --surface-2: #f6f8fa;
   --border: #d1d9e0;
-  --border-strong: #b7c0c9;
+  --border-strong: #8c959f;
   --fg: #1f2328;
   --fg-muted: #59636e;
   --fg-subtle: #818b98;
@@ -162,7 +181,37 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.65;
-  overflow-x: hidden;
+  /*
+   * HIER STAND overflow-x: hidden — UND IST BEWUSST WEG
+   *
+   * Die Regel hat einen Preis, den sie nicht wert war: hidden macht aus body
+   * einen Scrollbehaelter, auch in der Achse, die gar nicht abgeschnitten
+   * wird (overflow-y wird dabei stillschweigend zu auto). Und ein
+   * Scrollbehaelter ist der Bezugsrahmen fuer alles darin mit
+   * position: sticky. Die Seitenspalten der Anmeldung klebten dadurch an
+   * einem Behaelter, der selbst nie scrollt, waehrend sichtbar das Fenster
+   * scrollte — gemessen: 300px gescrollt, 300px mitgewandert, obwohl
+   * getComputedStyle brav "sticky" meldete.
+   *
+   * Der naheliegende Tausch gegen clip half nicht. Gemessen bei 1400px
+   * Fenster mit einem 3000px breiten Kind, jeweils ob sich waagerecht
+   * scrollen laesst:
+   *
+   *     body: hidden   riegelt ab       html: hidden   wirkungslos
+   *     body: clip     wirkungslos      html: clip     wirkungslos
+   *
+   * Auf dem Wurzelelement wandert overflow ins Viewport ab, und clip auf body
+   * riegelt nicht ab. Es gab also nur hidden oder nichts.
+   *
+   * Nachgemessen wurde deshalb, wovor die Regel ueberhaupt schuetzt: 15 Seiten
+   * in beiden Sprachen, bei 360px und bei 768px, mit abgeschalteter Regel.
+   * Kein einziger Ueberlauf. Sie hat nichts abgefangen — sie haette nur etwas
+   * verdeckt, falls es je auftritt.
+   *
+   * Und genau das ist der zweite Grund: eine Regel, die Ueberlauf versteckt,
+   * versteckt den Fehler, der ihn verursacht. Waagerechter Ueberlauf gehoert
+   * dort behoben, wo er entsteht.
+   */
   -webkit-font-smoothing: antialiased;
   /* Real punctuation and proportional-looking numerals in running text. */
   font-variant-numeric: proportional-nums;

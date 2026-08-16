@@ -23,6 +23,7 @@ import * as learn from './pages/learn.mjs';
 import * as scripts from './pages/scripts.mjs';
 import * as api from './pages/api.mjs';
 import * as forum from './pages/forum.mjs';
+import * as anmelden from './pages/anmelden.mjs';
 import { impressum, privacy } from './pages/legal.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -32,7 +33,7 @@ const STATISCH = join(ROOT, 'static');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
-const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, impressum, privacy];
+const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, anmelden, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 
