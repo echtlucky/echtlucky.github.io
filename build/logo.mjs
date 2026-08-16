@@ -62,9 +62,6 @@ export const LOGO_FAVICON = (hex) =>
  * headings want.
  */
 export const WORDMARK_CSS = `
-:root {
-  --display: Constantia, "Palatino Linotype", "Iowan Old Style", "Hoefler Text", Palatino, Georgia, serif;
-}
 
 .gh-logo { display: inline-flex; align-items: center; gap: 9px; flex: none; }
 .gh-logo:hover { text-decoration: none; }
@@ -77,13 +74,17 @@ export const WORDMARK_CSS = `
 .gh-logo:hover .mark { transform: translateY(-0.5px) scale(1.03); }
 
 .gh-word {
-  font-family: var(--display);
+  font-family: var(--anzeige);
   font-size: 19px;
-  font-weight: 600;
-  letter-spacing: 0.005em;
+  /* 700 und nicht 600: Montserrat baut leichter als die Serife davor und wirkt
+     bei 600 neben einem 34 Punkt grossen Zeichen duenn. */
+  font-weight: 700;
+  /* Negativ statt positiv. Die Serife brauchte offene Laufweite, damit die
+     Anschluesse bei 19 Punkt nicht zulaufen. Eine geometrische Grotesk braucht
+     das Gegenteil — sie laeuft von sich aus weit, und ohne das Zusammenziehen
+     zerfaellt das Wort in Buchstaben. */
+  letter-spacing: -0.004em;
   line-height: 1;
-  /* Serif numerals and small caps are wrong here; the ligature that Constantia
-     forms across "ll" is not. */
   font-feature-settings: "kern" 1, "liga" 1;
   white-space: nowrap;
 }

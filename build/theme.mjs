@@ -10,6 +10,8 @@
  * and cyan means NEXUS without being told.
  */
 
+import { BEWEGUNG, MARKE, RUHE, SCHRIFT, SCHRIFT_QUELLE } from './marke.mjs';
+
 export const TOKENS = {
   airlock: '#4EE296',
   nexus: '#38D9FF',
@@ -47,7 +49,7 @@ const DARK = `
   --e2: 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px -8px rgba(1,4,9,0.85);
   --e3: 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px -16px rgba(1,4,9,0.95);
   --sheen: inset 0 1px 0 rgba(255,255,255,0.045);
-`;
+${MARKE.dunkel}`;
 
 const LIGHT = `
   --bg: #ffffff;
@@ -73,10 +75,12 @@ const LIGHT = `
   --e2: 0 2px 4px rgba(31,35,40,0.05), 0 8px 20px -6px rgba(31,35,40,0.10);
   --e3: 0 4px 8px rgba(31,35,40,0.06), 0 20px 40px -12px rgba(31,35,40,0.16);
   --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
-`;
+${MARKE.hell}`;
 
-export const CSS = `
+export const CSS = `${SCHRIFT_QUELLE}
+
 :root {
+${SCHRIFT}${BEWEGUNG}${MARKE.hell}
   --bg: #ffffff;
   --bg-subtle: #f6f8fa;
   --surface: #ffffff;
@@ -140,7 +144,16 @@ export const CSS = `
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+/* Die eine Ruheregel fuer die ganze Seite. Sie steht in build/marke.mjs, weil
+   sie zur Bewegung gehoert und nicht zu dieser Seite — Portal und Panel
+   bekommen dieselbe. Die drei aelteren Bloecke in theme-extra.mjs schalten
+   daneben einzelne Bewegungen ab; sie bleiben, denn sie sagen genauer, was dort
+   statt der Bewegung passieren soll.
+
+   KEINE RUECKSTRICHE IN DIESEM KOMMENTAR. Er steht innerhalb eines
+   Template-Literals, und ein Rueckstrich darin beendet es — die Datei laesst
+   sich dann nicht mehr laden, und der Fehler heisst "Unexpected identifier". */
+${RUHE}
 
 body {
   margin: 0;
@@ -171,7 +184,11 @@ a {
   transition: color var(--fast) var(--ease), text-decoration-color var(--fast) var(--ease);
 }
 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
-:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; border-radius: 3px; }
+/* Der Fokusring ist gruen, und das ist der sichtbarste der kleinen Akzente:
+   er ist das Erste, was jemand sieht, der die Seite mit der Tastatur benutzt.
+   --marke-rand hat in beiden Schemata mehr als 3:1 gegen den Grund (hell 3.53,
+   dunkel 5.37) und traegt damit als Kante eines Bedienelements. */
+:focus-visible { outline: 2px solid var(--marke-rand); outline-offset: 2px; border-radius: 3px; }
 
 /**
  * Display sizes want tighter tracking than body text: the same letter-spacing
@@ -297,8 +314,19 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .btn:hover { text-decoration: none; border-color: var(--fg-muted); background: var(--surface-2); box-shadow: var(--e2), var(--sheen); transform: translateY(-1px); }
 /* Pressing has to move the thing down again, or the button feels stuck up. */
 .btn:active { transform: translateY(0); box-shadow: var(--e1); }
-.btn-primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.btn-primary:hover { background: var(--fg-muted); border-color: var(--fg-muted); color: var(--bg); }
+/* Der Hauptknopf ist gruen — die zweite Stelle, an der die Marke handelt.
+   Flaeche UND Schrift kommen als Paar aus build/marke.mjs: im dunklen Schema
+   ist die gruene Flaeche hell, und weisse Schrift darauf haette 1.64:1. Die
+   ausfuehrliche Begruendung steht dort. */
+.btn-primary {
+  background: var(--knopf-flaeche); color: var(--knopf-schrift); border-color: var(--knopf-flaeche);
+  box-shadow: var(--e1), 0 0 0 0 var(--marke-schimmer);
+}
+.btn-primary:hover {
+  background: var(--knopf-flaeche-hover); border-color: var(--knopf-flaeche-hover);
+  color: var(--knopf-schrift);
+  box-shadow: var(--e2), 0 0 0 4px var(--marke-schimmer);
+}
 
 /* ── cards ──────────────────────────────────────────────────────────────── */
 .grid { display: grid; gap: 20px; }

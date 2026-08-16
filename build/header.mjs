@@ -409,12 +409,43 @@ export const HEADER_CSS = `
   padding-inline: var(--hdr-pad);
 }
 
-.gh-logo { display: flex; align-items: center; gap: 10px; color: var(--header-fg); flex: none; }
+.gh-logo { display: flex; align-items: center; gap: 11px; color: var(--header-fg); flex: none; }
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
-.gh-logo svg { display: block; }
+
+/*
+ * Das Zeichen ist gruen, die Wortmarke nicht.
+ *
+ * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides gruen
+ * waere ein gruener Klumpen; das Zeichen allein ist ein Akzent, und der Name
+ * daneben bleibt lesbar wie jede andere Schrift im Kopf.
+ *
+ * Es ist --marke-auf-dunkel und keines der beiden Schema-Merkmale. Der
+ * Kopfbalken ist dunkel, auch im hellen Schema, und richtet sich deshalb nicht
+ * nach dem Schema der Seite. Der erste Entwurf nahm --marke-stark und landete
+ * damit im hellen Schema bei 1.47:1 — gemessen, nicht vermutet. Ausfuehrlich
+ * in build/marke.mjs.
+ *
+ * KEINE RUECKSTRICHE IN DIESEM KOMMENTAR — er steht innerhalb eines
+ * Template-Literals, und einer darin beendet es.
+ */
+.gh-logo svg { display: block; color: var(--marke-auf-dunkel); }
+
+/*
+ * Von 26 auf 34 Punkt.
+ *
+ * Der Balken bleibt 62 Punkt hoch — das war die Auflage. Damit ist 34 fast
+ * die Obergrenze: darueber wird die Luft ueber und unter dem Zeichen kleiner
+ * als der Abstand zur Wortmarke, und dann sieht der Kopf gedraengt aus statt
+ * grosszuegig. 34 laesst 14 Punkte oben und unten.
+ */
+.gh-logo svg.mark { width: 34px; height: 34px; }
+
 .gh-word {
-  font-family: var(--display, var(--sans));
-  font-weight: 600; font-size: 16px; letter-spacing: 0.005em;
+  font-family: var(--anzeige);
+  /* Von 16 auf 19: die zwei Stufen, um die die Wortmarke wachsen sollte. 700
+     statt 600, weil Montserrat leichter baut als die Systemschrift und bei 600
+     neben einem 34er Zeichen duenn wirkt. */
+  font-weight: 700; font-size: 19px; letter-spacing: -0.004em;
 }
 
 .gh-burger { display: none; }
@@ -457,7 +488,10 @@ export const HEADER_CSS = `
 .gh-navlink::after {
   content: ''; position: absolute; left: 10px; right: 10px; height: 2px;
   bottom: calc((var(--hdr-h) - 34px) / -2 - 1px);
-  border-radius: 2px 2px 0 0; background: currentColor;
+  /* Der aktive Punkt ist gruen — der dritte kleine Akzent. --marke-auf-dunkel,
+     weil der Balken in beiden Schemata dunkel ist; dieselbe Begruendung wie
+     beim Zeichen, ausfuehrlich in build/marke.mjs. */
+  border-radius: 2px 2px 0 0; background: var(--marke-auf-dunkel);
   transform: scaleX(0); transform-origin: 50% 100%; opacity: 0;
   transition: transform 180ms var(--ease), opacity 180ms var(--ease);
 }
@@ -732,7 +766,7 @@ export const HEADER_CSS = `
      and this one is deliberately not self-explanatory — it needs the word
      beside it far more than a padlock would. It only goes below 420px, where
      there is genuinely no room for both it and the search. */
-  .gh-word { font-size: 16px; letter-spacing: 0.006em; }
+  .gh-word { font-size: 17px; letter-spacing: -0.002em; }
   .gh-quick span { display: none; }
   .gh-quick { padding: 0 9px; }
   .lang-switch { display: none; }          /* lives in the menu panel instead */
