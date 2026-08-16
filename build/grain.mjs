@@ -85,7 +85,9 @@
  * scattering of separate dots: pushed higher, the same standard deviation
  * arrives as visible specks with clean paper between them, which is dust, not
  * texture. Measured on a rendered card at k = 0.16: mean 251.2, sd 3.46,
- * darkest pixel 239.
+ * darkest pixel 238. In dark mode at k = 0.115 the same tile over #1a1d21 runs
+ * mean 29.8 against a plain 27.3, sd 2.23 — two thirds of the light amplitude,
+ * which is what makes the two read as the same material.
  *
  * `filterUnits='userSpaceOnUse'` pins the filter region to exactly the tile so
  * `stitchTiles` has the right box to make seamless, and it avoids having to
@@ -185,8 +187,8 @@ export const GRAIN_CSS = `
  *
  * On the short text that is left inside a card, the arithmetic is again the
  * argument. Body text is #1f2328 on #ffffff, a contrast ratio of 15.3:1. Under
- * the grain the ground averages #fbfbfb and the ratio is 15.0:1; the darkest
- * pixel the grain produces anywhere still leaves 13.9:1 against a threshold of
+ * the grain the ground averages #fbfbfb and the ratio is 15.3:1; the darkest
+ * pixel the grain produces anywhere still leaves 13.6:1 against a threshold of
  * 4.5. Compared with the hero's line texture, which shipped, this is about a
  * fifth as strong.
  */
