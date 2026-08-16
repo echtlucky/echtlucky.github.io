@@ -1,3 +1,18 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * Die Anzahl der Skripte kommt aus derselben Datei wie die Skripteseite.
+ *
+ * **Nicht aus einem Satz, den jemand pflegt.** Eine Zahl auf der Startseite,
+ * die jemand von Hand nachzieht, ist eine Behauptung, sobald er es einmal
+ * vergisst — und niemand merkt es, weil nichts kaputtgeht.
+ */
+const N_SKRIPTE = JSON.parse(readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content', 'scripts.json'), 'utf8',
+)).products.length;
+
 import { href, SITE } from '../layout.mjs';
 import { HERO_WAVE_HTML, HERO_WAVE_CSS, HERO_WAVE_JS } from '../hero-wave.mjs';
 
@@ -27,6 +42,21 @@ const T = {
       'AI assistants load instructions written by strangers. Those instructions are plain text files, nothing checks them, and text can hide things you will never see on your screen. These are the tools I build so that stops being true.',
     ctaPrimary: 'Check your skills',
     ctaSecondary: 'How does this work?',
+
+    bereicheEyebrow: 'What is here',
+    bereicheH: 'Three things, and all of them work today.',
+    bereicheLede: 'Skillry started as one scanner. It is now a workshop with three doors — and none of them is a promise for later.',
+    bereiche: [
+      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM scripts',
+        p: 'Resources for a GTA V roleplay server, each with the version it declares. A basket that hands your selection to a human being.',
+        cta: 'Look at the scripts' },
+      { slug: 'airlock', zahl: '2', h: 'Tools',
+        p: 'AIRLOCK reads a skill file the way an assistant would. NEXUS keeps the pieces in one place instead of five windows.',
+        cta: 'Look at the tools' },
+      { slug: 'forum', zahl: '6', h: 'Forum',
+        p: 'Ask what something means, recommend a skill, report a false positive. Beginner questions are the point.',
+        cta: 'Open the forum' },
+    ],
 
     problemEyebrow: 'The problem, in one paragraph',
     problemH: 'A skill is a text file. Nobody checks it.',
@@ -96,6 +126,21 @@ const T = {
     ctaPrimary: 'Deine Skills prüfen',
     ctaSecondary: 'Wie funktioniert das?',
 
+    bereicheEyebrow: 'Was es hier gibt',
+    bereicheH: 'Drei Dinge, und alle drei gibt es heute.',
+    bereicheLede: 'Skillry hat als ein einzelner Prüfer angefangen. Inzwischen ist es eine Werkstatt mit drei Türen — und keine davon ist ein Versprechen für später.',
+    bereiche: [
+      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM-Skripte',
+        p: 'Ressourcen für einen GTA-V-Rollenspielserver, jede mit der Fassung, die sie deklariert. Ein Warenkorb, der die Auswahl an einen Menschen übergibt.',
+        cta: 'Die Skripte ansehen' },
+      { slug: 'airlock', zahl: '2', h: 'Werkzeuge',
+        p: 'AIRLOCK liest eine Skill-Datei so, wie ein Assistent es täte. NEXUS hält die Teile an einem Ort statt in fünf Fenstern.',
+        cta: 'Die Werkzeuge ansehen' },
+      { slug: 'forum', zahl: '6', h: 'Forum',
+        p: 'Fragen was etwas bedeutet, einen Skill empfehlen, einen False Positive melden. Einsteigerfragen sind der Sinn davon.',
+        cta: 'Ins Forum' },
+    ],
+
     problemEyebrow: 'Das Problem in einem Absatz',
     problemH: 'Ein Skill ist eine Textdatei. Niemand prüft sie.',
     problemBody: [
@@ -157,6 +202,28 @@ const T = {
   },
 };
 
+/**
+ * Die drei Tueren.
+ *
+ * Die Zahl steht gross und in der Marke: sie ist das Erste, was zaehlt — „37"
+ * sagt mehr ueber diese Seite als jeder Satz darunter. Und sie ist der Ort, an
+ * dem Gruen auf der Startseite ueberhaupt auftaucht.
+ */
+const BEREICH_CSS = `
+.bereich { display: flex; flex-direction: column; gap: 6px; }
+.bereich:hover { text-decoration: none; }
+.bereich-zahl {
+  font-family: var(--anzeige); font-weight: 700; font-size: 2.4rem; line-height: 1;
+  color: var(--marke); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+.bereich h3 { margin: 0; }
+.bereich-mehr {
+  margin-top: auto; padding-top: 10px; color: var(--link); font-size: 0.9rem; font-weight: 600;
+}
+.bereich-mehr span { display: inline-block; transition: transform var(--kurz) var(--ease); }
+.bereich:hover .bereich-mehr span { transform: translateX(3px); }
+`;
+
 export function body(lang) {
   const t = T[lang];
 
@@ -170,6 +237,46 @@ export function body(lang) {
     <div class="btn-row">
       <a class="btn btn-primary" href="${href(lang, 'airlock')}">${t.ctaPrimary}</a>
       <a class="btn" href="${href(lang, 'learn')}">${t.ctaSecondary}</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  Was es hier gibt — und zwar mit Zahlen
+  ═══════════════════════════════════════════════════════════════════════════
+
+  Die Startseite erzaehlte bis hierher eine einzige Geschichte: den Skill-
+  Pruefer. Das stimmte, solange Skillry AIRLOCK war. Es stimmt nicht mehr,
+  seit 37 FiveM-Ressourcen, zwei Werkzeuge und ein Forum daneben stehen — und
+  wer die Navigation liest und dann die Startseite, sieht zwei verschiedene
+  Haeuser.
+
+  KEINE RUECKSTRICHE IN DIESEM KOMMENTAR — er steht in einem Template-Literal.
+
+  Dieser Abschnitt steht deshalb GLEICH NACH dem Aufmacher und nicht am Ende:
+  er ist die Antwort auf "was ist das hier", und die gehoert nach oben.
+
+  Die Zahlen kommen aus den Daten (content/scripts.json) und nicht aus
+  einem Satz, den jemand pflegt. Eine Zahl, die zur Behauptung wird, wenn
+  jemand eine Datei aendert, ist schlimmer als keine.
+-->
+<section class="stack">
+  <div class="wrap stack-lg">
+    <div class="stack narrow">
+      <span class="eyebrow">${t.bereicheEyebrow}</span>
+      <h2>${t.bereicheH}</h2>
+      <p class="muted">${t.bereicheLede}</p>
+    </div>
+    <div class="grid grid-3">
+      ${t.bereiche.map((b) => `<a class="card lift bereich" href="${href(lang, b.slug)}">
+        <span class="bereich-zahl">${b.zahl}</span>
+        <h3>${b.h}</h3>
+        <p class="muted small">${b.p}</p>
+        <span class="bereich-mehr">${b.cta} <span aria-hidden="true">→</span></span>
+      </a>`).join('')}
     </div>
   </div>
 </section>
@@ -277,7 +384,7 @@ $ airlock scan pdf-helper
  * Seven other heroes share the .hero-stage class and none of them pay for it.
  */
 export function head() {
-  return `<style>${HERO_WAVE_CSS}</style>`;
+  return `<style>${HERO_WAVE_CSS}${BEREICH_CSS}</style>`;
 }
 
 export function script() {
