@@ -113,7 +113,7 @@ export const href = (lang, slug) => `${base(lang)}/${slug ? `${slug}/` : ''}` ||
  */
 const HEADER_STRINGS = {
   en: {
-    menu: { open: 'Open menu', close: 'Close', all: 'Everything on this site', onPage: 'On this page' },
+    menu: { open: 'Open menu', close: 'Close', all: 'Everything on this site', onPage: 'On this page', spiel: 'By game', bald: 'soon', keine: 'none yet', auch: 'Also here' },
     find: {
       placeholder: 'Search or jump to…',
       aria: 'Search pages, sections, skills and actions',
@@ -173,7 +173,7 @@ const HEADER_STRINGS = {
     },
   },
   de: {
-    menu: { open: 'Menü öffnen', close: 'Schließen', all: 'Alles auf dieser Seite', onPage: 'Auf dieser Seite' },
+    menu: { open: 'Menü öffnen', close: 'Schließen', all: 'Alles auf dieser Seite', onPage: 'Auf dieser Seite', spiel: 'Nach Spiel', bald: 'bald', keine: 'noch keine', auch: 'Auch hier' },
     find: {
       placeholder: 'Suchen oder springen…',
       aria: 'Seiten, Abschnitte, Skills und Aktionen durchsuchen',
@@ -238,7 +238,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -253,6 +253,8 @@ export const UI = {
     themeLabel: 'Toggle light and dark',
     skipLink: 'Skip to content',
     footer: {
+      scriptsGta5: 'For GTA V',
+      scriptsEgal: 'Game-independent',
       products: 'Products',
       resources: 'Resources',
       community: 'Community',
@@ -286,7 +288,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -301,6 +303,8 @@ export const UI = {
     themeLabel: 'Hell und dunkel umschalten',
     skipLink: 'Zum Inhalt springen',
     footer: {
+      scriptsGta5: 'Für GTA V',
+      scriptsEgal: 'Spielunabhängig',
       products: 'Produkte',
       resources: 'Material',
       community: 'Community',
@@ -389,13 +393,22 @@ function footer(lang, t) {
   return `<footer class="site">
   <div class="wrap">
     <div class="cols">
-      ${col(f.products, [
+      <!--
+        Der Fuss folgt derselben Einteilung wie die Navigation — Skripte,
+        Werkzeuge, Forum, Lernen. Zwei Ordnungen fuer dieselben Seiten sind
+        zwei Karten desselben Hauses, und die zweite ist immer die aeltere.
+      -->
+      ${col(t.nav.scripts, [
+        [f.scriptsGta5, `${href(lang, 'scripts')}?spiel=gta5`],
+        [f.scriptsEgal, `${href(lang, 'scripts')}?spiel=egal`],
+        [t.nav.api, href(lang, 'api')],
+      ])}
+      ${col(t.nav.werkzeuge, [
         ['AIRLOCK', href(lang, 'airlock')],
         ['NEXUS', href(lang, 'nexus')],
-        [t.nav.scripts, href(lang, 'scripts')],
+        [f.catalogue, href(lang, 'skills')],
       ])}
       ${col(f.resources, [
-        [f.catalogue, href(lang, 'skills')],
         [f.learn, href(lang, 'learn')],
         [f.docs, `${SITE.repoAirlock}/blob/main/docs/internals.md`],
         [f.source, SITE.repoAirlock],

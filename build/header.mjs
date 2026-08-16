@@ -16,8 +16,14 @@
  *     genuinely needs it.
  */
 
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { href, LANGS, FLAGS, SITE } from './layout.mjs';
 import { LOGO } from './logo.mjs';
+
+const WURZEL = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // ---------------------------------------------------------------------------
 // Icons — small enough to be worth inlining, and the only ones the bar uses.
@@ -169,15 +175,64 @@ export const SITEMAP = {
   },
 };
 
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Vier Punkte statt sieben
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Sieben gleichrangige Punkte sind keine Navigation, sondern eine Liste — man
+ * liest sie einzeln, statt sie zu erfassen. AIRLOCK, NEXUS und der Skill-Index
+ * gehoeren ausserdem zusammen: es sind drei Werkzeuge, und dass sie
+ * nebeneinander standen wie „Skripte" und „Forum", hat das verborgen.
+ *
+ * Jeder Punkt ist entweder eine Seite mit ihrem Menue (wie bisher) oder eine
+ * GRUPPE, deren Menue ihre Kinder auflistet. Erreichbar bleibt jede Seite; sie
+ * steht nur eine Ebene tiefer, wenn sie dorthin gehoert.
+ *
+ * `spiele` an den Skripten ist die Dimension aus `unternehmen.md`: sie steht
+ * hier, bevor es GTA 6 gibt, damit ein neues Spiel ein Eintrag ist und kein
+ * Umbau. Was es noch nicht gibt, wird auch nicht verlinkt — siehe `spielListe`.
+ */
+/**
+ * Wie viele Ressourcen es je Spiel gibt.
+ *
+ * **Aus den Daten und nicht von Hand.** Das Feld `spiel` gibt es in
+ * `content/scripts.json` noch nicht; alle 37 Eintraege sind FiveM-Ressourcen
+ * und damit GTA V. Diese Vorgabe steht hier im Code und nicht als 37 gleiche
+ * Zeilen in der Datei — sobald dort ein `spiel` steht, gilt es, und diese Zeile
+ * aendert sich nicht.
+ */
+const PRODUKTE = JSON.parse(readFileSync(join(WURZEL, 'content', 'scripts.json'), 'utf8'));
+export const SPIEL_ANZAHL = (Array.isArray(PRODUKTE) ? PRODUKTE : PRODUKTE.products ?? [])
+  .reduce((z, p) => { const g = p.spiel ?? 'gta5'; z[g] = (z[g] ?? 0) + 1; return z; }, Object.create(null));
+
 export const NAV = [
-  { slug: 'airlock', key: 'airlock' },
-  { slug: 'nexus', key: 'nexus' },
-  { slug: 'scripts', key: 'scripts' },
-  { slug: 'skills', key: 'skills' },
-  { slug: 'learn', key: 'learn' },
-  { slug: 'api', key: 'api' },
+  {
+    slug: 'scripts',
+    key: 'scripts',
+    spiele: [
+      { key: 'gta5', l: { en: 'GTA V', de: 'GTA V' }, da: true },
+      { key: 'gta6', l: { en: 'GTA VI', de: 'GTA VI' }, da: false },
+      { key: 'egal', l: { en: 'Game-independent', de: 'Spielunabhängig' }, da: true },
+    ],
+  },
+  {
+    key: 'werkzeuge',
+    gruppe: [
+      { slug: 'airlock', key: 'airlock' },
+      { slug: 'nexus', key: 'nexus' },
+      { slug: 'skills', key: 'skills' },
+    ],
+  },
   { slug: 'forum', key: 'forum' },
+  { slug: 'learn', key: 'learn', dazu: [{ slug: 'api', key: 'api' }] },
 ];
+
+/** Die Seiten hinter einem Punkt — eine Gruppe hat mehrere, eine Seite sich selbst. */
+const seiten = (n) => (n.gruppe ? n.gruppe : [n]);
+
+/** Jede Seite, die es gibt, in der Reihenfolge der Navigation. */
+export const ALLE_SEITEN = NAV.flatMap((n) => [...seiten(n), ...(n.dazu ?? [])]);
 
 /**
  * Harvested section anchors, filled by the build between its two passes.
@@ -192,7 +247,66 @@ export function setMenu(m) { MENU = m || {}; }
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
-function megaPanel(lang, key, t) {
+/**
+ * Die Liste der Spiele im Skripte-Menue.
+ *
+ * **Was es noch nicht gibt, bekommt keinen Link.** GTA VI hat keine
+ * Modding-Plattform; ein Link dorthin fuehrte auf eine leere Liste, und eine
+ * leere Liste hinter einem Menuepunkt liest sich wie ein Fehler. Es steht
+ * trotzdem da — als Ankuendigung, nicht als Angebot. Wer die Struktur erst
+ * baut, wenn es soweit ist, baut sie zweimal.
+ */
+function spielListe(lang, spiele, t) {
+  const eintraege = spiele.map((g) => {
+    const n = SPIEL_ANZAHL[g.key] ?? 0;
+    /*
+     * **Verlinkt wird nur, was Eintraege hat.** Ein Menuepunkt, der auf eine
+     * leere Liste fuehrt, liest sich wie ein Fehler — und „Spielunabhaengig"
+     * waere heute genau das: alle 37 Ressourcen sind FiveM. Die Zeile steht
+     * trotzdem da, mit ihrer Null, denn sie sagt etwas Wahres ueber das
+     * Angebot.
+     */
+    if (!n) return `<li><span class="mega-bald">${esc(g.l[lang])}<em>${esc(g.da ? t.menu.keine : t.menu.bald)}</em></span></li>`;
+    return `<li><a href="${href(lang, 'scripts')}?spiel=${g.key}">${esc(g.l[lang])}<em>${n}</em></a></li>`;
+  }).join('');
+  return `<div class="mega-col">
+      <h3 class="mega-h">${esc(t.menu.spiel)}</h3>
+      <ul>${eintraege}</ul>
+    </div>`;
+}
+
+/**
+ * Das Menue einer GRUPPE: keine eigene Seite, sondern ihre Kinder.
+ *
+ * Es sieht aus wie ein Seitenmenue und ist eines ohne Kopfspalte — eine Gruppe
+ * hat nichts, worauf ihr „Mehr erfahren" zeigen koennte. Statt eine Seite dafuer
+ * zu erfinden, steht hier die Aufzaehlung, und jedes Kind bringt seine eigene
+ * Beschreibung mit.
+ */
+function gruppenPanel(lang, n, t) {
+  const spalten = n.gruppe.map((k) => {
+    const m = SITEMAP[k.key];
+    return `<div class="mega-col">
+      <h3 class="mega-h"><a href="${href(lang, k.slug)}" class="accent-${m.accent}">${esc(t.nav[k.key])}</a></h3>
+      <p class="mega-kurz">${esc(m.lede[lang])}</p>
+      <ul>${m.extra.items.slice(0, 3)
+        .map((it) => `<li><a href="${esc(it.h(lang))}" class="dim">${esc(it.l[lang])}</a></li>`).join('')}</ul>
+    </div>`;
+  }).join('');
+  return `<div class="gh-panel mega" id="mega-${n.key}" role="group" aria-label="${esc(t.nav[n.key])}">
+  <div class="mega-in">${spalten}</div>
+</div>`;
+}
+
+/** Seiten, die zu einem Punkt gehoeren, ohne eigener Punkt zu sein. */
+function dazuListe(lang, dazu, t) {
+  return `<div class="mega-col">
+      <h3 class="mega-h">${esc(t.menu.auch)}</h3>
+      <ul>${dazu.map((k) => `<li><a href="${href(lang, k.slug)}">${esc(t.nav[k.key])}</a></li>`).join('')}</ul>
+    </div>`;
+}
+
+function megaPanel(lang, key, t, n = null) {
   const m = SITEMAP[key];
   const sections = (MENU[lang]?.[key] ?? []).slice(0, 7);
   const label = t.nav[key];
@@ -222,15 +336,17 @@ function megaPanel(lang, key, t) {
       <span class="mega-lede">${esc(m.lede[lang])}</span>
       <span class="mega-cta">${esc(m.cta[lang])} <span aria-hidden="true">→</span></span>
     </a>
+    ${n?.spiele ? spielListe(lang, n.spiele, t) : ''}
     ${secList}
     ${extras}
+    ${n?.dazu ? dazuListe(lang, n.dazu, t) : ''}
   </div>
 </div>`;
 }
 
 /** The overview: every area at once. This is what an empty search field shows. */
 function overviewPanel(lang, t) {
-  const cols = NAV.map((n) => {
+  const cols = ALLE_SEITEN.map((n) => {
     const m = SITEMAP[n.key];
     const sections = (MENU[lang]?.[n.key] ?? []).slice(0, 5);
     return `<div class="mega-col">
@@ -257,8 +373,8 @@ function overviewPanel(lang, t) {
 
 export function header(lang, current, t, opts = {}) {
   const nav = NAV.map(
-    (n) => `<a class="gh-navlink" href="${href(lang, n.slug)}" data-mega="${n.key}"
-      aria-expanded="false" aria-controls="mega-${n.key}" aria-haspopup="true"${current === n.slug ? ' aria-current="page"' : ''}>${t.nav[n.key]}${I_CARET}</a>`,
+    (n) => `<a class="gh-navlink" href="${n.slug ? href(lang, n.slug) : href(lang, n.gruppe[0].slug)}" data-mega="${n.key}"
+      aria-expanded="false" aria-controls="mega-${n.key}" aria-haspopup="true"${seiten(n).some((k) => k.slug === current) || (n.dazu ?? []).some((k) => k.slug === current) ? ' aria-current="page"' : ''}>${t.nav[n.key]}${I_CARET}</a>`,
   ).join('');
 
   const langs = LANGS.map((l) => {
@@ -266,7 +382,9 @@ export function header(lang, current, t, opts = {}) {
     return `<a href="${href(l, current)}" hreflang="${l}" aria-current="${l === lang}" title="${name}" data-lang="${l}">${FLAGS[l]}<span class="sr">${name}</span></a>`;
   }).join('');
 
-  const megas = NAV.map((n) => megaPanel(lang, n.key, t)).join('\n');
+  /* Eine Gruppe hat kein SITEMAP — sie hat Kinder. Deshalb zwei Bauer statt
+     einer Verzweigung im Bauer selbst. */
+  const megas = NAV.map((n) => (n.gruppe ? gruppenPanel(lang, n, t) : megaPanel(lang, n.key, t, n))).join('\n');
 
   // The sign-in form is markup, not a string built in JS: it has to be there
   // for anyone whose JavaScript failed, and it is one <form> so a password
@@ -399,7 +517,7 @@ export const HEADER_CSS = `
   position: sticky; top: 0; z-index: 50;
   background: var(--header-bg);
   border-bottom: 1px solid var(--header-border);
-  transition: box-shadow 200ms var(--ease);
+  transition: box-shadow var(--kurz) var(--ease);
 }
 .gh-header.stuck { box-shadow: 0 6px 24px -10px rgba(0,0,0,0.45); }
 
@@ -450,6 +568,31 @@ export const HEADER_CSS = `
 
 .gh-burger { display: none; }
 
+/* ── Die Spieldimension im Menue ─────────────────────────────────────────── */
+
+/*
+ * Die Zahl steht rechts und in der Marke: sie ist die eigentliche Auskunft
+ * dieser Zeile. „GTA V" allein sagt nur, dass es die Kategorie gibt; „GTA V 37"
+ * sagt, dass sich das Klicken lohnt.
+ */
+.mega-col li a em,
+.mega-bald em {
+  font-style: normal; font-size: 0.82em; font-variant-numeric: tabular-nums;
+  margin-left: 0.6em; opacity: 0.75;
+}
+.mega-col li a em { color: var(--marke); opacity: 1; font-weight: 600; }
+
+/* Was es (noch) nicht gibt, ist kein Link — und sieht auch nicht wie einer aus. */
+.mega-bald { color: var(--fg-subtle); cursor: default; }
+.mega-bald em { text-transform: lowercase; letter-spacing: 0.02em; }
+
+/* Die Beschreibung eines Werkzeugs in der Gruppenansicht. Zwei Zeilen, dann
+   Schluss — ein Menue ist kein Ort zum Lesen. */
+.mega-kurz {
+  margin: 2px 0 8px; color: var(--fg-muted); font-size: 0.86rem; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
 /* ── nav ────────────────────────────────────────────────────────────────── */
 /*
  * flex: 0 0 — the nav never shrinks. Letting it shrink is how a bar ends up
@@ -493,7 +636,7 @@ export const HEADER_CSS = `
      beim Zeichen, ausfuehrlich in build/marke.mjs. */
   border-radius: 2px 2px 0 0; background: var(--marke-auf-dunkel);
   transform: scaleX(0); transform-origin: 50% 100%; opacity: 0;
-  transition: transform 180ms var(--ease), opacity 180ms var(--ease);
+  transition: transform var(--kurz) var(--ease), opacity var(--kurz) var(--ease);
 }
 .gh-navlink[aria-expanded="true"]::after { transform: none; opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .gh-navlink::after { transition: none; } }
@@ -502,23 +645,23 @@ export const HEADER_CSS = `
 /*
  * It grows leftwards. The right edge is pinned by the nav's margin-right:auto,
  * so animating the basis moves only the left edge, and the nav collapses into
- * the same 280ms. Fixed basis rather than flex-grow, because a growing field
+ * the same var(--mittel). Fixed basis rather than flex-grow, because a growing field
  * next to an auto margin never grows at all — the margin takes the free space
  * first — and a growing field without one leaves the actions floating away
  * from the right edge.
  */
 .gh-find {
   flex: 0 0 var(--hdr-find); min-width: 0;
-  transition: flex-basis 280ms var(--ease);
+  transition: flex-basis var(--mittel) var(--ease);
 }
 .gh-header.finding .gh-find { flex-basis: var(--hdr-find-open); }
-.gh-nav { transition: flex-basis 280ms var(--ease), max-width 280ms var(--ease),
-                      opacity 150ms var(--ease) 40ms, transform 220ms var(--ease); }
+.gh-nav { transition: flex-basis var(--mittel) var(--ease), max-width var(--mittel) var(--ease),
+                      opacity var(--kurz) var(--ease) 40ms, transform var(--mittel) var(--ease); }
 .gh-header.finding .gh-nav {
   flex-basis: 0; max-width: 0;
   opacity: 0; transform: translateX(-10px); pointer-events: none;
-  transition: flex-basis 280ms var(--ease), max-width 280ms var(--ease),
-              opacity 130ms var(--ease), transform 200ms var(--ease);
+  transition: flex-basis var(--mittel) var(--ease), max-width var(--mittel) var(--ease),
+              opacity var(--kurz) var(--ease), transform var(--kurz) var(--ease);
 }
 
 .gh-findopen { display: none; }
@@ -559,7 +702,7 @@ export const HEADER_CSS = `
   background: color-mix(in srgb, var(--airlock) 22%, transparent);
   border: 1px solid color-mix(in srgb, var(--airlock) 55%, transparent);
   color: var(--header-fg);
-  animation: quickIn 260ms var(--ease) both;
+  animation: quickIn var(--mittel) var(--ease) both;
 }
 .gh-quick:hover { text-decoration: none; background: color-mix(in srgb, var(--airlock) 34%, transparent); }
 .gh-quick[hidden] { display: none; }
@@ -606,7 +749,7 @@ export const HEADER_CSS = `
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--e3);
-  transition: opacity 170ms var(--ease), transform 170ms var(--ease);
+  transition: opacity var(--kurz) var(--ease), transform var(--kurz) var(--ease);
 }
 .gh-panel.on { display: block; }
 /* A five-column overview on a 1400x600 laptop is taller than what is left of
@@ -622,7 +765,7 @@ export const HEADER_CSS = `
  */
 .gh-scrim {
   position: fixed; inset: 0; z-index: 40; background: rgba(1,4,9,0.32);
-  opacity: 0; pointer-events: none; transition: opacity 180ms var(--ease);
+  opacity: 0; pointer-events: none; transition: opacity var(--kurz) var(--ease);
 }
 .gh-header[data-scrim] ~ .gh-scrim { opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .gh-scrim { transition: none; } }
