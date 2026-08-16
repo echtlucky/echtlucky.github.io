@@ -532,7 +532,39 @@ ${THEME_TOGGLE}
 ${HEADER_JS({
   lang: page.lang,
   strings: headerStrings(t),
-  fb: FIREBASE_READY ? FIREBASE_CFG : null,
+  /*
+   * ══ Genau die Form, die der Kopf erwartet — und nur die ═════════════════
+   *
+   * Hier stand `FIREBASE_CFG`, also die ganze Datei. Der Kopf liest daraus aber
+   * `C.fb.sdk` und `C.fb.config`, und beide Felder gibt es dort nicht: sie
+   * heissen `sdkVersion`, und die Einstellungen liegen flach im Objekt.
+   *
+   * Die Folge war kein Fehler, den man sieht, sondern einer, den man erst im
+   * Netzwerkfenster findet:
+   *
+   *     GET https://www.gstatic.com/firebasejs/undefined/firebase-app.js  404
+   *
+   * **Die Anmeldung im Kopf hat damit auf keiner Seite je funktioniert.** Nur
+   * das Forum hatte eine eigene, richtig verdrahtete (`build/pages/forum.mjs`)
+   * — deshalb gab es zwei verschiedene Anmeldefenster, und nur eines davon tat
+   * etwas.
+   *
+   * Uebergeben wird jetzt die Form, die der Kopf liest, und **nur die Felder,
+   * die er braucht**: `moderatorUids` gehoerte nie in ein Skript, das auf jeder
+   * Seite ausgeliefert wird.
+   */
+  fb: FIREBASE_READY ? {
+    sdk: FIREBASE_CFG.sdkVersion,
+    apiKey: FIREBASE_CFG.apiKey,
+    config: {
+      apiKey: FIREBASE_CFG.apiKey,
+      authDomain: FIREBASE_CFG.authDomain,
+      projectId: FIREBASE_CFG.projectId,
+      storageBucket: FIREBASE_CFG.storageBucket,
+      messagingSenderId: FIREBASE_CFG.messagingSenderId,
+      appId: FIREBASE_CFG.appId,
+    },
+  } : null,
   urls: {
     forum: href(page.lang, 'forum'),
     other: href(page.lang === 'de' ? 'en' : 'de', page.slug),
