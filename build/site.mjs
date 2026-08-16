@@ -8,7 +8,7 @@
  * need a build pipeline, it needs a loop.
  */
 
-import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,6 +27,8 @@ import { impressum, privacy } from './pages/legal.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist');
+/** Was nur kopiert wird — die selbst gehostete Schrift und ihre Lizenz. */
+const STATISCH = join(ROOT, 'static');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
@@ -120,6 +122,21 @@ writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${ORIG
 // GitHub Pages runs Jekyll by default, which silently ignores files starting
 // with an underscore. We have none, but relying on that is a trap for later.
 writeFileSync(join(OUT, '.nojekyll'), '', 'utf8');
+
+/*
+ * Alles aus `static/` unveraendert nach `dist/`.
+ *
+ * Bisher gab es diesen Ordner nicht — jede Datei der Seite wurde erzeugt. Mit
+ * der eigenen Schrift gibt es zum ersten Mal etwas, das nur kopiert wird: zwei
+ * `woff2` und die Lizenz dazu. Sie liegen bei uns und nicht bei Google, und
+ * warum, steht ausfuehrlich in `build/marke.mjs`.
+ */
+if (existsSync(STATISCH)) {
+  cpSync(STATISCH, OUT, { recursive: true });
+  const n = readdirSync(join(OUT, 'schrift')).length;
+  process.stdout.write(`  + static/ kopiert (${n} Dateien unter /schrift/)
+`);
+}
 
 // A 404 that keeps the header, so a wrong URL is not a dead end.
 const notFound = render({
