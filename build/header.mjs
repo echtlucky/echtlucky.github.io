@@ -395,20 +395,7 @@ export function header(lang, current, t, opts = {}) {
     <div data-auth-view="out">
       <h3 class="authp-h">${esc(t.auth.signIn)}</h3>
       <p class="authp-note">${esc(t.auth.why)}</p>
-      <form id="ghAuthForm" novalidate>
-        <label class="authp-l" for="ghAuthName" data-only="up">${esc(t.auth.name)}</label>
-        <input class="fld" id="ghAuthName" type="text" autocomplete="nickname" data-only="up">
-        <label class="authp-l" for="ghAuthMail">${esc(t.auth.email)}</label>
-        <input class="fld" id="ghAuthMail" type="email" autocomplete="email" required>
-        <label class="authp-l" for="ghAuthPw">${esc(t.auth.password)}</label>
-        <input class="fld" id="ghAuthPw" type="password" autocomplete="current-password" required>
-        <p class="authp-err" id="ghAuthErr" role="alert" hidden></p>
-        <button class="btn btn-primary authp-go" id="ghAuthGo" type="submit">${esc(t.auth.submitIn)}</button>
-      </form>
-      <div class="authp-alt">
-        <button type="button" class="linkish" id="ghAuthSwap">${esc(t.auth.swapUp)}</button>
-        <button type="button" class="linkish" id="ghAuthReset">${esc(t.auth.forgot)}</button>
-      </div>
+      <a class="btn btn-primary authp-go" href="${href(lang, 'signin')}">${esc(t.auth.signIn)}</a>
     </div>
 
     <div data-auth-view="unverified" hidden>
@@ -434,8 +421,29 @@ export function header(lang, current, t, opts = {}) {
 </div>`
     : '';
 
+  /*
+   * Zwei Elemente fuer zwei Zustaende, und zwar mit Absicht.
+   *
+   * Abgemeldet ist "Anmelden" ein LINK auf eine Seite. Ein Ausklappfeld am
+   * Bildschirmrand hat keine Adresse: man kann niemanden dorthin schicken, es
+   * ist kein Ziel nach einer Weiterleitung, und der Zurueck-Knopf tut nichts.
+   * Und in 400px am Rand war nie Platz fuer Google, GitHub und E-Mail
+   * nebeneinander — deshalb fehlten die beiden Wege hier, waehrend es sie im
+   * Kundenportal gab. Dieselbe Firma, zwei Anmeldungen.
+   *
+   * Angemeldet bleibt es ein Knopf mit Ausklappfeld, denn dann ist es kein
+   * Formular mehr, sondern ein kurzes Menue — und dafuer ist ein Ausklappfeld
+   * genau richtig.
+   *
+   * Ohne JavaScript ist der Link sichtbar und der Knopf nicht. Das ist die
+   * richtige Reihenfolge: ohne Skript gibt es ohnehin keinen Anmeldezustand,
+   * und der Link funktioniert trotzdem.
+   */
   const authBtn = opts.auth
-    ? `<button type="button" class="gh-signin" id="ghAuthBtn" aria-expanded="false" aria-controls="ghAuthPanel">
+    ? `<a class="gh-signin" id="ghAuthLink" href="${href(lang, 'signin')}">
+        <span id="ghAuthLinkLabel">${esc(t.auth.signIn)}</span>
+      </a>
+      <button type="button" class="gh-signin" id="ghAuthBtn" aria-expanded="false" aria-controls="ghAuthPanel" hidden>
         <span class="gh-avatar" id="ghAvatar" hidden aria-hidden="true"></span>
         <span id="ghAuthLabel">${esc(t.auth.signIn)}</span>
       </button>`
@@ -527,7 +535,22 @@ export const HEADER_CSS = `
   padding-inline: var(--hdr-pad);
 }
 
-.gh-logo { display: flex; align-items: center; gap: 11px; color: var(--header-fg); flex: none; }
+/*
+ * Drei Abstaende, die zusammen die Ruhe links im Kopf machen.
+ *
+ * 1. Zeichen zu Wortmarke: 11px waren zu wenig fuer eine Wortmarke, die seit
+ *    dem Umstieg auf Montserrat 19px gross ist. Ein Zeichen klebt an einem
+ *    Wort, sobald der Abstand kleiner wird als die Innenraeume der Schrift.
+ * 2. Wortmarke zu Navigation: das war bisher der gap von 12px der Leiste,
+ *    also
+ *    derselbe Abstand wie zwischen zwei Knoepfen rechts. Die Marke ist aber
+ *    kein Knopf in einer Reihe, sondern das eine Element, von dem sich alles
+ *    andere absetzt.
+ * 3. Beide wachsen, aber nicht gleich: 11 → 15 und 12 → 34. Der zweite bleibt
+ *    dadurch der groessere, und genau daran liest man ab, dass Zeichen und
+ *    Wort zusammengehoeren und die Navigation etwas anderes ist.
+ */
+.gh-logo { display: flex; align-items: center; gap: 15px; color: var(--header-fg); flex: none; margin-right: 22px; }
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
 
 /*
@@ -1334,29 +1357,47 @@ export const HEADER_JS = (cfg) => `
   var state = { user: null };
   var CRUMB = 'skillry:who';
 
+  var authLink = document.getElementById('ghAuthLink');
+  /*
+   * Das Ziel wird beim Laden gesetzt und nicht beim Klick.
+   *
+   * Beim Klick waere es zu spaet fuer den, der den Link mit der mittleren
+   * Maustaste in einen neuen Tab legt oder seine Adresse kopiert: dort gibt es
+   * kein Klickereignis, das noch etwas anhaengen koennte. Am Anmeldeknopf
+   * liest man dann in der Statusleiste eine Adresse, die nicht die ist, die
+   * beim Klick benutzt wuerde.
+   *
+   * Nur Pfad und Parameter, nie die ganze Adresse — die Gegenseite nimmt
+   * ohnehin nur Pfade an (siehe ziel() in pages/anmelden.mjs), und was hier
+   * nicht reingeschrieben wird, muss dort nicht abgewiesen werden.
+   */
+  if (authLink) {
+    var hier = location.pathname + location.search;
+    if (hier.indexOf('/signin') === -1) {
+      authLink.href = authLink.href + '?weiter=' + encodeURIComponent(hier);
+    }
+  }
+
   function paint() {
     var u = state.user;
-    if (authBtn) {
+    /* Abgemeldet der Link zur Seite, angemeldet der Knopf mit dem Menue.
+       Genau einer von beiden ist sichtbar, nie beide und nie keiner. */
+    if (authLink) authLink.hidden = !!u;
+    if (authBtn) authBtn.hidden = !u;
+    if (authBtn && u) {
       var label = document.getElementById('ghAuthLabel');
       var av = document.getElementById('ghAvatar');
-      authBtn.classList.toggle('io', !!u);
-      authBtn.classList.toggle('unverified', !!(u && !u.emailVerified));
-      if (u) {
-        var n = u.displayName || (u.email || '?').split('@')[0];
-        label.textContent = n.length > 14 ? n.slice(0, 13) + '…' : n;
-        av.hidden = false;
-        av.textContent = n.slice(0, 2).toUpperCase();
-        authBtn.setAttribute('aria-label', S.account + ': ' + n);
-        setView(u.emailVerified ? 'in' : 'unverified');
-        var n2 = document.getElementById('ghAuthName2'), m2 = document.getElementById('ghAuthMail2'),
-            a2 = document.getElementById('ghAuthAvatar2');
-        if (n2) { n2.textContent = n; m2.textContent = u.email || ''; a2.textContent = n.slice(0, 2).toUpperCase(); }
-      } else {
-        label.textContent = S.signIn;
-        av.hidden = true;
-        authBtn.removeAttribute('aria-label');
-        setView('out');
-      }
+      var n = u.displayName || (u.email || '?').split('@')[0];
+      authBtn.classList.toggle('io', true);
+      authBtn.classList.toggle('unverified', !u.emailVerified);
+      label.textContent = n.length > 14 ? n.slice(0, 13) + '…' : n;
+      av.hidden = false;
+      av.textContent = n.slice(0, 2).toUpperCase();
+      authBtn.setAttribute('aria-label', S.account + ': ' + n);
+      setView(u.emailVerified ? 'in' : 'unverified');
+      var n2 = document.getElementById('ghAuthName2'), m2 = document.getElementById('ghAuthMail2'),
+          a2 = document.getElementById('ghAuthAvatar2');
+      if (n2) { n2.textContent = n; m2.textContent = u.email || ''; a2.textContent = n.slice(0, 2).toUpperCase(); }
     }
     if (quick) {
       if (u && u.emailVerified) {
@@ -1491,79 +1532,27 @@ export const HEADER_JS = (cfg) => `
     else { openDrop('ghAuthPanel', authBtn, true); focusAuth(); }
   });
 
-  var form = document.getElementById('ghAuthForm');
-  var errEl = document.getElementById('ghAuthErr');
+  /*
+   * Das Anmeldeformular ist umgezogen und mit ihm alles, was dazu gehoerte:
+   * Umschalten zwischen Anmelden und Anlegen, das Absenden, das Zuruecksetzen
+   * des Passworts und die Uebersetzung der Firebase-Fehlercodes. Das steht
+   * jetzt in build/pages/anmelden.mjs.
+   *
+   * Was hier bleibt, ist das Ausklappfeld fuer den ANGEMELDETEN Zustand: die
+   * Bestaetigung der Adresse und das kurze Kontomenue.
+   */
   var err2 = document.getElementById('ghAuthErr2');
-  var go = document.getElementById('ghAuthGo');
-  var swap = document.getElementById('ghAuthSwap');
-  var mode = 'in';
-
   function say(el, msg, ok) {
     if (!el) return;
     el.hidden = !msg; el.textContent = msg || '';
     el.classList.toggle('ok', !!ok);
   }
-
   function mapError(e) {
     var c = (e && e.code) || '';
-    if (c.indexOf('email-already-in-use') !== -1) return S.errInUse;
-    if (c.indexOf('weak-password') !== -1) return S.errWeak;
     if (c.indexOf('too-many-requests') !== -1) return S.errMany;
-    if (c.indexOf('invalid-email') !== -1) return S.errMail;
     if (c.indexOf('network') !== -1) return S.errNet;
-    // One message for wrong-password, unknown-account and invalid-credential,
-    // on purpose: three messages turn the form into an address oracle.
-    if (c.indexOf('invalid-credential') !== -1 || c.indexOf('wrong-password') !== -1 ||
-        c.indexOf('user-not-found') !== -1) return S.errWrong;
     return S.errGeneric;
   }
-
-  if (swap) swap.addEventListener('click', function () {
-    mode = mode === 'in' ? 'up' : 'in';
-    document.getElementById('ghAuthPanel').classList.toggle('mode-up', mode === 'up');
-    go.textContent = mode === 'in' ? S.submitIn : S.submitUp;
-    swap.textContent = mode === 'in' ? S.swapUp : S.swapIn;
-    document.getElementById('ghAuthPw').setAttribute('autocomplete', mode === 'in' ? 'current-password' : 'new-password');
-    say(errEl, '');
-  });
-
-  if (form) form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var mail = document.getElementById('ghAuthMail').value.trim();
-    var pw = document.getElementById('ghAuthPw').value;
-    var name = (document.getElementById('ghAuthName').value || '').trim();
-    if (mail.indexOf('@') < 1) return say(errEl, S.errMail);
-    if (pw.length < 8) return say(errEl, S.errShort);
-    if (mode === 'up' && name.length < 2) return say(errEl, S.errName);
-
-    say(errEl, '');
-    go.disabled = true; go.textContent = S.working;
-    ensureSdk().then(function (k) {
-      if (mode === 'in') return k.fb.signInWithEmailAndPassword(k.auth, mail, pw);
-      return k.fb.createUserWithEmailAndPassword(k.auth, mail, pw).then(function (cred) {
-        return k.fb.updateProfile(cred.user, { displayName: name })
-          .then(function () { return k.fb.sendEmailVerification(cred.user); });
-      });
-    }).then(function () {
-      go.disabled = false; go.textContent = mode === 'in' ? S.submitIn : S.submitUp;
-      form.reset();
-      focusAuth();
-    }).catch(function (e2) {
-      go.disabled = false; go.textContent = mode === 'in' ? S.submitIn : S.submitUp;
-      say(errEl, mapError(e2));
-    });
-  });
-
-  var reset = document.getElementById('ghAuthReset');
-  if (reset) reset.addEventListener('click', function () {
-    var mail = document.getElementById('ghAuthMail').value.trim();
-    if (mail.indexOf('@') < 1) return say(errEl, S.errMail);
-    ensureSdk().then(function (k) { return k.fb.sendPasswordResetEmail(k.auth, mail); })
-      .catch(function () {})
-      // Always the same answer, sent or not: whether an address has an account
-      // is not the form's to reveal.
-      .then(function () { say(errEl, S.resetSent, true); });
-  });
 
   var resend = document.getElementById('ghAuthResend');
   if (resend) resend.addEventListener('click', function () {

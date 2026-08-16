@@ -1,0 +1,69 @@
+{
+  "_": [
+    "Die Notizen fuer die linke Spalte der Anmeldung.",
+    "",
+    "EHRLICH ZUM HALTBARKEITSDATUM: Diese Datei wird von Hand gepflegt. Eine",
+    "statische Seite kann nichts abrufen, also kann sie auch nicht von selbst",
+    "aktuell bleiben. Deshalb traegt jeder Eintrag ein Datum und die Spalte",
+    "zeigt den Stand sichtbar an. Wer sie liest, sieht sofort, wie alt sie ist,",
+    "statt Veraltetes fuer Neues zu halten.",
+    "",
+    "Der naechste Schritt waere ein Feed vom Lizenzdienst, der die Datei",
+    "ersetzt. Bis dahin gilt: lieber wenige Eintraege, die laenger stimmen, als",
+    "viele, die in zwei Wochen falsch sind.",
+    "",
+    "Format: stand = wann zuletzt durchgesehen. eintraege[].datum = wann der",
+    "einzelne Punkt geschrieben wurde."
+  ],
+  "stand": "2026-08-16",
+  "eintraege": [
+    {
+      "datum": "2026-08-16",
+      "marke": "modelle",
+      "de": {
+        "titel": "Assistenten arbeiten laenger am Stueck",
+        "text": "Weg von einer Antwort pro Frage, hin zu Laeufen ueber viele Schritte. Wichtiger als die Groesse eines Modells wird, ob es den eigenen Fehler bemerkt."
+      },
+      "en": {
+        "titel": "Assistants work longer in one go",
+        "text": "Away from one answer per question, towards runs across many steps. Whether a model notices its own mistake matters more than its size."
+      }
+    },
+    {
+      "datum": "2026-08-16",
+      "marke": "werkzeuge",
+      "de": {
+        "titel": "Werkzeuge sind der eigentliche Sprung",
+        "text": "Ein Modell, das nur redet, ist ein Ratgeber. Eines, das Dateien liest und Befehle ausfuehrt, ist ein Mitarbeiter — mit allem, was an Rechten daranhaengt."
+      },
+      "en": {
+        "titel": "Tools are the actual jump",
+        "text": "A model that only talks is an adviser. One that reads files and runs commands is a colleague — with everything that means for rights."
+      }
+    },
+    {
+      "datum": "2026-08-16",
+      "marke": "sicherheit",
+      "de": {
+        "titel": "Anweisungen aus fremdem Text",
+        "text": "Liest ein Assistent fremde Inhalte, kann darin etwas an ihn gerichtet sein. Gelesenes ist kein Auftrag. Genau an dieser Grenze sitzt AIRLOCK."
+      },
+      "en": {
+        "titel": "Instructions inside foreign text",
+        "text": "When an assistant reads outside content, that content can address it. What you read is not an order. AIRLOCK sits on exactly that line."
+      }
+    },
+    {
+      "datum": "2026-08-16",
+      "marke": "praxis",
+      "de": {
+        "titel": "Kontext ist teurer als Rechenzeit",
+        "text": "Grosse Kontextfenster loesen weniger als erwartet: was drinsteht zaehlt mehr als wie viel. Ausschnitte schlagen den ganzen Ordner."
+      },
+      "en": {
+        "titel": "Context costs more than compute",
+        "text": "Large context windows solve less than expected: what is in them beats how much. Excerpts beat the whole folder."
+      }
+    }
+  ]
+}

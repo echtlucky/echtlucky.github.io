@@ -284,7 +284,31 @@ export const LEISTE_CSS = `
 }
 `;
 
-export const MELDE_CSS = `
+export /* Ohne <style>-Huelle: head() setzt sie einmal um alle Bausteine. Eine
+   zweite darin verschachtelt beendet die erste, und der Rest der Regeln
+   landet als Text im Dokument statt im Stylesheet. */
+const EINLADUNG_CSS = `
+/*
+ * Die Einladung steht an der Stelle, an der vorher ein 420px breites
+ * Formular klebte — linksbuendig in einer Zeile, die sonst leer war. Genau
+ * das sah schief aus. Hier steht sie mittig und ist so hoch wie ein Absatz,
+ * weil sie auch nur einer ist: ein Satz und ein Weg dorthin.
+ */
+.fo-einladung {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap;
+  /* Der Elternteil ist ein flex-Kasten mit space-between. Dort ist width:100%
+     wirkungslos, weil die Grundgroesse aus flex-basis kommt: gemessen 169px
+     statt 1232. flex: 1 1 100% setzt die Grundgroesse selbst. */
+  flex: 1 1 100%;
+  padding: 20px 24px; margin: 0 auto;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface);
+}
+.fo-einladung p { margin: 0; color: var(--fg-muted); font-size: 0.92rem; }
+`;
+
+const MELDE_CSS = `
 .fo-melde {
   position: fixed; left: 50%; bottom: 20px; z-index: 60;
   transform: translate(-50%, 12px);
@@ -304,7 +328,7 @@ export const MELDE_CSS = `
 
 /** Nur das Blatt dieser Seite — der Rest kommt aus der Designsprache. */
 export function head() {
-  return `<style>${LEISTE_CSS}${MELDE_CSS}</style>`;
+  return `<style>${LEISTE_CSS}${EINLADUNG_CSS}${MELDE_CSS}</style>`;
 }
 
 export function body(lang) {
@@ -427,6 +451,11 @@ export function script(lang) {
     }) + ';',
     '  var SDK = ' + JSON.stringify(FB.sdkVersion || '11.0.2') + ';',
     '  var L = ' + JSON.stringify(t) + ';',
+    /* Die Adresse der Anmeldeseite kommt aus href() und wird nicht im
+       Skript zusammengesetzt: sie haengt an der Sprache, und ein von Hand
+       gebauter Pfad waere die eine Stelle, die beim naechsten Umbau der
+       Adressen vergessen wird. So faellt sie in die Verweispruefung. */
+    '  var ANMELDEN = ' + JSON.stringify(href(lang, 'signin')) + ';',
     '  var CATS = ' + JSON.stringify(CATEGORIES.map((c) => ({ id: c.id, label: c[lang] }))) + ';',
     '  var MODS = ' + JSON.stringify(FB.moderatorUids || []) + ';',
     '',
@@ -551,25 +580,22 @@ export function script(lang) {
   '',
   '  var mode = "in";',
   '',
+  '  /*',
+  '   * DIE DRITTE ANMELDUNG IST WEG',
+  '   *',
+  '   * Hier stand ein vollstaendiges Anmeldeformular: GitHub-Knopf, E-Mail,',
+  '   * Passwort, Umschalten auf Registrieren, Passwort vergessen — rund',
+  '   * neunzig Zeilen, die dasselbe taten wie der Kopf und dasselbe wie das',
+  '   * Kundenportal, nur in einer dritten Gestalt und mit einer dritten',
+  '   * Fehlerbehandlung. Drei Anmeldungen fuer ein Konto sind fuer den, der',
+  '   * sie benutzt, drei verschiedene Firmen — und fuer den, der sie pflegt,',
+  '   * drei Stellen, an denen eine Verbesserung vergessen werden kann.',
+  '   *',
+  '   * Was bleibt, ist die Einladung samt Ziel: die Anmeldeseite mit',
+  '   * ?weiter=hier. Wer dort fertig ist, kommt genau hierher zurueck.',
+  '   */',
   '  function renderAuth() {',
-  '    if (user && !user.emailVerified) {',
-  '      authBar.innerHTML =',
-  '        \'<div class="note warn" style="flex:1"><h3>\' + esc(L.verifyH) + \'</h3>\' +',
-  '        \'<p>\' + esc(L.verifyP) + \'</p>\' +',
-  '        \'<div class="btn-row"><button class="btn" id="resendBtn">\' + esc(L.verifyResend) + \'</button>\' +',
-  '        \'<button class="btn" id="recheckBtn">\' + esc(L.verifyDone) + \'</button>\' +',
-  '        \'<button class="btn" id="signOutBtn">\' + esc(L.signOut) + \'</button></div></div>\';',
-  '      document.getElementById("resendBtn").addEventListener("click", function (e) {',
-  '        fb.sendEmailVerification(user).then(function () { e.currentTarget.textContent = L.verifySent; })',
-  '          .catch(function (err) { melde(authError(err), "fehler"); });',
-  '      });',
-  '      document.getElementById("recheckBtn").addEventListener("click", function () {',
-  '        user.reload().then(function () { user = auth.currentUser; renderAuth(); route(); });',
-  '      });',
-  '      document.getElementById("signOutBtn").addEventListener("click", function () { fb.signOut(auth); });',
-  '      return;',
-  '    }',
-  '',
+  '    if (!authBar) return;',
   '    if (user) {',
   '      authBar.innerHTML =',
   '        \'<span class="small muted">\' + esc(L.signedInAs) + \' <strong>\' + esc(user.displayName || user.email) + \'</strong></span>\' +',
@@ -577,76 +603,10 @@ export function script(lang) {
   '      document.getElementById("signOutBtn").addEventListener("click", function () { fb.signOut(auth); });',
   '      return;',
   '    }',
-  '',
-  '    var up = mode === "up";',
+  '    var ziel = ANMELDEN + "?weiter=" + encodeURIComponent(location.pathname + location.search);',
   '    authBar.innerHTML =',
-  '      \'<div class="card" style="flex:1;max-width:420px">\' +',
-  '      \'<button class="btn" id="ghBtn" style="width:100%;justify-content:center">\' + esc(L.signInGithub) + \'</button>\' +',
-  '      \'<p class="small muted center" style="margin:12px 0">\' + esc(L.orEmail) + \'</p>\' +',
-  '      (up ? field("auName", "text", L.nameLabel, L.namePlaceholder) : "") +',
-  '      /* EIN <form> UM DIE FELDER. Chrome meldet sonst "Password field is not',
-  '       * contained in a form" — und das ist keine Formalie: ein Passwortfeld',
-  '       * ausserhalb eines Formulars wird von Passwortspeichern nicht',
-  '       * zuverlaessig erkannt, weder beim Ausfuellen noch beim Anbieten zu',
-  '       * speichern. Wer sich hier anmeldet, tippt sein Passwort sonst jedes',
-  '       * Mal von Hand. Und die Eingabetaste sendet wieder ab. */',
-  '      \'<form id="auForm" novalidate>\' +',
-  '      field("auMail", "email", L.emailLabel, "") +',
-  '      field("auPass", "password", L.passwordLabel, "") +',
-  '      \'<div class="btn-row"><button class="btn btn-primary" id="goBtn" type="submit">\' + esc(up ? L.signUp : L.signIn) + \'</button>\' +',
-  '      \'<button class="btn" id="swapBtn" type="button">\' + esc(up ? L.haveAccount : L.needAccount) + \'</button></div></form>\' +',
-  '      (up ? "" : \'<p class="small"><a href="#" id="resetLink">\' + esc(L.forgot) + \'</a></p>\') +',
-  '      \'</div>\';',
-  '',
-  '    document.getElementById("swapBtn").addEventListener("click", function () { mode = up ? "in" : "up"; renderAuth(); });',
-  '',
-  '    document.getElementById("ghBtn").addEventListener("click", function (e) {',
-  '      e.currentTarget.disabled = true;',
-  '      ensureAuth().then(function () {',
-  '      fb.signInWithPopup(auth, new fb.GithubAuthProvider()).catch(function (err) {',
-  '        e.currentTarget.disabled = false;',
-  '        // A closed popup is somebody changing their mind, not a failure.',
-  '        if ((err && err.code || "").indexOf("popup-closed") === -1) melde(authError(err), "fehler");',
-  '      });',
-  '      });',
-  '    });',
-  '',
-  '    var reset = document.getElementById("resetLink");',
-  '    if (reset) reset.addEventListener("click", function (ev) {',
-  '      ev.preventDefault();',
-  '      var mail = document.getElementById("auMail").value.trim();',
-  '      if (!mail) { melde(L.emailInvalid, "fehler"); return; }',
-  '      // Always the same message, whether or not the address exists — the form',
-  '      // must not become a way to test which emails are registered.',
-  '      ensureAuth().then(function () {',
-  '        return fb.sendPasswordResetEmail(auth, mail).catch(function () {});',
-  '      }).then(function () { melde(L.resetSent, "gut"); });',
-  '    });',
-  '',
-  '    /* Am FORMULAR und nicht am Knopf: so greift auch die Eingabetaste, und',
-  '       preventDefault haelt den Browser davon ab, die Seite neu zu laden. */',
-  '    document.getElementById("auForm").addEventListener("submit", function (e) {',
-  '      e.preventDefault();',
-  '      /* currentTarget ist jetzt das Formular. Der Knopf, der gesperrt und',
-  '         beschriftet wird, muss deshalb gesucht werden. */',
-  '      var btn = document.getElementById("goBtn");',
-  '      var mail = document.getElementById("auMail").value.trim();',
-  '      var pass = document.getElementById("auPass").value;',
-  '      var name = up ? (document.getElementById("auName").value || "").trim() : "";',
-  '      if (mail.indexOf("@") < 1) { melde(L.emailInvalid, "fehler"); return; }',
-  '      if (pass.length < 8) { melde(L.pwTooShort, "fehler"); return; }',
-  '      if (up && name.length < 2) { melde(L.nameLabel, "fehler"); return; }',
-  '      btn.disabled = true;',
-  '      ensureAuth().then(function () {',
-  '      var work = up',
-  '        ? fb.createUserWithEmailAndPassword(auth, mail, pass).then(function (cred) {',
-  '            return fb.updateProfile(cred.user, { displayName: name })',
-  '              .then(function () { return fb.sendEmailVerification(cred.user); });',
-  '          })',
-  '        : fb.signInWithEmailAndPassword(auth, mail, pass);',
-  '      work.catch(function (err) { btn.disabled = false; melde(authError(err), "fehler"); });',
-  '      });',
-  '    });',
+  '      \'<div class="fo-einladung"><p>\' + esc(L.signInToPost) + \'</p>\' +',
+  '      \'<a class="btn btn-primary" href="\' + ziel + \'">\' + esc(L.signIn) + \'</a></div>\';',
   '  }',
   '',
     '  // ── list ────────────────────────────────────────────────────────────',
