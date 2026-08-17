@@ -29,7 +29,7 @@
  *     node build/marke-ausgeben.mjs > ../skillry-lizenz/web/marke.css
  */
 
-import { BEWEGUNG, MARKE, RUHE, SCHRIFT, SCHRIFT_QUELLE } from './marke.mjs';
+import { BEWEGUNG, MARKE_LIZENZ, RUHE, SCHRIFT, SCHRIFT_QUELLE } from './marke.mjs';
 
 /**
  * Die Schrift liegt im Portal woanders.
@@ -59,12 +59,12 @@ const kopf = `/*
 process.stdout.write(`${kopf}${SCHRIFT_QUELLE}
 
 :root {
-${SCHRIFT}${BEWEGUNG}${MARKE.hell}}
+${SCHRIFT}${BEWEGUNG}${MARKE_LIZENZ.hell}}
 
 @media (prefers-color-scheme: dark) {
-  :root {${MARKE.dunkel}  }
+  :root {${MARKE_LIZENZ.dunkel}  }
 }
-:root[data-theme="dark"] {${MARKE.dunkel}}
-:root[data-theme="light"] {${MARKE.hell}}
+:root[data-theme="dark"] {${MARKE_LIZENZ.dunkel}}
+:root[data-theme="light"] {${MARKE_LIZENZ.hell}}
 ${RUHE}
 `);

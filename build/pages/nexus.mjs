@@ -1,5 +1,14 @@
 import { href, SITE } from '../layout.mjs';
 
+/**
+ * Stufe 2 — gehalten.
+ *
+ * Auftritte beim Eintreten und Hover-Tiefe, aber KEINE an den Bildlauf
+ * gekoppelte Bewegung: diese Seite wird gelesen, nicht bestaunt. Das
+ * Schaufenster ist die Startseite. Stufen: `D:/Projekte/UMBAU-PLAN.md`.
+ */
+export const bewegung = 2;
+
 export const slug = 'nexus';
 
 export const meta = {
@@ -128,7 +137,7 @@ export function body(lang) {
       ${t.modules
         .map(
           ([h, p]) =>
-            `<article class="card"><h3><span class="accent-nexus">${h}</span></h3><p class="muted small">${p}</p></article>`,
+            `<article class="card lift"><h3><span class="accent-nexus">${h}</span></h3><p class="muted small">${p}</p></article>`,
         )
         .join('')}
     </div>

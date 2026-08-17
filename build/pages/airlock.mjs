@@ -1,5 +1,14 @@
 import { href, SITE } from '../layout.mjs';
 
+/**
+ * Stufe 2 — gehalten.
+ *
+ * Auftritte beim Eintreten und Hover-Tiefe, aber KEINE an den Bildlauf
+ * gekoppelte Bewegung: diese Seite wird gelesen, nicht bestaunt. Das
+ * Schaufenster ist die Startseite. Stufen: `D:/Projekte/UMBAU-PLAN.md`.
+ */
+export const bewegung = 2;
+
 export const slug = 'airlock';
 
 export const meta = {
@@ -202,7 +211,7 @@ node bin/airlock.mjs lock ~/.claude/skills</pre>
     <div class="grid grid-3">
       ${t.flow
         .map(
-          (f) => `<article class="card">
+          (f) => `<article class="card lift">
         <h3><code>${f.cmd}</code></h3>
         <p><strong>${f.h}</strong></p>
         <p class="muted small">${f.p}</p>

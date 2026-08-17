@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="static/marke/zeichen.svg" alt="Skillry" width="96">
+</p>
+
 # echtlucky.github.io
 
 The product site: [AIRLOCK](https://github.com/echtlucky/airlock), NEXUS, the
@@ -5,8 +9,18 @@ Skillry FiveM scripts, a searchable skill index, plain-language material about
 how AI assistants get tricked, and the published contract for the Skillry
 licence API.
 
-**Zero dependencies.** No framework, no bundler, no `npm install`. A site this
-size does not need a build pipeline, it needs a loop.
+**No build dependencies.** No framework, no bundler, no `npm install`. A site
+this size does not need a build pipeline, it needs a loop.
+
+This used to say *zero dependencies*, and since 17.08.2026 that is no longer
+true: the home page loads **GSAP and ScrollTrigger** for its scroll
+choreography. They are checked in under `static/js/` — never from a CDN, for
+the same reason the font is self-hosted — and they ship only on pages that
+opt in with `export const bewegung = true`. Every other page is unchanged and
+still fetches nothing.
+
+The claim was corrected rather than quietly left standing. A README that
+promises something the code stopped doing is worse than the dependency.
 
 ```bash
 node build/site.mjs      # build to dist/

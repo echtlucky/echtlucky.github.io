@@ -13,6 +13,11 @@ const N_SKRIPTE = JSON.parse(readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content', 'scripts.json'), 'utf8',
 )).products.length;
 
+/** Und die Zahl der Skill-Eintraege aus derselben Quelle wie die Indexseite. */
+const N_SKILLS = JSON.parse(readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'content', 'catalog.json'), 'utf8',
+)).skills.length;
+
 import { href, SITE } from '../layout.mjs';
 import { HERO_WAVE_HTML, HERO_WAVE_CSS, HERO_WAVE_JS } from '../hero-wave.mjs';
 
@@ -44,18 +49,27 @@ const T = {
     ctaSecondary: 'How does this work?',
 
     bereicheEyebrow: 'What is here',
-    bereicheH: 'Three things, and all of them work today.',
-    bereicheLede: 'Skillry started as one scanner. It is now a workshop with three doors — and none of them is a promise for later.',
+    bereicheH: 'Six doors, and something finished behind each.',
+    bereicheLede: 'Skillry started as one scanner. It is now two businesses sharing a mark: tools for people who use AI, and a GTA V roleplay server with the resources that run it. Everything below exists today.',
     bereiche: [
-      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM scripts',
-        p: 'Resources for a GTA V roleplay server, each with the version it declares. A basket that hands your selection to a human being.',
-        cta: 'Look at the scripts' },
       { slug: 'airlock', zahl: '2', h: 'Tools',
         p: 'AIRLOCK reads a skill file the way an assistant would. NEXUS keeps the pieces in one place instead of five windows.',
         cta: 'Look at the tools' },
+      { slug: 'skills', zahl: String(N_SKILLS), h: 'Skill index',
+        p: 'Every entry carries a verdict the scanner produced, not one somebody typed in. Look a skill up before you install it.',
+        cta: 'Search the index' },
       { slug: 'forum', zahl: '6', h: 'Forum',
         p: 'Ask what something means, recommend a skill, report a false positive. Beginner questions are the point.',
         cta: 'Open the forum' },
+      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM scripts',
+        p: 'Resources for a GTA V roleplay server, each with the version it declares. A basket that hands your selection to a human being.',
+        cta: 'Look at the scripts' },
+      { extern: 'https://roleplay.skillry.de/', wort: 'GTA V', h: 'Roleplay server',
+        p: 'A German roleplay server with its own rules and its own world — running on the same resources sold here.',
+        cta: 'Visit the server' },
+      { slug: 'api', wort: 'v1', h: 'Licence',
+        p: 'Buying a script means getting a licence. The contract behind it is published: the address, the method, every answer, and what the game server does with each one.',
+        cta: 'Read the contract' },
     ],
 
     problemEyebrow: 'The problem, in one paragraph',
@@ -127,18 +141,27 @@ const T = {
     ctaSecondary: 'Wie funktioniert das?',
 
     bereicheEyebrow: 'Was es hier gibt',
-    bereicheH: 'Drei Dinge, und alle drei gibt es heute.',
-    bereicheLede: 'Skillry hat als ein einzelner Prüfer angefangen. Inzwischen ist es eine Werkstatt mit drei Türen — und keine davon ist ein Versprechen für später.',
+    bereicheH: 'Sechs Türen, und hinter jeder steht etwas Fertiges.',
+    bereicheLede: 'Skillry hat als ein einzelner Prüfer angefangen. Inzwischen sind es zwei Geschäfte unter einem Zeichen: Werkzeuge für Leute, die KI benutzen, und ein GTA-V-Rollenspielserver samt den Ressourcen, auf denen er läuft. Alles hier unten gibt es heute.',
     bereiche: [
-      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM-Skripte',
-        p: 'Ressourcen für einen GTA-V-Rollenspielserver, jede mit der Fassung, die sie deklariert. Ein Warenkorb, der die Auswahl an einen Menschen übergibt.',
-        cta: 'Die Skripte ansehen' },
       { slug: 'airlock', zahl: '2', h: 'Werkzeuge',
         p: 'AIRLOCK liest eine Skill-Datei so, wie ein Assistent es täte. NEXUS hält die Teile an einem Ort statt in fünf Fenstern.',
         cta: 'Die Werkzeuge ansehen' },
+      { slug: 'skills', zahl: String(N_SKILLS), h: 'Skill-Index',
+        p: 'Jeder Eintrag trägt ein Urteil, das der Prüfer erzeugt hat — keines, das jemand eingetippt hat. Vor dem Installieren nachschlagen.',
+        cta: 'Im Index suchen' },
       { slug: 'forum', zahl: '6', h: 'Forum',
         p: 'Fragen was etwas bedeutet, einen Skill empfehlen, einen False Positive melden. Einsteigerfragen sind der Sinn davon.',
         cta: 'Ins Forum' },
+      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'FiveM-Skripte',
+        p: 'Ressourcen für einen GTA-V-Rollenspielserver, jede mit der Fassung, die sie deklariert. Ein Warenkorb, der die Auswahl an einen Menschen übergibt.',
+        cta: 'Die Skripte ansehen' },
+      { extern: 'https://roleplay.skillry.de/', wort: 'GTA V', h: 'Rollenspielserver',
+        p: 'Ein deutscher Rollenspielserver mit eigenen Regeln und eigener Welt — auf denselben Ressourcen, die es hier zu kaufen gibt.',
+        cta: 'Zum Server' },
+      { slug: 'api', wort: 'v1', h: 'Lizenz',
+        p: 'Wer ein Skript kauft, bekommt eine Lizenz. Der Vertrag dahinter ist veröffentlicht: die Adresse, die Methode, jede Antwort und was der Spielserver aus jeder einzelnen macht.',
+        cta: 'Den Vertrag lesen' },
     ],
 
     problemEyebrow: 'Das Problem in einem Absatz',
@@ -216,6 +239,18 @@ const BEREICH_CSS = `
   font-family: var(--anzeige); font-weight: 700; font-size: 2.4rem; line-height: 1;
   color: var(--marke); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
 }
+/*
+ * Zwei Karten tragen ein WORT statt einer Zahl, und das ist kein Stilmittel.
+ *
+ * Der Rollenspielserver und der Lizenzvertrag haben keine ehrliche Anzahl —
+ * "1 Server" und "1 Adresse" waeren Zahlen, die nur so aussehen, als saessen
+ * sie auf Daten. Die Datei besteht weiter oben zu Recht darauf, dass Zahlen
+ * aus den Daten kommen; also steht dort etwas Nachpruefbares: die Plattform
+ * und die Fassung des Vertrags, die unter /v1/ tatsaechlich laeuft.
+ *
+ * Kleiner gesetzt, weil "GTA V" bei 2.4rem so breit wird wie die Karte.
+ */
+.bereich-zahl.wort { font-size: 1.5rem; letter-spacing: 0.01em; font-variant-numeric: normal; }
 .bereich h3 { margin: 0; }
 .bereich-mehr {
   margin-top: auto; padding-top: 10px; color: var(--link); font-size: 0.9rem; font-weight: 600;
@@ -223,6 +258,15 @@ const BEREICH_CSS = `
 .bereich-mehr span { display: inline-block; transition: transform var(--kurz) var(--ease); }
 .bereich:hover .bereich-mehr span { transform: translateX(3px); }
 `;
+
+/**
+ * Stufe 3 — volle Choreografie, und die einzige Seite, die sie bekommt.
+ *
+ * Sie ist das Schaufenster. Nur hier laeuft die an den Bildlauf gekoppelte
+ * Tiefe im Aufmacher; Produktseiten stehen auf Stufe 2, der Vertrag und das
+ * Impressum bleiben still. Die Stufen stehen in `D:/Projekte/UMBAU-PLAN.md`.
+ */
+export const bewegung = 3;
 
 export function body(lang) {
   const t = T[lang];
@@ -271,11 +315,12 @@ export function body(lang) {
       <p class="muted">${t.bereicheLede}</p>
     </div>
     <div class="grid grid-3">
-      ${t.bereiche.map((b) => `<a class="card lift bereich" href="${href(lang, b.slug)}">
-        <span class="bereich-zahl">${b.zahl}</span>
+      ${t.bereiche.map((b) => `<a class="card lift bereich" href="${b.extern ?? href(lang, b.slug)}"${
+        b.extern ? ' rel="noopener"' : ''}>
+        <span class="bereich-zahl${b.wort ? ' wort' : ''}">${b.zahl ?? b.wort}</span>
         <h3>${b.h}</h3>
         <p class="muted small">${b.p}</p>
-        <span class="bereich-mehr">${b.cta} <span aria-hidden="true">→</span></span>
+        <span class="bereich-mehr">${b.cta} <span aria-hidden="true">${b.extern ? '↗' : '→'}</span></span>
       </a>`).join('')}
     </div>
   </div>

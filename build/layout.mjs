@@ -14,6 +14,7 @@ import { CSS } from './theme.mjs';
 import { CSS_EXTRA, MOTION_JS } from './theme-extra.mjs';
 import { anchorHeadings } from './search.mjs';
 import { WORDMARK_CSS, LOGO_FAVICON } from './logo.mjs';
+import { BEWEGUNG_BOOT, BEWEGUNG_CSS, BEWEGUNG_JS, BEWEGUNG_SCRIPTS } from './bewegung.mjs';
 import { SCENE_CSS, sceneFor } from './scenes.mjs';
 import { GRAIN_CSS } from './grain.mjs';
 import { header, HEADER_JS, HEADER_CSS } from './header.mjs';
@@ -519,8 +520,9 @@ export function render(page) {
 <link rel="alternate" hreflang="${page.lang}" href="${ORIGIN}${href(page.lang, page.slug)}">
 ${alt}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}${href(DEFAULT_LANG, page.slug)}">
-<script>${THEME_BOOT}</script>
-<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}${GRAIN_CSS}</style>
+<script>${THEME_BOOT}${page.bewegung ? BEWEGUNG_BOOT : ''}</script>
+${page.bewegung ? BEWEGUNG_SCRIPTS : ''}
+<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}${GRAIN_CSS}${page.bewegung ? BEWEGUNG_CSS : ''}</style>
 ${page.head ?? ''}
 </head>
 <body>
@@ -598,6 +600,7 @@ ${HEADER_JS({
 })}
 ${MOTION_JS}
 ${VT_JS}
+${page.bewegung ? BEWEGUNG_JS(page.bewegung) : ''}
 ${page.script ?? ''}
 </script>
 </body>
