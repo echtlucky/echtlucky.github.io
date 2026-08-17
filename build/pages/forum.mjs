@@ -1460,7 +1460,7 @@ export function script(lang) {
     '      var meins = user && d.authorUid === user.uid;',
     '',
     '      root.innerHTML =',
-    '        "<a class=\\"fo-zurueck\\" href=\\"./\\">&#8592; " + esc(L.back) + "</a>" +',
+    '        "<a class=\\"fo-zurueck\\" href=\\"./\\">" + esc(L.back) + "</a>" +',
     '        "<article class=\\"fo-thema\\">" +',
     '        stimmleiste(d.score, meinThema.wert) +',
     '        "<div class=\\"fo-thema-in\\">" +',
