@@ -56,7 +56,7 @@ const T = {
         p: 'AIRLOCK reads a skill file the way an assistant would. NEXUS keeps the pieces in one place instead of five windows.',
         cta: 'Look at the tools' },
       { slug: 'skills', zahl: String(N_SKILLS), h: 'Skill index',
-        p: 'Every entry carries a verdict the scanner produced, not one somebody typed in. Look a skill up before you install it.',
+        p: 'Every skill carries a verdict the scanner produced, not one somebody typed in — and what is not a skill file says so instead. Look one up before you install it.',
         cta: 'Search the index' },
       { slug: 'forum', zahl: '6', h: 'Forum',
         p: 'Ask what something means, recommend a skill, report a false positive. Beginner questions are the point.',
@@ -113,7 +113,7 @@ const T = {
       },
       {
         h: 'I install skills other people wrote',
-        p: 'Search the index before you install. Every entry carries a verdict produced by running the scanner, not typed by hand.',
+        p: 'Search the index before you install. Every skill carries a verdict produced by running the scanner, not typed by hand.',
         cta: 'Search the skill index',
       },
       {
@@ -148,7 +148,7 @@ const T = {
         p: 'AIRLOCK liest eine Skill-Datei so, wie ein Assistent es täte. NEXUS hält die Teile an einem Ort statt in fünf Fenstern.',
         cta: 'Die Werkzeuge ansehen' },
       { slug: 'skills', zahl: String(N_SKILLS), h: 'Skill-Index',
-        p: 'Jeder Eintrag trägt ein Urteil, das der Prüfer erzeugt hat — keines, das jemand eingetippt hat. Vor dem Installieren nachschlagen.',
+        p: 'Jeder Skill trägt ein Urteil, das der Prüfer erzeugt hat — keines, das jemand eingetippt hat. Und was keine Skill-Datei ist, schreibt das hin. Vor dem Installieren nachschlagen.',
         cta: 'Im Index suchen' },
       { slug: 'forum', zahl: '6', h: 'Forum',
         p: 'Fragen was etwas bedeutet, einen Skill empfehlen, einen False Positive melden. Einsteigerfragen sind der Sinn davon.',
@@ -205,7 +205,7 @@ const T = {
       },
       {
         h: 'Ich installiere Skills von anderen',
-        p: 'Durchsuch den Index, bevor du installierst. Jeder Eintrag trägt ein Urteil, das durch einen echten Scan entstanden ist — nicht per Hand eingetippt.',
+        p: 'Durchsuch den Index, bevor du installierst. Jeder Skill trägt ein Urteil, das durch einen echten Scan entstanden ist — nicht per Hand eingetippt.',
         cta: 'Skill-Index durchsuchen',
       },
       {

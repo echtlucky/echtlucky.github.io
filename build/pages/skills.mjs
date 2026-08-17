@@ -10,14 +10,14 @@ const CATALOG = JSON.parse(readFileSync(join(ROOT, 'content', 'catalog.json'), '
 
 export const meta = {
   en: {
-    title: 'Skill index — every entry carries a scan verdict · Skillry',
+    title: 'Skill index — every skill carries a scan verdict · Skillry',
     description:
-      'A searchable index of agent skills where every entry carries a verdict produced by running AIRLOCK over it, not typed by hand. Submit yours by pull request.',
+      'A searchable index of agent skills where every skill carries a verdict produced by running AIRLOCK over it, not typed by hand. Entries that are not skill files say so. Submit yours by pull request.',
   },
   de: {
-    title: 'Skill-Index — jeder Eintrag trägt ein Scan-Urteil · Skillry',
+    title: 'Skill-Index — jeder Skill trägt ein Scan-Urteil · Skillry',
     description:
-      'Ein durchsuchbarer Index für Agent-Skills, bei dem jeder Eintrag ein Urteil trägt, das durch einen echten AIRLOCK-Scan entstanden ist — nicht per Hand eingetippt. Eigene Skills per Pull Request einreichen.',
+      'Ein durchsuchbarer Index für Agent-Skills, bei dem jeder Skill ein Urteil trägt, das durch einen echten AIRLOCK-Scan entstanden ist — nicht per Hand eingetippt. Einträge, die keine Skill-Datei sind, sagen das. Eigene Skills per Pull Request einreichen.',
   },
 };
 
@@ -26,7 +26,7 @@ const T = {
     eyebrow: 'Skill index',
     h1: 'Every entry says whether it is clean.',
     lede:
-      'Skill lists exist. What none of them tell you is whether a skill is safe to install. Here, every entry carries a verdict that was <strong>produced by running the scanner</strong> — the date and engine version are on the card, and the script that generates them is in the repository.',
+      'Skill lists exist. What none of them tell you is whether a skill is safe to install. Here, every skill carries a verdict that was <strong>produced by running the scanner</strong> — the date and engine version are on the card, and the script that generates them is in the repository. One entry is a registry rather than a skill file; it carries no verdict and says why, because that is not the same thing as a missing one.',
     countOne: 'skill indexed',
     countMany: 'skills indexed',
     updated: 'Verdicts last refreshed',
@@ -44,13 +44,14 @@ const T = {
     view: 'View source',
     scannedOn: 'scanned',
     engine: 'engine',
-    verdicts: { pass: 'pass', review: 'review', block: 'block', unscanned: 'unscanned' },
+    verdicts: { pass: 'pass', review: 'review', block: 'block', unscanned: 'unscanned', unscannable: 'not scannable' },
     verdictHelpH: 'What the verdicts mean',
     verdictHelp: [
       ['pass', 'No rule matched. That is not a guarantee — read the limits before you treat it as one.'],
       ['review', 'It reaches further than it claims to. Worth a deliberate look rather than a skim.'],
       ['block', 'Something certain and serious was found. Do not install it without reading the finding.'],
       ['unscanned', 'Listed but not yet verified. Shown honestly rather than quietly assumed clean.'],
+      ['unscannable', 'There is no skill file to read — the entry is a service or a registry. It says on its card why, because "no verdict" and "nothing to scan" are not the same thing.'],
     ],
     youngH: 'This index is young, and says so',
     youngP:
@@ -66,9 +67,9 @@ const T = {
 
   de: {
     eyebrow: 'Skill-Index',
-    h1: 'Jeder Eintrag sagt, ob er sauber ist.',
+    h1: 'Jeder Skill sagt, ob er sauber ist.',
     lede:
-      'Skill-Listen gibt es. Was keine davon sagt: ob ein Skill sicher zu installieren ist. Hier trägt jeder Eintrag ein Urteil, das durch einen <strong>echten Scan entstanden ist</strong> — Datum und Engine-Version stehen auf der Karte, und das Skript, das sie erzeugt, liegt im Repository.',
+      'Skill-Listen gibt es. Was keine davon sagt: ob ein Skill sicher zu installieren ist. Hier trägt jeder Skill ein Urteil, das durch einen <strong>echten Scan entstanden ist</strong> — Datum und Engine-Version stehen auf der Karte, und das Skript, das sie erzeugt, liegt im Repository. Ein Eintrag ist ein Register und keine Skill-Datei; er trägt kein Urteil und schreibt hin, warum — denn das ist etwas anderes als ein fehlendes.',
     countOne: 'Skill im Index',
     countMany: 'Skills im Index',
     updated: 'Urteile zuletzt aktualisiert',
@@ -86,13 +87,14 @@ const T = {
     view: 'Quelle ansehen',
     scannedOn: 'gescannt',
     engine: 'Engine',
-    verdicts: { pass: 'pass', review: 'review', block: 'block', unscanned: 'ungescannt' },
+    verdicts: { pass: 'pass', review: 'review', block: 'block', unscanned: 'ungescannt', unscannable: 'nicht scannbar' },
     verdictHelpH: 'Was die Urteile bedeuten',
     verdictHelp: [
       ['pass', 'Keine Regel hat angeschlagen. Das ist keine Garantie — lies die Grenzen, bevor du es als eine behandelst.'],
       ['review', 'Greift weiter, als er behauptet. Verdient einen bewussten Blick statt eines Überfliegens.'],
       ['block', 'Etwas Sicheres und Ernstes wurde gefunden. Nicht installieren, ohne den Befund gelesen zu haben.'],
       ['unscanned', 'Gelistet, aber noch nicht geprüft. Ehrlich ausgewiesen statt still als sauber angenommen.'],
+      ['unscannable', 'Es gibt keine Skill-Datei zu lesen — der Eintrag ist ein Dienst oder ein Register. Warum, steht auf der Karte: „kein Urteil“ und „nichts zu prüfen“ sind nicht dasselbe.'],
     ],
     youngH: 'Dieser Index ist jung, und sagt das auch',
     youngP:
@@ -120,7 +122,8 @@ function payload(lang) {
     tools: s.tools ?? [],
     title: s.title?.[lang] ?? s.title?.en ?? '',
     desc: s.description?.[lang] ?? s.description?.en ?? '',
-    verdict: s.scan?.verdict ?? 'unscanned',
+    verdict: s.scan?.verdict ?? (s.unscannable ? 'unscannable' : 'unscanned'),
+    unscannable: s.unscannable?.[lang] ?? s.unscannable?.en ?? null,
     findings: s.scan?.findings ?? null,
     reaches: s.scan?.reaches ?? [],
     date: s.scan?.date ?? null,
@@ -245,6 +248,8 @@ export function script(lang) {
     meta.push(L.declares + ': ' + (s.tools.length ? esc(s.tools.join(', ')) : L.nothingDeclared));
     if (s.reaches.length) meta.push(L.reaches + ': ' + esc(s.reaches.join(', ')));
     if (s.date) meta.push(L.scannedOn + ' ' + esc(s.date) + ' · ' + L.engine + ' ' + esc(s.engine));
+    // Warum hier nichts zu pruefen ist, steht auf der Karte und nicht nur im Datensatz.
+    if (s.unscannable) meta.push(esc(s.unscannable));
 
     return '<article class="skill verdict-' + v + '">' +
       '<div><h3>' + esc(s.name) + '</h3></div>' +

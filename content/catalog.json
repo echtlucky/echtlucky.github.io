@@ -793,7 +793,11 @@
         "en": "Verifies namespace ownership through GitHub, DNS or HTTP — identity rather than code. A different axis of trust from scanning, and a good one.",
         "de": "Prüft Namespace-Eigentum über GitHub, DNS oder HTTP — Identität statt Code. Eine andere Vertrauensachse als Scannen, und eine gute."
       },
-      "scan": null
+      "scan": null,
+      "unscannable": {
+        "en": "Not a skill file. The registry verifies namespace ownership through GitHub, DNS or HTTP — there is no SKILL.md here for the engine to read.",
+        "de": "Keine Skill-Datei. Das Register prüft Namespace-Eigentum über GitHub, DNS oder HTTP — es gibt hier kein SKILL.md, das die Engine lesen könnte."
+      }
     }
   ]
 }
