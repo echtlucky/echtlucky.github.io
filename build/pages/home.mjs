@@ -264,7 +264,7 @@ const BEREICH_CSS = `
  *
  * Sie ist das Schaufenster. Nur hier laeuft die an den Bildlauf gekoppelte
  * Tiefe im Aufmacher; Produktseiten stehen auf Stufe 2, der Vertrag und das
- * Impressum bleiben still. Die Stufen stehen in `D:/Projekte/UMBAU-PLAN.md`.
+ * Impressum bleiben still. Die Stufen stehen in `docs/UMBAU-PLAN.md`.
  */
 export const bewegung = 3;
 
