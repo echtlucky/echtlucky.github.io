@@ -526,16 +526,81 @@ tr:last-child td { border-bottom: 0; }
 .step h3 { margin-bottom: 0.3rem; }
 
 /* ── footer ─────────────────────────────────────────────────────────────── */
+/*
+ * ══ DER FUSS BESTEHT AUS INSELN, WIE DER KOPF ═════════════════════════════
+ *
+ * Vorher: ein Streifen in --bg-subtle mit Oberkante, darin fuenf Spalten, die
+ * nur durch Abstand getrennt waren. Jetzt traegt jede Spalte ihre eigene
+ * Flaeche, und die Grundzeile darunter ihre eigene. Die Luecken sind der
+ * Entwurf, genau wie oben.
+ *
+ * ══ Und ein Unterschied zum Kopf, der wichtig ist ═════════════════════════
+ *
+ * Der Kopf ist sein eigener Farbraum -- dunkel in BEIDEN Schemata, weil sich
+ * das, was darin steht, danach richtet und nicht danach, ob die Seite hell
+ * ist. Der Fuss steht dagegen AUF der Seite. Seine Inseln gehen deshalb mit
+ * dem Schema mit und nehmen --surface: das ist im Dunklen #161c24 ueber
+ * #0d1117 und im Hellen #ffffff ueber #f6f8fa. In beiden Faellen liegt die
+ * Insel HELLER als ihr Grund und liest sich damit als angehoben.
+ *
+ * Haette ich hier die dunklen Kopf-Token genommen, saesse im hellen Schema
+ * ein schwarzer Block unter einer weissen Seite.
+ *
+ * Der Radius ist derselbe wie oben (--insel-r), damit Kopf und Fuss als
+ * dieselbe Sprache lesbar sind, und die Verweise darin tragen den kleineren
+ * Innenradius.
+ */
 footer.site {
-  border-top: 1px solid var(--border); background: var(--bg-subtle);
-  padding: 44px 0 60px; margin-top: 40px;
+  background: transparent;
+  padding: 12px 0 40px; margin-top: 56px;
 }
-footer.site .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 28px; }
-footer.site h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--fg-subtle); margin-bottom: 0.7rem; }
-footer.site ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
-footer.site a { color: var(--fg-muted); font-size: 0.9rem; }
-footer.site a:hover { color: var(--fg); }
-footer.site .base { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; color: var(--fg-subtle); font-size: 0.84rem; }
+footer.site .cols {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: clamp(8px, 0.9vw, 14px);
+}
+/*
+ * Dieselbe Rezeptur wie .card, und das mit Absicht: --surface, --border,
+ * --e1 UND --sheen.
+ *
+ * Das Innenlicht ist der Teil, den man beim Nachmessen uebersieht. Die
+ * Fuellung allein steht im Dunklen nur 1.1:1 ueber der Seite -- das liest man
+ * kaum. Was die Insel traegt, sind Kante und Oberkantenlicht zusammen, und
+ * genau so steht es auch in DESIGN.md: Tiefe kommt aus Flaechen und Kanten
+ * zuerst, aus Schatten zuletzt.
+ *
+ * Eine eigene, hellere Fuellung nur fuer den Fuss waere die falsche Antwort
+ * gewesen: --surface-2 ist im hellen Schema #f6f8fa und laege damit fast
+ * unsichtbar auf dem weissen Grund. Die Kartenrezeptur ist fuer beide
+ * Schemata schon geloest.
+ */
+footer.site .cols > div,
+footer.site .base {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--insel-r);
+  box-shadow: var(--e1), var(--sheen);
+  padding: 18px 18px 20px;
+  transition: border-color var(--mittel) var(--ease), box-shadow var(--mittel) var(--ease);
+}
+footer.site .cols > div:hover { border-color: var(--border-strong); box-shadow: var(--e2), var(--sheen); }
+
+footer.site h4 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--fg-subtle); margin: 0 0 0.7rem; }
+footer.site ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+/* Die Verweise sitzen in der Schale und bekommen deshalb den Innenradius --
+   und einen eigenen Innenabstand, damit die Flaeche beim Ueberfahren nicht
+   an der Schriftkante klebt. */
+footer.site a {
+  color: var(--fg-muted); font-size: 0.9rem;
+  display: block; padding: 5px 8px; margin-inline: -8px;
+  border-radius: var(--insel-r-innen);
+  transition: color var(--kurz) var(--ease), background-color var(--kurz) var(--ease);
+}
+footer.site a:hover { color: var(--fg); background: var(--surface-2); text-decoration: none; }
+footer.site .base {
+  margin-top: clamp(8px, 0.9vw, 14px);
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+  color: var(--fg-subtle); font-size: 0.84rem;
+}
 /* Der Rockstar-Hinweis bekommt eine eigene Zeile, sonst teilt er sich den
    Streifen mit einem Absatz, der dreimal so lang ist, und wird zur Randnotiz.
    **Und er wird ausdruecklich nicht kleiner gesetzt als der Rest**: die Cfx.re
