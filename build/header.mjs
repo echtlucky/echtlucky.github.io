@@ -472,9 +472,10 @@ export function header(lang, current, t, opts = {}) {
       </div>
     </div>
 
+    <div class="lang-switch">${langs}</div>
+
     <div class="gh-actions">
       <a class="gh-quick" id="ghQuick" href="${href(lang, 'forum')}?new=1" hidden>${I_PLUS}<span>${esc(t.quick.newPostShort)}</span></a>
-      <div class="lang-switch">${langs}</div>
       <button class="icon-btn" id="themeBtn" type="button" title="${esc(t.themeLabel)}" aria-label="${esc(t.themeLabel)}">${I_THEME}</button>
       ${authBtn}
     </div>
@@ -523,18 +524,133 @@ export const HEADER_CSS = `
   --hdr-ring: rgba(255,255,255,0.22);
 }
 
+/*
+ * ══ DER KOPF IST KEIN BALKEN MEHR, SONDERN FUENF INSELN ═══════════════════
+ *
+ * Vorher: ein durchgehender Balken mit Volltongrund und Unterkante. Alles
+ * darin lag auf derselben Flaeche, und die Gruppen -- Marke, Navigation,
+ * Sprache, Suche, Aktionen -- waren nur durch Abstand getrennt.
+ *
+ * Jetzt traegt jede Gruppe ihre eigene Flaeche, und **die Luecken dazwischen
+ * sind der Entwurf**. Man sieht die Seite zwischen ihnen durchlaufen; nichts
+ * ist verbunden, weil nichts verbunden gehoert.
+ *
+ * ══ Warum die Inseln in BEIDEN Schemata dunkel sind ═══════════════════════
+ *
+ * Weil der Kopf seit jeher sein eigener Farbraum ist (die Begruendung steht
+ * bei --header-bg): was in ihm steht, richtet sich danach, dass er dunkel
+ * ist, und nicht danach, ob die Seite hell oder dunkel ist. Ein Kopf, der
+ * mitschaltet, braeuchte zwei Saetze Kontrastwerte fuer jedes Element darin.
+ *
+ * Der Grund ist durchscheinend und unterlegt: darunter laeuft der Inhalt
+ * durch, und ohne backdrop-filter waere eine Ueberschrift, die gerade
+ * darunter steht, als Schatten in der Insel zu lesen.
+ *
+ * ══ Doppelrand: Schale und Kern ═══════════════════════════════════════════
+ *
+ * Jede Insel ist eine Schale mit Innenabstand, und was darin liegt, hat einen
+ * KLEINEREN Radius -- ausgerechnet, nicht geschaetzt:
+ *
+ *     innen = aussen - Innenabstand
+ *
+ * Nur dann sind die Kurven konzentrisch. Gleicher Radius innen wie aussen
+ * ergibt an den Ecken eine sich verjuengende Sichel, und die sieht man, auch
+ * wenn man sie nicht benennen kann.
+ */
+:root {
+  /*
+   * EINE Hoehe fuer alle fuenf. Gemessen standen sie vorher auf 36, 40, 44,
+   * 46 und 47.1 px -- jede Insel so hoch, wie ihr Inhalt zufaellig war, und
+   * die Oberkanten damit um 5.5px versetzt. Nebeneinanderliegende Koerper in
+   * fuenf Hoehen liest man als Versehen, nicht als Entwurf. Der Inhalt
+   * zentriert sich in die Hoehe hinein, nicht umgekehrt.
+   */
+  --insel-h: 44px;
+  --insel-r: 15px;
+  --insel-pad: 5px;
+  --insel-r-innen: calc(var(--insel-r) - var(--insel-pad));
+
+  /*
+   * Der Grund der Insel ist HELLER als die dunkle Seite, nicht dunkler.
+   *
+   * Zuerst stand hier rgba(15,20,27,.86) -- gemessen 1.02:1 gegen den
+   * Seitengrund #0d1117. Das ist dieselbe Farbe. Eine Insel, die genau so
+   * dunkel ist wie das Wasser, ist keine Insel; sichtbar war nur der Schatten,
+   * und der allein liest sich als Fleck statt als Koerper.
+   *
+   * Gemessen und danach gewaehlt:
+   *
+   *     rgb(26,32,40)   1.15:1   zu wenig, ahnt man nur
+   *     rgb(33,40,50)   1.27:1   knapp
+   *     rgb(38,46,57)   1.38:1   <- deutlich, ohne sich vorzudraengen
+   *     rgb(44,53,65)   1.53:1   trennt zu hart, der Kopf zerfaellt
+   *
+   * Gegen die weisse Seite sind es 13.7:1 -- im hellen Schema ist die Insel
+   * ein dunkler Koerper auf Papier, und das ist genau richtig: der Kopf ist
+   * sein eigener Farbraum und schaltet nicht mit.
+   */
+  --insel-grund: rgba(38, 46, 57, 0.88);
+  --insel-kante: rgba(255, 255, 255, 0.13);
+  --insel-kante-hell: rgba(255, 255, 255, 0.19);
+  /* Innenlicht an der Oberkante: das ist der Unterschied zwischen einer
+     Flaeche und einem Koerper. */
+  --insel-glanz: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* Zwei Schatten, nie einer -- dieselbe Regel wie im Rest der Seite: ein
+     enger als Auflagekante, ein weiter als Entfernung. Und beide aus dem
+     dunkelsten Blau der Palette statt aus neutralem Schwarz, sonst legt sich
+     ein grauer Hof um jede Insel. */
+  --insel-schatten: 0 1px 2px rgba(1, 4, 9, 0.55), 0 10px 26px -12px rgba(1, 4, 9, 0.8);
+  --insel-schatten-hoch: 0 2px 5px rgba(1, 4, 9, 0.6), 0 24px 52px -18px rgba(1, 4, 9, 0.95);
+
+  /* Eigene Kurve fuer den Kopf: traeger am Anfang, langes Ausschwingen. Sie
+     laesst eine Insel wirken, als haette sie Masse. */
+  --insel-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
 .gh-header {
   position: sticky; top: 0; z-index: 50;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--header-border);
-  transition: box-shadow var(--kurz) var(--ease);
+  background: transparent;
+  padding-block: 10px;
 }
-.gh-header.stuck { box-shadow: 0 6px 24px -10px rgba(0,0,0,0.45); }
 
 .gh-bar {
-  display: flex; align-items: center; gap: 12px;
-  height: var(--hdr-h);
+  display: flex; align-items: center;
+  /* Der Abstand IST die Gestaltung. Er waechst mit der Breite mit, damit die
+     Inseln auf einem grossen Bildschirm nicht zusammenruecken. */
+  gap: clamp(8px, 0.9vw, 14px);
+  min-height: var(--hdr-h);
   padding-inline: var(--hdr-pad);
+}
+
+/* ── die Schale ─────────────────────────────────────────────────────────── */
+
+.gh-logo, .gh-nav, .lang-switch, .gh-findbox, .gh-actions {
+  height: var(--insel-h);
+  box-sizing: border-box;
+  background: var(--insel-grund);
+  border: 1px solid var(--insel-kante);
+  border-radius: var(--insel-r);
+  box-shadow: var(--insel-schatten), var(--insel-glanz);
+  -webkit-backdrop-filter: blur(14px) saturate(1.35);
+  backdrop-filter: blur(14px) saturate(1.35);
+  transition: box-shadow var(--mittel) var(--insel-ease),
+              border-color var(--mittel) var(--insel-ease),
+              transform var(--mittel) var(--insel-ease);
+}
+
+/* Was IN einer Schale liegt, bekommt den kleineren Radius. */
+.gh-navlink, .lang-switch a, .gh-quick, .gh-actions .icon-btn,
+.gh-signin, .gh-avatar { border-radius: var(--insel-r-innen); }
+
+/*
+ * Beim Scrollen sinken die Inseln nicht -- sie heben sich. Der Inhalt
+ * wandert unter ihnen durch, und genau dann muessen sie sich davon absetzen.
+ */
+.gh-header.stuck .gh-logo, .gh-header.stuck .gh-nav, .gh-header.stuck .lang-switch,
+.gh-header.stuck .gh-findbox, .gh-header.stuck .gh-actions {
+  box-shadow: var(--insel-schatten-hoch), var(--insel-glanz);
+  border-color: var(--insel-kante-hell);
 }
 
 /*
@@ -552,7 +668,8 @@ export const HEADER_CSS = `
  *    dadurch der groessere, und genau daran liest man ab, dass Zeichen und
  *    Wort zusammengehoeren und die Navigation etwas anderes ist.
  */
-.gh-logo { display: flex; align-items: center; gap: 15px; color: var(--header-fg); flex: none; margin-right: 22px; }
+.gh-logo { display: flex; align-items: center; gap: 11px; color: var(--header-fg); flex: none;
+  padding: var(--insel-pad) 13px var(--insel-pad) 10px; }
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
 
 /*
@@ -627,7 +744,7 @@ export const HEADER_CSS = `
  * sizes to its content and the widening animation degrades to a fade.
  */
 .gh-nav {
-  display: flex; align-items: center; gap: 2px;
+  display: flex; align-items: center; gap: 2px; padding: var(--insel-pad);
   flex: 0 0 var(--nav-w, auto); max-width: var(--nav-w, none);
   min-width: 0; overflow: hidden;
   /* The one auto margin in the bar. It is what pins the field and the actions
@@ -637,7 +754,10 @@ export const HEADER_CSS = `
 .gh-navlink {
   display: inline-flex; align-items: center; gap: 5px;
   color: var(--header-fg); font-size: 14px; font-weight: 500; white-space: nowrap;
-  padding: 7px 10px; border-radius: var(--radius); opacity: 0.82;
+  /* Kein senkrechter Innenabstand: der Verweis fuellt den Innenraum der
+     Schale ganz aus. Mit eigener Hoehe lief er ueber und wurde beschnitten,
+     weil .gh-nav overflow:hidden traegt. */
+  padding: 0 11px; height: 100%; border-radius: var(--insel-r-innen); opacity: 0.82;
   transition: opacity var(--fast) var(--ease), background var(--fast) var(--ease);
 }
 .gh-navlink:hover, .gh-navlink:focus-visible { opacity: 1; background: var(--hdr-tint); text-decoration: none; }
@@ -647,19 +767,29 @@ export const HEADER_CSS = `
 .gh-navlink[aria-expanded="true"] .gh-caret { transform: rotate(180deg); opacity: 0.9; }
 
 /*
- * A marker that grows out of the open item and lands on the bar's bottom edge,
- * so the panel below reads as hanging off that item rather than off the header.
- * The offset is derived from --hdr-h, not typed, so the 62/56px breakpoint
- * does not need a second copy of this rule.
+ * Der Marker unter dem geoeffneten Punkt.
+ *
+ * Er wuchs frueher aus dem Punkt heraus und landete auf der UNTERKANTE DES
+ * BALKENS, damit das Panel darunter an diesem Punkt zu haengen scheint und
+ * nicht am Kopf. Mit bottom: calc((var(--hdr-h) - 34px) / -2 - 1px) lag er
+ * also ausserhalb des Verweises.
+ *
+ * Seit der Kopf aus Inseln besteht, gibt es diese Unterkante nicht mehr --
+ * und .gh-nav traegt overflow: hidden, also wurde der Marker schlicht
+ * abgeschnitten. Unsichtbar, und dazu 10px Ueberlauf in einer Schale, die
+ * genau 44px hoch sein soll.
+ *
+ * Jetzt sitzt er INNEN, am unteren Rand des Verweises. Die Insel ist das,
+ * woran das Panel haengt; der Marker sagt nur noch, an welchem Punkt davon.
  */
 .gh-navlink { position: relative; }
 .gh-navlink::after {
   content: ''; position: absolute; left: 10px; right: 10px; height: 2px;
-  bottom: calc((var(--hdr-h) - 34px) / -2 - 1px);
+  bottom: 5px;
   /* Der aktive Punkt ist gruen — der dritte kleine Akzent. --marke-auf-dunkel,
      weil der Balken in beiden Schemata dunkel ist; dieselbe Begruendung wie
      beim Zeichen, ausfuehrlich in build/marke.mjs. */
-  border-radius: 2px 2px 0 0; background: var(--marke-auf-dunkel);
+  border-radius: 2px; background: var(--marke-auf-dunkel);
   transform: scaleX(0); transform-origin: 50% 100%; opacity: 0;
   transition: transform var(--kurz) var(--ease), opacity var(--kurz) var(--ease);
 }
@@ -691,17 +821,49 @@ export const HEADER_CSS = `
 
 .gh-findopen { display: none; }
 .gh-findbox {
-  display: flex; align-items: center; gap: 8px;
-  height: 34px; padding: 0 8px 0 10px;
-  background: var(--hdr-tint); border: 1px solid var(--header-border);
-  border-radius: var(--radius); color: var(--header-fg);
-  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease),
-              box-shadow var(--fast) var(--ease);
+  display: flex; align-items: center; gap: 9px;
+  padding: 0 var(--insel-pad) 0 13px;
+  color: var(--header-fg);
 }
-.gh-findbox:hover { border-color: var(--hdr-ring); }
+.gh-findbox:hover { border-color: var(--insel-kante-hell); }
+/*
+ * ══ DIE SUCHE TRITT NACH VORN ═════════════════════════════════════════════
+ *
+ * Angeklickt ist sie nicht mehr eine Insel unter fuenf, sondern DIE Insel:
+ * sie hebt sich, wird heller umrandet und legt sich ueber die anderen. Die
+ * uebrigen treten zurueck -- nicht indem sie verschwinden, sondern indem sie
+ * an Saettigung und Deckkraft verlieren.
+ *
+ * Das ist der Unterschied zwischen "ein Feld hat Fokus" und "ich suche
+ * gerade". Ein Fokusring allein sagt das Erste; die Tiefenstaffelung sagt
+ * das Zweite, und darum geht es hier.
+ *
+ * Bewegt wird nur transform und opacity -- filter auf einer Flaeche mit
+ * backdrop-filter kostet sonst bei jedem Bild eine Neuberechnung.
+ */
 .gh-header.finding .gh-findbox {
-  background: rgba(0,0,0,0.28); border-color: var(--hdr-ring);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  border-color: var(--insel-kante-hell);
+  box-shadow: var(--insel-schatten-hoch), var(--insel-glanz),
+              0 0 0 3px rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+}
+.gh-header.finding .gh-find { position: relative; z-index: 3; }
+
+.gh-header.finding .gh-logo,
+.gh-header.finding .lang-switch,
+.gh-header.finding .gh-actions {
+  opacity: 0.55;
+  transition: opacity var(--mittel) var(--insel-ease);
+}
+
+/*
+ * Haptik: eine Insel, die man druecken kann, gibt nach. 0.985 und nicht 0.95
+ * -- eine Leiste ist kein Knopf, sie soll nachgeben und nicht einknicken.
+ */
+.gh-logo:active, .lang-switch:active, .gh-findbox:active { transform: scale(0.985); }
+@media (prefers-reduced-motion: reduce) {
+  .gh-logo:active, .lang-switch:active, .gh-findbox:active { transform: none; }
+  .gh-header.finding .gh-findbox { transform: none; }
 }
 .gh-findicon { display: flex; opacity: 0.6; flex: none; }
 .gh-findinput {
@@ -718,7 +880,7 @@ export const HEADER_CSS = `
 .gh-findclose:hover { opacity: 1; }
 
 /* ── actions ────────────────────────────────────────────────────────────── */
-.gh-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.gh-actions { display: flex; align-items: center; gap: 4px; flex: none; padding: var(--insel-pad); }
 
 .gh-quick {
   display: inline-flex; align-items: center; gap: 6px;
@@ -742,7 +904,7 @@ export const HEADER_CSS = `
   color: var(--header-fg); cursor: pointer; padding: 0;
 }
 .icon-btn:hover { background: var(--hdr-tint-2); }
-.lang-switch { display: flex; gap: 2px; align-items: center; }
+.lang-switch { display: flex; gap: 2px; align-items: center; padding: var(--insel-pad); flex: none; }
 .lang-switch a { color: var(--header-fg); padding: 5px 7px; border-radius: var(--radius); opacity: 0.5; line-height: 1; }
 .lang-switch a svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
 .lang-switch a:hover { opacity: 1; background: var(--hdr-tint); text-decoration: none; }
@@ -767,19 +929,38 @@ export const HEADER_CSS = `
 .gh-signin.unverified .gh-avatar { background: linear-gradient(140deg, var(--accent-idx), var(--danger)); }
 
 /* ── the one drop layer ─────────────────────────────────────────────────── */
-.gh-drop { position: absolute; left: 0; right: 0; top: 100%; pointer-events: none; }
+/*
+ * ══ AUCH DAS PANEL IST EINE INSEL ═════════════════════════════════════════
+ *
+ * Es war eine durchgehende Platte von Kante zu Kante, die unten am Kopf klebte
+ * und mit einer Unterkante abschloss -- gebaut fuer den Balken, der darueber
+ * lag. Neben fuenf freistehenden Inseln liest sich das als der eine Teil, den
+ * jemand vergessen hat.
+ *
+ * Jetzt haengt es frei: eingerueckt auf dieselbe Achse wie die Inseln, mit
+ * demselben Radius, demselben Schatten, einem Abstand nach oben. Man sieht
+ * unter dem Kopf hindurch, und das Panel schwebt darunter statt daran zu
+ * haengen.
+ */
+.gh-drop {
+  position: absolute; top: 100%; pointer-events: none;
+  left: var(--hdr-pad); right: var(--hdr-pad);
+  padding-top: 8px;
+}
 .gh-panel {
   display: none; opacity: 0; transform: translateY(-8px);
   pointer-events: auto;
   background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--e3);
+  border: 1px solid var(--border);
+  border-radius: var(--insel-r);
+  box-shadow: var(--insel-schatten-hoch);
   transition: opacity var(--kurz) var(--ease), transform var(--kurz) var(--ease);
 }
 .gh-panel.on { display: block; }
 /* A five-column overview on a 1400x600 laptop is taller than what is left of
    the screen. Every panel scrolls inside itself rather than off the bottom. */
-.gh-panel.mega { max-height: calc(100dvh - var(--hdr-h)); overflow-y: auto; overscroll-behavior: contain; }
+.gh-panel.mega { max-height: calc(100dvh - var(--hdr-h) - 34px); overflow-y: auto; overscroll-behavior: contain;
+  border-radius: var(--insel-r); }
 .gh-panel.on.show { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .gh-panel { transition: none; transform: none; } }
 
