@@ -163,6 +163,29 @@ ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+/*
+ * WARUM DIESE REGEL WICHTIG IST — UND WARUM MIT !important
+ *
+ * Das hidden-Attribut wirkt nur ueber die Standardregel des Browsers,
+ * [hidden] { display: none }. Die hat die niedrigste Stufe, die es gibt.
+ * JEDE eigene display-Regel schlaegt sie — auch eine so harmlose wie
+ * .gh-signin { display: inline-flex }.
+ *
+ * Genau das ist passiert: im Kopf standen der Anmelde-Link und der
+ * Konto-Knopf. Das Skript setzt brav das eine auf hidden und das andere
+ * nicht. Sichtbar waren trotzdem beide — angemeldet stand rechts oben
+ * "Anmelden" NEBEN dem eigenen Namen, abgemeldet zweimal "Anmelden".
+ *
+ * Das Tueckische daran: im Skript ist nichts falsch, und getComputedStyle
+ * meldet display: inline-flex, was ja auch stimmt. Man sieht den Fehler nur
+ * auf dem Bildschirm.
+ *
+ * !important ist hier kein Notnagel, sondern die Bedeutung selbst: hidden
+ * heisst "das gibt es fuer diesen Zustand nicht". Etwas, das es nicht gibt,
+ * kann kein Layout mehr ueberstimmen.
+ */
+[hidden] { display: none !important; }
 /* Die eine Ruheregel fuer die ganze Seite. Sie steht in build/marke.mjs, weil
    sie zur Bewegung gehoert und nicht zu dieser Seite — Portal und Panel
    bekommen dieselbe. Die drei aelteren Bloecke in theme-extra.mjs schalten

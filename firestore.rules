@@ -56,6 +56,31 @@ service cloud.firestore {
       return field == request.time;
     }
 
+    // A vote changes the running total on the parent document, and nothing
+    // else. The step is bounded to what a single vote can actually do:
+    //
+    //   +1 / -1   a first vote, or taking one back
+    //   +2 / -2   flipping from down to up or back
+    //
+    // BE HONEST ABOUT WHAT THIS DOES AND DOES NOT BUY:
+    //
+    // It stops the obvious attack — opening the console and writing
+    // score = 9999. It does NOT stop somebody who scripts the two writes in a
+    // loop, because with no server in between, the count and the permission to
+    // change it necessarily live on the client.
+    //
+    // The real fix is to move counting to the licence service on the VPS,
+    // where the vote document is the input and the total is never written by a
+    // browser. Until that exists, the vote document per uid is the honest part
+    // (it makes double-voting a rewrite, not an addition) and this bound is
+    // the cheap part. Anyone reading a score should know it is only as good as
+    // that.
+    function scoreStepOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['score'])
+        && request.resource.data.score is int
+        && (request.resource.data.score - resource.data.score) in [1, -1, 2, -2];
+    }
+
     // ── profiles ───────────────────────────────────────────────────────────
     match /users/{uid} {
       allow read: if true;
@@ -100,11 +125,27 @@ service cloud.firestore {
             && textOk(request.resource.data.body, 10, 8000))
         || request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['replyCount', 'lastActivity'])
+        || scoreStepOnly()
       );
 
       // Nothing is hard-deleted from the client. Removing a thread means
       // setting `deleted`, which keeps the record and the moderation trail.
       allow delete: if false;
+
+      // ── votes ────────────────────────────────────────────────────────────
+      //
+      // One document per voter, named after their uid. That is the whole
+      // anti-double-vote mechanism, and it is enforced here rather than in the
+      // interface: a hidden button is a suggestion, a document id is a fact.
+      // Voting twice means writing the same path twice, which overwrites
+      // instead of adding.
+      match /votes/{uid} {
+        allow read: if true;
+        allow create, update: if verified() && isSelf(uid)
+          && request.resource.data.v is int
+          && request.resource.data.v in [1, -1];
+        allow delete: if verified() && isSelf(uid);
+      }
 
       // ── replies ──────────────────────────────────────────────────────────
       match /posts/{postId} {
@@ -122,9 +163,18 @@ service cloud.firestore {
               && request.resource.data.authorUid == resource.data.authorUid
               && request.resource.data.createdAt == resource.data.createdAt
               && textOk(request.resource.data.body, 1, 8000))
+          || scoreStepOnly()
         );
 
         allow delete: if false;
+
+        match /votes/{uid} {
+          allow read: if true;
+          allow create, update: if verified() && isSelf(uid)
+            && request.resource.data.v is int
+            && request.resource.data.v in [1, -1];
+          allow delete: if verified() && isSelf(uid);
+        }
       }
     }
 
