@@ -5,7 +5,7 @@ import { href, SITE } from '../layout.mjs';
  *
  * Auftritte beim Eintreten und Hover-Tiefe, aber KEINE an den Bildlauf
  * gekoppelte Bewegung: diese Seite wird gelesen, nicht bestaunt. Das
- * Schaufenster ist die Startseite. Stufen: `D:/Projekte/UMBAU-PLAN.md`.
+ * Schaufenster ist die Startseite. Stufen: `docs/UMBAU-PLAN.md`.
  */
 export const bewegung = 2;
 

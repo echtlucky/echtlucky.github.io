@@ -181,7 +181,7 @@ addEventListener('DOMContentLoaded', function(){
   // auffaelligste Effekt, den es hier gibt: er laeuft bei jedem Scrollschritt
   // und zieht den Blick dauerhaft. Auf dem Schaufenster ist das richtig, auf
   // einer Produktseite, die jemand LIEST, nicht. Die Stufen stehen in
-  // D:/Projekte/UMBAU-PLAN.md.
+  // docs/UMBAU-PLAN.md.
   //
   // Nur eine Verschiebung, kein Massstab: eine skalierte Welle wird unscharf.
   var welle = STUFE >= 3 ? document.querySelector('.hero .hero-wave') : null;
