@@ -571,6 +571,27 @@ ${HEADER_JS({
   } : null,
   urls: {
     forum: href(page.lang, 'forum'),
+    /*
+     * ZWEI FELDER, DIE HIER GEFEHLT HABEN — UND ES IST DASSELBE MUSTER WIE
+     * DAMALS BEI fb.sdk
+     *
+     * Das Kopfskript liest C.urls.newPost und C.urls.alt. Beide gab es nicht.
+     * Ein fehlendes Feld ist in JavaScript kein Fehler, sondern undefined, und
+     * undefined in einer Adresse ergibt eine gueltige Adresse:
+     *
+     *     quick.href = C.urls.newPost   ->   https://skillry.de/undefined
+     *
+     * Der Knopf "+ POST" oben rechts fuehrte damit auf die 404-Seite, und der
+     * Sprungbefehl fuer den Sprachwechsel ebenso. Nichts hat gewarnt: kein
+     * Build-Fehler, kein Konsolenfehler, keine rote Zeile. Nur eine Seite, die
+     * hoeflich sagt, dass es sie nicht gibt.
+     *
+     * `alt` heisst dasselbe wie `other` — der eine Name steht in der Suche,
+     * der andere in der Sprachumschaltung. Statt einen umzubenennen und den
+     * zweiten Fundort zu uebersehen, stehen jetzt beide da.
+     */
+    newPost: href(page.lang, 'forum') + '?new=1',
+    alt: href(page.lang === 'de' ? 'en' : 'de', page.slug),
     other: href(page.lang === 'de' ? 'en' : 'de', page.slug),
     index: '/search-index.json',
   },
