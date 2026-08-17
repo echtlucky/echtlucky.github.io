@@ -117,6 +117,8 @@ const T = {
     fmtHint: 'Two stars for bold, one for italic, two underscores for underline.',
     noComments: 'No answers yet. Yours would be the first.',
     answersH: 'Answers',
+    pinned: 'Pinned',
+    answer: 'Answer',
     replyOne: 'reply',
     back: '← All threads',
     loading: 'Loading…',
@@ -224,6 +226,8 @@ const T = {
     fmtHint: 'Zwei Sterne fett, einer kursiv, zwei Unterstriche unterstrichen.',
     noComments: 'Noch keine Antworten. Deine wäre die erste.',
     answersH: 'Antworten',
+    pinned: 'Angepinnt',
+    answer: 'Antworten',
     replyOne: 'Antwort',
     back: '← Alle Themen',
     loading: 'Lädt…',
@@ -408,6 +412,51 @@ const BEITRAG_CSS = `
 }
 .fo-tat-knopf:hover { border-color: var(--border-strong); color: var(--fg); }
 .fo-tat-knopf.klein { margin-left: auto; padding: 2px 8px; font-size: 0.74rem; }
+
+/* ── Die Karte in der Liste ─────────────────────────────────────────────── */
+/*
+ * Dieselbe Aufteilung wie beim Beitrag selbst: Stimmspalte links, Inhalt
+ * rechts. Wer aus der Liste auf einen Beitrag klickt, findet die Pfeile an
+ * derselben Stelle wieder — eine Oberflaeche, die ihre Teile beim Wechsel
+ * verschiebt, muss zweimal gelernt werden.
+ */
+.fo-karte {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr);
+  gap: 16px; align-items: start;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface); padding: 16px 18px; margin-bottom: 12px;
+  transition: border-color var(--kurz) var(--ease);
+}
+.fo-karte:hover { border-color: var(--border-strong); }
+/* Angepinnt bekommt eine Kante in der Markenfarbe und keinen anderen Grund:
+   eine zweite Flaechenfarbe in einer Liste liest sich als anderer Inhaltstyp. */
+.fo-karte.genadelt { border-left: 3px solid var(--nexus); }
+.fo-karte-in { min-width: 0; }
+.fo-karte-kopf { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
+.fo-nadel {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.09em;
+  text-transform: uppercase; color: var(--marke-auf-flaeche);
+  background: var(--marke-flaeche); padding: 1px 7px; border-radius: 999px;
+}
+.fo-karte-titel { font-size: 1.06rem; line-height: 1.35; margin: 0 0 6px; }
+.fo-karte-titel a { color: var(--fg); }
+.fo-karte-titel a:hover { color: var(--link); text-decoration: none; }
+/*
+ * Zwei Zeilen und dann Schluss. Ein Auszug, der bei einem langen Beitrag
+ * zwanzig Zeilen fuellt, ist kein Auszug mehr, und die Liste wird unlesbar —
+ * man scrollt dann durch Beitraege statt durch Titel.
+ */
+.fo-auszug {
+  font-size: 0.88rem; line-height: 1.55; color: var(--fg-muted); margin: 0 0 11px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.fo-karte-fuss {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--fg-subtle);
+}
+.fo-karte-wer { color: var(--fg-muted); }
+.fo-karte-punkt { opacity: 0.5; }
+.fo-antworten { margin-left: auto; }
 
 .fo-abschnitt {
   display: flex; align-items: baseline; gap: 10px;
@@ -858,6 +907,40 @@ export function script(lang) {
     '    return t;',
     '  }',
     '',
+    '  /*',
+    '   * Der Auszug fuer die Liste: reiner Text, keine Auszeichnung.',
+    '   *',
+    '   * Bewusst NICHT mark() mit anschliessendem Abschneiden. Ein Auszug, der',
+    '   * mitten in einer Liste oder einem Codeblock endet, reisst das Markup auf,',
+    '   * und ein halb geschlossenes ul verschiebt alles darunter. Hier werden die',
+    '   * Zeichen entfernt statt gedeutet.',
+    '   */',
+    '  function auszug(roh, laenge) {',
+    '    var t = String(roh || "");',
+    '    var BT = String.fromCharCode(96);',
+    '    /* Codebloecke ganz weg: in einer Zeile ergeben sie Kauderwelsch. */',
+    '    t = t.replace(new RegExp(BT + BT + BT + "[^" + BT + "]*" + BT + BT + BT, "g"), " ");',
+    '    t = t.replace(/\\[([^\\]]{1,120})\\]\\([^)]*\\)/g, "$1");',
+    '    /* Hier steht ein rohes Groesserzeichen und nicht &gt;: auszug()',
+    '       bekommt den Text, wie er getippt wurde. mark() escapt zuerst,',
+    '       diese Funktion nicht — und die Regel muss zu ihrer Eingabe',
+    '       passen, nicht zur Eingabe der Nachbarfunktion. */',
+    '    t = t.replace(/^ *(#{1,6}|>|[-*+]|\\d+[.)]) */gm, "");',
+    '    /* {1,} statt einem Plus: beim Erzeugen dieser Datei ist +~ ein',
+    '       Marker fuer ein escaptes Anfuehrungszeichen, und das Plus im',
+    '       Muster wurde als sein Anfang gelesen. Derselbe Marker, dieselbe',
+    '       Falle wie schon bei der Tilde. */',
+    '    t = t.replace(new RegExp("[*_" + BT + "]{1,}", "g"), "");',
+    '    t = t.replace(new RegExp(String.fromCharCode(126, 126), "g"), "");',
+    '    t = t.replace(/^ *-{3,} *$/gm, " ").replace(/\\s+/g, " ").trim();',
+    '    if (t.length <= laenge) return t;',
+    '    /* An der Wortgrenze abschneiden. Mitten im Wort zu kappen liest sich wie',
+    '       ein Fehler, nicht wie eine Kuerzung. */',
+    '    var kurz = t.slice(0, laenge);',
+    '    var luecke = kurz.lastIndexOf(" ");',
+    '    return (luecke > laenge * 0.6 ? kurz.slice(0, luecke) : kurz) + " …";',
+    '  }',
+    '',
     '  function mark(s) {',
     '    var zeilen = esc(s).split(/\\r?\\n/);',
     '    var aus = [], liste = null, code = null, absatz = [];',
@@ -1302,18 +1385,89 @@ export function script(lang) {
     '      if (!box) return;',
     '      if (snap.empty) { box.innerHTML = "<div class=\\"empty\\">" + esc(L.emptyCat) + "</div>"; return; }',
     '      var html = "";',
-    '      snap.forEach(function (doc) {',
+    '      /*',
+    '       * ANGEPINNTES ZUERST — und zwar hier, nicht in der Abfrage.',
+    '       *',
+    '       * orderBy(pinned) zusammen mit orderBy(lastActivity) verlangt in',
+    '       * Firestore einen zusammengesetzten Index, der angelegt und',
+    '       * ausgeliefert werden muss. Fuer eine Handvoll Beitraege ist das',
+    '       * Aufwand ohne Gegenwert.',
+    '       *',
+    '       * Ehrlich zur Grenze: sortiert wird nur innerhalb der geladenen',
+    '       * fuenfzig. Ein angepinnter Beitrag, der aus diesem Fenster',
+    '       * herausfaellt, kommt nicht mehr nach oben — dann braucht es den',
+    '       * Index. Bis dahin waere er eine Vorsorge fuer einen Fall, den es',
+    '       * noch nicht gibt.',
+    '       */',
+    '      var reihe = [];',
+    '      snap.forEach(function (doc) { reihe.push(doc); });',
+    '      reihe.sort(function (x, y) {',
+    '        var px = x.data().pinned ? 1 : 0, py = y.data().pinned ? 1 : 0;',
+    '        return py - px;',
+    '      });',
+    '',
+    '      var ids = [];',
+    '      reihe.forEach(function (doc) {',
     '        var d = doc.data();',
     '        var n = d.replyCount || 0;',
     '        var label = (CATS.filter(function (c) { return c.id === d.category; })[0] || {}).label || d.category;',
-    '        html += "<article class=\\"skill\\">" +',
-    '          "<div><h3><a href=\\"?t=" + esc(doc.id) + "\\">" + esc(d.deleted ? L.deleted : d.title) + "</a></h3></div>" +',
-    '          "<span class=\\"verdict v-unscanned\\">" + esc(label) + "</span>" +',
-    '          "<div class=\\"meta\\">" + esc(d.authorName || "?") + "<span>·</span>" + when(d.createdAt) +',
-    '          "<span>&middot;</span>" + n + " " + esc(n === 1 ? L.replyOne : L.replies) +',
-    '          "<span>&middot;</span>" + (d.score || 0) + " &#9650;</div></article>";',
+    '        var wer = d.authorName || "?";',
+    '        var text = d.deleted ? "" : auszug(d.body, 180);',
+    '        ids.push(doc.id);',
+    '',
+    '        html += "<article class=\\"fo-karte" + (d.pinned ? " genadelt" : "") + "\\" data-thread=\\"" + esc(doc.id) + "\\">" +',
+    '          stimmleiste(d.score, 0) +',
+    '          "<div class=\\"fo-karte-in\\">" +',
+    '          "<div class=\\"fo-karte-kopf\\"><span class=\\"fo-kat\\">" + esc(label) + "</span>" +',
+    '          (d.pinned ? "<span class=\\"fo-nadel\\">" + esc(L.pinned) + "</span>" : "") +',
+    '          "</div>" +',
+    '          "<h3 class=\\"fo-karte-titel\\"><a href=\\"?t=" + esc(doc.id) + "\\">" +',
+    '          esc(d.deleted ? L.deleted : d.title) + "</a></h3>" +',
+    '          (text ? "<p class=\\"fo-auszug\\">" + esc(text) + "</p>" : "") +',
+    '          "<div class=\\"fo-karte-fuss\\">" +',
+    '          "<span class=\\"fo-avatar klein\\" aria-hidden=\\"true\\">" + esc(wer.slice(0, 2).toUpperCase()) + "</span>" +',
+    '          "<span class=\\"fo-karte-wer\\">" + esc(wer) + "</span>" +',
+    '          "<span class=\\"fo-karte-punkt\\">&middot;</span>" + when(d.createdAt) +',
+    '          "<span class=\\"fo-karte-punkt\\">&middot;</span>" + n + " " + esc(n === 1 ? L.replyOne : L.replies) +',
+    '          /* Der Antworten-Knopf traegt #schreiben mit. Auf der Beitragsseite',
+    '             springt der Zeiger damit gleich ins Feld — ein Knopf, der nur zur',
+    '             Seite fuehrt und einen dort suchen laesst, ist ein halber Knopf. */',
+    '          "<a class=\\"fo-tat-knopf fo-antworten\\" href=\\"?t=" + esc(doc.id) + "#schreiben\\">" + esc(L.answer) + "</a>" +',
+    '          "</div></div></article>";',
     '      });',
     '      box.innerHTML = html;',
+    '',
+    '      /* Stimmen auch in der Liste. Die eigenen Stimmen kommen in EINEM Rutsch',
+    '         fuer alle sichtbaren Karten — nacheinander waeren es gleich viele',
+    '         Abfragen, aber die Pfeile sprangen sichtbar einer nach dem anderen. */',
+    '      [].forEach.call(box.querySelectorAll(".fo-karte"), function (art) {',
+    '        var id = art.dataset.thread;',
+    '        var leiste = art.querySelector(".fo-stimmen");',
+    '        if (!leiste) return;',
+    '        var stand = { wert: 0 };',
+    '        [].forEach.call(leiste.querySelectorAll(".fo-pfeil"), function (kn) {',
+    '          kn.addEventListener("click", function () {',
+    '            var wunsch = Number(kn.dataset.v);',
+    '            var neu = stand.wert === wunsch ? 0 : wunsch;',
+    '            var alt = stand.wert;',
+    '            stimmeSetzen(["threads", id], alt, neu).then(function (ok) {',
+    '              if (!ok) return;',
+    '              stand.wert = neu;',
+    '              [].forEach.call(leiste.querySelectorAll(".fo-pfeil"), function (x) {',
+    '                x.setAttribute("aria-pressed", String(Number(x.dataset.v) === neu));',
+    '              });',
+    '            });',
+    '          });',
+    '        });',
+    '        if (user) {',
+    '          fb.getDoc(fb.doc(db, "threads", id, "votes", user.uid)).then(function (dd) {',
+    '            stand.wert = dd.exists() ? (dd.data().v || 0) : 0;',
+    '            [].forEach.call(leiste.querySelectorAll(".fo-pfeil"), function (x) {',
+    '              x.setAttribute("aria-pressed", String(Number(x.dataset.v) === stand.wert));',
+    '            });',
+    '          }, function () {});',
+    '        }',
+    '      });',
     '    }, function () {',
     '      var box = document.getElementById("threads");',
     '      if (box) box.innerHTML = "<div class=\\"empty\\">" + esc(L.errGeneric) + "</div>";',
@@ -1415,6 +1569,7 @@ export function script(lang) {
     '   * Die Adresse ?t=<id> gab es vorher schon. Was gefehlt hat, war die Gestalt,',
     '   * die dazu passt.',
     '   */',
+    '  var gesprungen = false;',
     '  function renderThread(id) {',
     '    root.innerHTML = "<p class=\\"muted\\">" + esc(L.loading) + "</p>";',
     '    var ref = fb.doc(db, "threads", id);',
@@ -1508,6 +1663,17 @@ export function script(lang) {
     '',
     '      werkzeugeVerdrahten(root);',
     '      vorschauVerdrahten(root, "rb", "rbVor", "rbVorFlaeche");',
+    '      /* Wer aus der Liste auf Antworten geklickt hat, will tippen und nicht',
+    '         suchen. #schreiben steht dann in der Adresse und der Zeiger landet',
+    '         im Feld — einmal, nicht bei jedem Neuzeichnen des Themas. */',
+    '      if (location.hash === "#schreiben" && !gesprungen) {',
+    '        gesprungen = true;',
+    '        var feld = document.getElementById("rb");',
+    '        if (feld) {',
+    '          feld.scrollIntoView({ block: "center", behavior: "smooth" });',
+    '          feld.focus({ preventScroll: true });',
+    '        }',
+    '      }',
     '',
     '      var rb = document.getElementById("replyBtn");',
     '      if (rb) rb.addEventListener("click", function (e) {',
