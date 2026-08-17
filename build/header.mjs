@@ -1098,13 +1098,29 @@ export const HEADER_CSS = `
 @media (max-width: 1200px) {
   .gh-nav { display: none; }
   .gh-find { margin-left: auto; }   /* the nav's auto margin went with it */
+  /*
+   * Burger und Suchknopf sind auf schmalen Geraeten EIGENE INSELN.
+   *
+   * Sie standen vorher auf dem Balken und brauchten nur eine Kante. Den Balken
+   * gibt es nicht mehr -- sie hingen dadurch als leere Kaesten im Nichts, und
+   * im hellen Schema sah man zwei weisse Quadrate ohne erkennbaren Zweck.
+   *
+   * Sie bekommen also dieselbe Schale wie die uebrigen Gruppen: gleiche Hoehe,
+   * gleicher Radius, gleicher Schatten. Auf dem Telefon sind sie die Gruppe.
+   */
   .gh-burger {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; border-radius: var(--radius); order: -1;
-    border: 1px solid var(--header-border); background: var(--hdr-tint);
+    width: var(--insel-h); height: var(--insel-h); order: -1;
+    border-radius: var(--insel-r);
+    border: 1px solid var(--insel-kante); background: var(--insel-grund);
+    box-shadow: var(--insel-schatten), var(--insel-glanz);
+    -webkit-backdrop-filter: blur(14px) saturate(1.35);
+    backdrop-filter: blur(14px) saturate(1.35);
     color: var(--header-fg); cursor: pointer; padding: 0;
+    transition: border-color var(--mittel) var(--insel-ease);
   }
-  .gh-burger:hover { background: var(--hdr-tint-2); }
+  .gh-burger:hover { border-color: var(--insel-kante-hell); }
+  .gh-burger:active { transform: scale(0.985); }
   .mega-in { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
   .gh-panel.mega { max-height: calc(100dvh - var(--hdr-h)); overflow-y: auto; }
 }
@@ -1129,10 +1145,15 @@ export const HEADER_CSS = `
   .gh-findbox { display: none; }
   .gh-findopen {
     display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; border-radius: var(--radius);
-    border: 1px solid var(--header-border); background: var(--hdr-tint);
+    width: var(--insel-h); height: var(--insel-h);
+    border-radius: var(--insel-r);
+    border: 1px solid var(--insel-kante); background: var(--insel-grund);
+    box-shadow: var(--insel-schatten), var(--insel-glanz);
+    -webkit-backdrop-filter: blur(14px) saturate(1.35);
+    backdrop-filter: blur(14px) saturate(1.35);
     color: var(--header-fg); cursor: pointer; padding: 0;
   }
+  .gh-findopen:active { transform: scale(0.985); }
   .gh-header.finding .gh-find {
     position: absolute; inset: 0 var(--hdr-pad) auto; height: var(--hdr-h);
     display: flex; align-items: center; z-index: 2;
