@@ -1123,6 +1123,38 @@ export const HEADER_JS = (cfg) => `
       closeTimer = setTimeout(function () { closeDrop(false); }, 220);
     });
     head.addEventListener('mouseenter', function () { clearTimeout(closeTimer); });
+
+    /*
+     * Drei Wege aus dem Menue heraus, die mouseleave auf dem Kopf NICHT
+     * meldet — und an denen das Panel deshalb offen stehenblieb:
+     *
+     *   1. Der Zeiger verlaesst das Fenster nach oben, in die Leiste des
+     *      Browsers. Je nach Weg und Geschwindigkeit bekommt der Kopf dabei
+     *      kein mouseleave, weil der Zeiger das Dokument verlaesst statt ein
+     *      Element.
+     *   2. Es wird gescrollt. Das Rad bewegt den Zeiger nicht, also feuert
+     *      gar nichts — der Kopf bleibt kleben, das Panel steht ueber dem
+     *      Inhalt, und der Zeiger ist laengst woanders.
+     *   3. Der Tab wird gewechselt. Beim Zurueckkommen steht das Menue
+     *      immer noch offen, und niemand weiss mehr, warum.
+     *
+     * Alle drei schliessen nur ein per Hover geoeffnetes Panel. Was jemand
+     * ANGEKLICKT hat (sticky), bleibt stehen — das ist eine Entscheidung
+     * und keine Zeigerbewegung.
+     */
+    document.addEventListener('mouseleave', function () {
+      if (!openId || sticky) return;
+      closeTimer = setTimeout(function () { closeDrop(false); }, 220);
+    });
+
+    addEventListener('scroll', function () {
+      if (!openId || sticky) return;
+      closeDrop(false);
+    }, { passive: true });
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden && openId && !sticky) closeDrop(false);
+    });
   }
 
   if (burger) burger.addEventListener('click', function () {
