@@ -513,17 +513,12 @@ export function body(lang) {
           <button type="button" class="btn an-go" id="anDone">${esc(t.done)}</button>
         </div>
 
-        <div data-an-sicht="da" hidden>
-          <div class="an-wer">
-            <div class="an-avatar" id="anAvatar" aria-hidden="true"></div>
-            <h1 class="an-kopf">${esc(t.signedInH)}</h1>
-            <p class="an-wer-mail" id="anWerMail"></p>
-            <a class="btn btn-primary" href="https://lizenz.skillry.de/">${esc(t.toPortal)}</a>
-            <a class="btn" href="${href(lang, 'forum')}">${esc(t.toForum)}</a>
-            <button type="button" class="btn" id="anOut">${esc(t.signOut)}</button>
-          </div>
-        </div>
-
+        <!--
+          Die Ansicht "angemeldet" ist hier bewusst NICHT mehr vorhanden.
+          Wer angemeldet ist, wird zur Kontoverwaltung weitergeleitet — und
+          Markup, das nie zu sehen ist, wird beim naechsten Umbau gepflegt,
+          obwohl es niemanden mehr erreicht.
+        -->
       </div>
     </div>
 
@@ -562,6 +557,7 @@ export function body(lang) {
 export function script(lang) {
   if (!CONFIGURED) return '';
   const t = T[lang] || T.de;
+  const kontoZiel = href(lang, 'account');
   const L = JSON.stringify({
     submitIn: t.submitIn,
     submitUp: t.submitUp,
@@ -709,11 +705,7 @@ export function script(lang) {
     '      });',
     '    });',
     '  });',
-    '  var out = document.getElementById("anOut");',
-    '  if (out) out.addEventListener("click", function () {',
-    '    A.ensure().then(function (k) { return k.fb.signOut(k.auth); });',
-    '  });',
-    '',
+
     '  /*',
     '   * Wohin danach.',
     '   *',
@@ -735,10 +727,18 @@ export function script(lang) {
     '        u.providerData[0].providerId === "password") { sicht("pruefen"); return; }',
     '    var z = ziel();',
     '    if (z) { location.replace(z); return; }',
-    '    var n = u.displayName || u.email || "?";',
-    '    document.getElementById("anAvatar").textContent = n.charAt(0).toUpperCase();',
-    '    document.getElementById("anWerMail").textContent = u.email || "";',
-    '    sicht("da");',
+    '    /*',
+    '     * Ohne Ziel geht es zur Kontoverwaltung.',
+    '     *',
+    '     * Angemeldet hat diese Seite keine Aufgabe mehr. Sie zeigte bisher',
+    '     * "Du bist angemeldet" und zwei Links — eine Sackgasse mit',
+    '     * Bestaetigung. Die Kontoseite ist der Ort, an dem es weitergeht.',
+    '     *',
+    '     * replace und nicht assign: sonst liegt die Anmeldeseite in der',
+    '     * Geschichte, und der Zurueck-Knopf fuehrt zurueck auf sie, die sofort',
+    '     * wieder weiterleitet. Man kaeme nicht mehr nach hinten heraus.',
+    '     */',
+    '    location.replace(' + JSON.stringify(kontoZiel) + ');',
     '  }',
     '',
     '  /*',
