@@ -61,6 +61,11 @@ for (const lang of LANGS) {
       // every page. One page's shop layout has no business loading on the
       // Impressum.
       head: typeof page.head === 'function' ? page.head(lang) : '',
+      // Dieselbe Opt-in-Form wie `script` und `head`: GSAP und die
+      // Choreografie kommen nur auf Seiten, die sie anfordern. 118 KB auf das
+      // Impressum zu laden waere dieselbe Nachlaessigkeit, gegen die der
+      // Kommentar darueber schon argumentiert.
+      bewegung: typeof page.bewegung === 'number' ? page.bewegung : 0,
     });
 
     const dir = join(OUT, base(lang).replace(/^\//, ''), page.slug);

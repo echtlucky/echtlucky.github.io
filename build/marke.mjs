@@ -172,6 +172,96 @@ ${AUF_DUNKEL}`;
 export const MARKE = { hell: MARKE_HELL, dunkel: MARKE_DUNKEL };
 
 // ---------------------------------------------------------------------------
+// 1b. Die zweite Leiter: Amber für das Lizenzportal
+// ---------------------------------------------------------------------------
+
+/**
+ * Amber, Farbton ~40°, **dieselbe Bauart wie Grün** — zehn Stufen, jede mit
+ * ihrem gemessenen Kontrast, und die Zahlen entscheiden, wofür eine taugt.
+ *
+ * ══ Warum das Portal eine eigene Farbe hat ════════════════════════════════
+ *
+ * Bis zum 17.08.2026 war die Klammer zwischen den Skillry-Seiten die FARBE:
+ * alle drei grün. Seit alle drei dasselbe S tragen — dieselbe Konstruktion,
+ * einen Parameter auseinander — ist die Klammer die FORM, und eine geteilte
+ * Form hält besser als eine geteilte Farbe. Damit darf die Farbe unterscheiden,
+ * wofür sie gut ist: Grün das Werkzeug, Blau das Rollenspiel, Amber die Lizenz.
+ *
+ * ══ Die eine Zahl, die diese Leiter überhaupt nötig macht ═════════════════
+ *
+ * **Das Marken-Amber #F5B942 erreicht auf Weiß nur 1.76:1.** Es kann im hellen
+ * Schema keinen Text setzen. Wer "die Lizenzfarbe" nimmt und sie als Schrift
+ * einträgt, baut eine unlesbare Seite — und merkt es nicht, weil dieselbe Farbe
+ * auf dunklem Grund glänzend dasteht (10.72:1).
+ *
+ * Die Leiter beantwortet das: hell trägt Stufe 800 den Text, das Marken-Amber
+ * ist dort FLÄCHE mit fast schwarzer Schrift darauf. Im Dunklen drehen die
+ * Rollen, genau wie bei Grün.
+ */
+export const AMBER = {
+  50: '#FDF6E7', // weiss  1.08  dunkel 17.58
+  100: '#FAEBC8', // weiss  1.18  dunkel 16.02
+  200: '#F6DA98', // weiss  1.36  dunkel 13.88
+  300: '#F5CD6B', // weiss  1.52  dunkel 12.46
+  400: '#F5B942', // weiss  1.76  dunkel 10.72   <- das Marken-Amber
+  500: '#E8A520', // weiss  2.14  dunkel  8.86
+  600: '#C4850C', // weiss  3.13  dunkel  6.04
+  700: '#9C6800', // weiss  4.78  dunkel  3.96
+  800: '#7A4F00', // weiss  7.13  dunkel  2.65
+  900: '#4F3300', // weiss 11.63  dunkel  1.63
+};
+
+/*
+ * Auf dem dunklen Kopfbalken (#24292f) gemessen: Stufe 300 hat 9.65:1, Stufe
+ * 400 hat 8.30, Stufe 500 hat 6.86. Genommen wird 400 — kräftig genug und
+ * zugleich das Marken-Amber selbst, damit das Zeichen im Kopf und das Zeichen
+ * auf der Seite dieselbe Farbe haben.
+ */
+const AMBER_AUF_DUNKEL = `
+  --marke-auf-dunkel: ${AMBER[400]};
+`;
+
+/** Helles Schema, Grund Weiß. Stufe 800 trägt Text (7.13), 700 die Kante (4.78). */
+const LIZENZ_HELL = `
+  --marke: ${AMBER[800]};
+  --marke-stark: ${AMBER[900]};
+  --marke-rand: ${AMBER[700]};
+  --marke-flaeche: ${AMBER[50]};
+  --marke-auf-flaeche: ${AMBER[900]};
+  --marke-schimmer: rgba(156, 104, 0, 0.18);
+  --knopf-flaeche: ${AMBER[900]};
+  --knopf-flaeche-hover: ${AMBER[800]};
+  --knopf-schrift: #ffffff;
+${AMBER_AUF_DUNKEL}`;
+
+/**
+ * Dunkles Schema, Grund `#0d1117`. Spiegelverkehrt, nicht dieselbe Zahl.
+ *
+ * Der Knopf ist wieder ein PAAR: Fläche Stufe 400, Schrift `#2B1C00` — 9.38:1.
+ * Weiß darauf hätte 1.76 und wäre unlesbar; das ist derselbe Fehler, der beim
+ * grünen Knopf schon einmal gemacht wurde.
+ */
+const LIZENZ_DUNKEL = `
+  --marke: ${AMBER[600]};
+  --marke-stark: ${AMBER[400]};
+  --marke-rand: ${AMBER[700]};
+  --marke-flaeche: #241A05;
+  --marke-auf-flaeche: ${AMBER[300]};
+  --marke-schimmer: rgba(245, 185, 66, 0.22);
+  --knopf-flaeche: ${AMBER[400]};
+  --knopf-flaeche-hover: ${AMBER[300]};
+  --knopf-schrift: #2B1C00;
+${AMBER_AUF_DUNKEL}`;
+
+/**
+ * Für `marke-ausgeben.mjs`, also für `skillry-lizenz/web/marke.css`.
+ *
+ * Dieselben Merkmalsnamen wie bei `MARKE` — `portal.css` hängt an ihnen und
+ * muss für den Farbwechsel keine Zeile ändern.
+ */
+export const MARKE_LIZENZ = { hell: LIZENZ_HELL, dunkel: LIZENZ_DUNKEL };
+
+// ---------------------------------------------------------------------------
 // 2. Die Bewegung
 // ---------------------------------------------------------------------------
 

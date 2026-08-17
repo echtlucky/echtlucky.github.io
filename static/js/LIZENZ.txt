@@ -1,0 +1,15 @@
+GSAP 3.15.0 und ScrollTrigger — https://gsap.com
+Copyright 2026, GreenSock. Alle Rechte vorbehalten.
+
+Lizenz: Standard "no charge" License — https://gsap.com/standard-license
+
+Diese Dateien liegen hier und werden NICHT von einem CDN geladen. Die Seite
+sagt an mehreren Stellen zu, zur Laufzeit nichts von Dritten zu holen; die
+Schrift liegt aus demselben Grund unter ../schrift/. Ein <script src> auf ein
+fremdes CDN uebertraegt die IP-Adresse jedes Besuchers dorthin und braeche
+diese Zusage ein zweites Mal.
+
+ACHTUNG BEI DEN VERKAUFTEN RESSOURCEN: Die kostenlose Lizenz deckt Websites,
+auch kommerzielle. Sie deckt NICHT das Einbetten in ein Produkt, das an
+Endkunden verkauft wird. GSAP gehoert damit nicht in ein FiveM-Skript-Paket,
+das ueber lizenz.skillry.de verkauft wird.

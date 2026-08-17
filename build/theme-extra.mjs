@@ -308,6 +308,9 @@ export const MOTION_JS = `
   onScroll();
 
   // --- reveal on approach --------------------------------------------------
+  // Auf Seiten mit GSAP macht bewegung.mjs die Auftritte, und zwar mit echtem
+  // Staffeln. Zwei Systeme auf derselben Deckkraft streiten sich.
+  if (document.documentElement.classList.contains('bewegt')) return;
   if (reduce || !('IntersectionObserver' in window)) return;
 
   var targets = document.querySelectorAll('main section > .wrap > *, main .grid > *, main .stats');

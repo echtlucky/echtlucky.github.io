@@ -35,6 +35,15 @@ import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * Stufe 2 — gehalten.
+ *
+ * Auftritte beim Eintreten und Hover-Tiefe, aber KEINE an den Bildlauf
+ * gekoppelte Bewegung: diese Seite wird gelesen, nicht bestaunt. Das
+ * Schaufenster ist die Startseite. Stufen: `D:/Projekte/UMBAU-PLAN.md`.
+ */
+export const bewegung = 2;
+
 export const slug = 'scripts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
