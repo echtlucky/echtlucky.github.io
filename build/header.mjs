@@ -414,6 +414,8 @@ export function header(lang, current, t, opts = {}) {
       <ul class="authp-links">
         <li><a href="${href(lang, 'forum')}?new=1">${esc(t.quick.newPost)}</a></li>
         <li><a href="${href(lang, 'forum')}?mine=1">${esc(t.auth.myPosts)}</a></li>
+        <li><a href="${href(lang, 'signin')}">${esc(t.auth.konto)}</a></li>
+        <li><a href="https://lizenz.skillry.de/" id="ghPortalLink">${esc(t.auth.portal)}</a></li>
       </ul>
       <button type="button" class="btn" data-signout>${esc(t.auth.signOut)}</button>
     </div>

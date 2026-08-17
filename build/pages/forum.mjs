@@ -84,6 +84,8 @@ const T = {
     post: 'Post',
     posting: 'Posting…',
     titleLabel: 'Title',
+    titleTooShort: 'The title needs at least six characters.',
+    bodyTooShort: 'At least ten characters — enough that somebody can answer.',
     titlePlaceholder: 'What is your question, in one line?',
     bodyLabel: 'Message',
     bodyPlaceholder: 'Give enough detail that somebody can actually answer. Paste the exact output if there is any.',
@@ -91,6 +93,18 @@ const T = {
     replyPlaceholder: 'Write a reply…',
     reply: 'Reply',
     replies: 'replies',
+    voteUp: 'Useful',
+    voteDown: 'Not useful',
+    errVote: 'The vote did not go through.',
+    share: 'Share',
+    linkCopied: 'Link copied.',
+    fmtBold: 'Bold',
+    fmtItalic: 'Italic',
+    fmtUnderline: 'Underline',
+    fmtCode: 'Code',
+    fmtHint: 'Two stars for bold, one for italic, two underscores for underline.',
+    noComments: 'No answers yet. Yours would be the first.',
+    answersH: 'Answers',
     replyOne: 'reply',
     back: '← All threads',
     loading: 'Loading…',
@@ -165,6 +179,8 @@ const T = {
     post: 'Absenden',
     posting: 'Wird gesendet…',
     titleLabel: 'Titel',
+    titleTooShort: 'Der Titel braucht mindestens sechs Zeichen.',
+    bodyTooShort: 'Mindestens zehn Zeichen — genug, dass jemand antworten kann.',
     titlePlaceholder: 'Was ist deine Frage, in einer Zeile?',
     bodyLabel: 'Nachricht',
     bodyPlaceholder: 'Gib genug Details, damit jemand tatsächlich antworten kann. Füg die genaue Ausgabe ein, falls es eine gibt.',
@@ -172,6 +188,18 @@ const T = {
     replyPlaceholder: 'Antwort schreiben…',
     reply: 'Antworten',
     replies: 'Antworten',
+    voteUp: 'Hilfreich',
+    voteDown: 'Nicht hilfreich',
+    errVote: 'Die Stimme ist nicht durchgegangen.',
+    share: 'Teilen',
+    linkCopied: 'Link kopiert.',
+    fmtBold: 'Fett',
+    fmtItalic: 'Kursiv',
+    fmtUnderline: 'Unterstrichen',
+    fmtCode: 'Code',
+    fmtHint: 'Zwei Sterne fett, einer kursiv, zwei Unterstriche unterstrichen.',
+    noComments: 'Noch keine Antworten. Deine wäre die erste.',
+    answersH: 'Antworten',
     replyOne: 'Antwort',
     back: '← Alle Themen',
     loading: 'Lädt…',
@@ -287,6 +315,124 @@ export const LEISTE_CSS = `
 export /* Ohne <style>-Huelle: head() setzt sie einmal um alle Bausteine. Eine
    zweite darin verschachtelt beendet die erste, und der Rest der Regeln
    landet als Text im Dokument statt im Stylesheet. */
+const BEITRAG_CSS = `
+/* ── Die Beitragsseite ──────────────────────────────────────────────────── */
+.fo-zurueck {
+  display: inline-block; margin-bottom: 18px;
+  font-size: 0.86rem; color: var(--fg-muted);
+}
+.fo-zurueck:hover { color: var(--link); }
+
+/*
+ * Stimmspalte links, Inhalt rechts. Ein Raster und kein flex, weil die
+ * Stimmspalte eine feste Breite hat und der Inhalt den Rest nimmt — mit flex
+ * muesste an zwei Stellen stehen, was hier in einer Zeile steht.
+ */
+.fo-thema, .fo-antwort {
+  display: grid; grid-template-columns: 46px minmax(0, 1fr);
+  gap: 16px; align-items: start;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface); padding: 20px 22px;
+}
+.fo-thema { margin-bottom: 30px; }
+.fo-antwort { padding: 15px 18px; margin-bottom: 10px; }
+
+.fo-stimmen { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+/*
+ * 30px hoch und 30px breit. Nicht aus Geschmack: alles darunter ist auf einem
+ * Telefon mit dem Daumen nicht zuverlaessig zu treffen, und ein Pfeil, den man
+ * verfehlt, setzt die falsche Stimme statt gar keiner.
+ */
+.fo-pfeil {
+  width: 30px; height: 30px; padding: 0; line-height: 1;
+  display: grid; place-items: center;
+  border: 1px solid transparent; border-radius: 8px;
+  background: none; color: var(--fg-subtle);
+  font-size: 12px; cursor: pointer;
+  transition: color var(--kurz) var(--ease), background var(--kurz) var(--ease);
+}
+.fo-pfeil:hover { background: var(--surface-2); color: var(--fg); }
+.fo-pfeil[aria-pressed="true"] { color: var(--marke-auf-flaeche); background: var(--marke-flaeche); }
+.fo-score { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--fg); }
+
+.fo-kat {
+  display: inline-block; margin-bottom: 8px;
+  font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--nexus);
+}
+.fo-titel { font-size: 1.5rem; line-height: 1.25; margin: 0 0 12px; }
+.fo-wer { display: flex; align-items: center; gap: 10px; font-size: 0.84rem; color: var(--fg-muted); margin-bottom: 14px; }
+.fo-zeit { color: var(--fg-subtle); font-size: 0.78rem; }
+.fo-avatar {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  display: grid; place-items: center; font-weight: 700; font-size: 12px;
+  color: #04120b; background: linear-gradient(140deg, var(--airlock), var(--nexus));
+}
+.fo-avatar.klein { width: 24px; height: 24px; font-size: 9.5px; }
+.fo-text { font-size: 0.95rem; }
+.fo-text :where(p):last-child { margin-bottom: 0; }
+.fo-text code {
+  font-family: var(--mono); font-size: 0.88em;
+  background: var(--surface-2); padding: 1px 5px; border-radius: 5px;
+}
+
+.fo-tat { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+.fo-tat-knopf {
+  border: 1px solid var(--border); border-radius: 8px;
+  background: none; color: var(--fg-muted);
+  padding: 5px 11px; font: inherit; font-size: 0.8rem; cursor: pointer;
+}
+.fo-tat-knopf:hover { border-color: var(--border-strong); color: var(--fg); }
+.fo-tat-knopf.klein { margin-left: auto; padding: 2px 8px; font-size: 0.74rem; }
+
+.fo-abschnitt {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 1.05rem; margin: 0 0 14px;
+}
+.fo-zahl { font-family: var(--mono); font-size: 0.8rem; color: var(--fg-subtle); }
+
+/* ── Schreiben ──────────────────────────────────────────────────────────── */
+.fo-schreiben {
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--surface); padding: 16px 18px; margin-top: 20px;
+}
+.fo-wzleiste { display: flex; gap: 4px; margin-bottom: 8px; }
+.fo-wz {
+  width: 30px; height: 28px; padding: 0;
+  display: grid; place-items: center;
+  border: 1px solid var(--border); border-radius: 7px;
+  background: none; color: var(--fg-muted); cursor: pointer;
+  font-family: var(--sans); font-size: 13px;
+}
+.fo-wz:hover { border-color: var(--border-strong); color: var(--fg); background: var(--surface-2); }
+.fo-wz code { font-family: var(--mono); font-size: 11px; }
+.fo-hinweis { font-family: var(--mono); font-size: 0.7rem; color: var(--fg-subtle); margin: 0; }
+
+/* ── Der Dialog ─────────────────────────────────────────────────────────── */
+.fo-dialog {
+  width: min(640px, calc(100vw - 32px));
+  padding: 0; border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); color: var(--fg);
+  box-shadow: var(--e3);
+}
+/*
+ * ::backdrop erbt NICHT vom Dokument — es haengt am Element, nicht im
+ * Elementbaum. Die eigenen Farbvariablen sind hier deshalb nicht zu haben,
+ * und ein var(--irgendwas) faellt still auf durchsichtig zurueck. Also ein
+ * fester Wert, der in beiden Modi funktioniert.
+ */
+.fo-dialog::backdrop { background: rgba(1, 4, 9, 0.62); backdrop-filter: blur(2px); }
+.fo-dialog-in { padding: 22px 24px 20px; }
+.fo-dialog-kopf { font-size: 1.15rem; margin: 0 0 16px; }
+.fo-l { display: block; font-size: 0.76rem; color: var(--fg-muted); margin-bottom: 2px; }
+.fo-dialog-fuss { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+
+@media (max-width: 620px) {
+  .fo-thema, .fo-antwort { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 15px 14px; }
+  .fo-titel { font-size: 1.22rem; }
+}
+`;
+
 const EINLADUNG_CSS = `
 /*
  * Die Einladung steht an der Stelle, an der vorher ein 420px breites
@@ -328,7 +474,7 @@ const MELDE_CSS = `
 
 /** Nur das Blatt dieser Seite — der Rest kommt aus der Designsprache. */
 export function head() {
-  return `<style>${LEISTE_CSS}${EINLADUNG_CSS}${MELDE_CSS}</style>`;
+  return `<style>${LEISTE_CSS}${BEITRAG_CSS}${EINLADUNG_CSS}${MELDE_CSS}</style>`;
 }
 
 export function body(lang) {
@@ -546,6 +692,141 @@ export function script(lang) {
     '    });',
     '  }',
     '  function para(s) { return esc(s).split(/\\n{2,}/).map(function (p) { return "<p>" + p.replace(/\\n/g, "<br>") + "</p>"; }).join(""); }',
+    '',
+    '  /*',
+    '   * Auszeichnung: fett, kursiv, unterstrichen, Code.',
+    '   *',
+    '   * DIE REIHENFOLGE IST DIE SICHERHEIT. esc() laeuft ZUERST, danach die',
+    '   * Muster. esc() erzeugt selbst nie einen Stern, einen Unterstrich oder',
+    '   * einen Backtick — wer also spitze Klammern tippt, bekommt sie escapt',
+    '   * zurueck und kann von da an kein Markup mehr bilden.',
+    '   *',
+    '   * Andersherum waere jedes Muster ein Loch: erst Tags einsetzen und dann',
+    '   * escapen wuerde die eigenen Tags mit escapen; erst Tags einsetzen und',
+    '   * dann NICHT escapen ist eine offene Tuer.',
+    '   *',
+    '   * Ehrlich zu den Grenzen: das ist ein kleiner Ersetzer und kein Markdown.',
+    '   * Verschachteltes kann sich verhaspeln. Dabei kann es haesslich werden,',
+    '   * nie unsicher — das ist die Grenze, auf die es ankommt.',
+    '   */',
+    '  function mark(s) {',
+    '    var t = esc(s);',
+    '    t = t.replace(/`([^`\\n]+)`/g, "<code>$1</code>");',
+    '    t = t.replace(/\\*\\*([^*\\n]+)\\*\\*/g, "<strong>$1</strong>");',
+    '    t = t.replace(/(^|[^*\\w])\\*([^*\\n]+)\\*/g, "$1<em>$2</em>");',
+    '    t = t.replace(/__([^_\\n]+)__/g, "<u>$1</u>");',
+    '    return t.split(/\\n{2,}/).map(function (p) {',
+    '      return "<p>" + p.replace(/\\n/g, "<br>") + "</p>";',
+    '    }).join("");',
+    '  }',
+    '',
+    '  /*',
+    '   * Stimmen.',
+    '   *',
+    '   * Zwei Schreibvorgaenge in EINEM Stapel: das eigene Stimmdokument und die',
+    '   * laufende Summe am Elterndokument. Einzeln abgeschickt koennte der zweite',
+    '   * scheitern, und dann stuende eine Stimme da, die in keiner Summe auftaucht',
+    '   * — ein Zaehler, der dauerhaft danebenliegt und den niemand mehr',
+    '   * geradeziehen kann.',
+    '   *',
+    '   * Das Stimmdokument heisst wie die uid. Zweimal abstimmen ist deshalb ein',
+    '   * Ueberschreiben und kein Dazuzaehlen, auch dann, wenn jemand die',
+    '   * Oberflaeche umgeht. Erzwungen wird das in firestore.rules, nicht hier:',
+    '   * ein versteckter Knopf ist ein Vorschlag, ein Dokumentname eine Tatsache.',
+    '   */',
+    '  function stimmeSetzen(pfad, alt, neu) {',
+    '    if (!canPost()) { melde(L.signInToPost, "fehler"); return Promise.resolve(false); }',
+    '    var elternRef = fb.doc.apply(null, [db].concat(pfad));',
+    '    var stimmRef = fb.doc.apply(null, [db].concat(pfad, ["votes", user.uid]));',
+    '    var stapel = fb.writeBatch(db);',
+    '    if (neu === 0) stapel.delete(stimmRef); else stapel.set(stimmRef, { v: neu });',
+    '    stapel.update(elternRef, { score: fb.increment(neu - alt) });',
+    '    return stapel.commit().then(function () { return true; }, function () {',
+    '      melde(L.errVote, "fehler"); return false;',
+    '    });',
+    '  }',
+    '',
+    '  /* aria-pressed statt nur einer Farbe: wer mit einer Vorlesehilfe unterwegs',
+    '     ist, soll auch hoeren, dass die eigene Stimme sitzt. */',
+    '  function stimmleiste(score, meine) {',
+    '    function pfeil(v, zeichen, text) {',
+    '      return "<button type=\\"button\\" class=\\"fo-pfeil\\" data-v=\\"" + v +',
+    '        "\\" aria-pressed=\\"" + (meine === v) + "\\" aria-label=\\"" + esc(text) +',
+    '        "\\">" + zeichen + "</button>";',
+    '    }',
+    '    return "<div class=\\"fo-stimmen\\">" +',
+    '      pfeil(1, "&#9650;", L.voteUp) +',
+    '      "<span class=\\"fo-score\\">" + (score || 0) + "</span>" +',
+    '      pfeil(-1, "&#9660;", L.voteDown) + "</div>";',
+    '  }',
+    '',
+    '  /* Teilen. navigator.share gibt es praktisch nur auf Mobilgeraeten und nur',
+    '     ueber https — die Zwischenablage ist deshalb kein Notnagel, sondern der',
+    '     Normalfall am Schreibtisch. Beide Wege melden zurueck: ein Knopf, der',
+    '     still nichts tut, wird zweimal gedrueckt. */',
+    '  function teilen(titel) {',
+    '    var u = location.href;',
+    '    if (navigator.share) { navigator.share({ title: titel, url: u }).catch(function () {}); return; }',
+    '    if (navigator.clipboard) {',
+    '      navigator.clipboard.writeText(u).then(function () { melde(L.linkCopied, "gut"); },',
+    '                                            function () { melde(u, "gut"); });',
+    '      return;',
+    '    }',
+    '    melde(u, "gut");',
+    '  }',
+    '',
+    '  /*',
+    '   * DIE FORMATIERUNGSLEISTE',
+    '   *',
+    '   * Sie tippt nur Zeichen. Fett ist zwei Sternchen, kursiv eines,',
+    '   * unterstrichen zwei Unterstriche — dieselben Zeichen, die man auch von',
+    '   * Hand schreiben kann, und dieselben, die mark() spaeter liest.',
+    '   *',
+    '   * Es waere verlockend gewesen, hier einen richtigen Editor einzubauen',
+    '   * (contenteditable, execCommand). Das haette aber HTML aus dem Browser in',
+    '   * die Datenbank gebracht, und damit stuende die Frage im Raum, welches',
+    '   * HTML man wieder herauslaesst. So bleibt gespeichert, was jemand getippt',
+    '   * hat: Text. Die Auszeichnung entsteht erst beim Anzeigen, an genau einer',
+    '   * Stelle, und die ist geprueft.',
+    '   */',
+    '  function werkzeugleiste(zielId) {',
+    '    function w(marke, titel, inhalt) {',
+    '      return "<button type=\\"button\\" class=\\"fo-wz\\" data-wz=\\"" + marke +',
+    '        "\\" data-ziel=\\"" + zielId + "\\" title=\\"" + esc(titel) + "\\">" + inhalt + "</button>";',
+    '    }',
+    '    return "<div class=\\"fo-wzleiste\\">" +',
+    '      w("**", L.fmtBold, "<strong>B</strong>") +',
+    '      w("*", L.fmtItalic, "<em>I</em>") +',
+    '      w("__", L.fmtUnderline, "<u>U</u>") +',
+    '      w("`", L.fmtCode, "<code>&lt;&gt;</code>") + "</div>";',
+    '  }',
+    '',
+    '  /*',
+    '   * Einmal binden, fuer alle Leisten unter der uebergebenen Wurzel.',
+    '   *',
+    '   * setRangeText statt value neu zu setzen: das erhaelt die Rueckgaengig-Kette',
+    '   * des Browsers. Wer sich vertippt und Strg+Z drueckt, bekommt sonst nicht',
+    '   * den Schritt davor zurueck, sondern gar nichts — der Kasten wurde ja',
+    '   * komplett neu beschrieben.',
+    '   */',
+    '  function werkzeugeVerdrahten(wurzel) {',
+    '    [].forEach.call(wurzel.querySelectorAll(".fo-wz"), function (kn) {',
+    '      kn.addEventListener("click", function () {',
+    '        var feld = document.getElementById(kn.dataset.ziel);',
+    '        if (!feld) return;',
+    '        var m = kn.dataset.wz;',
+    '        var a = feld.selectionStart, b = feld.selectionEnd;',
+    '        var text = feld.value.slice(a, b);',
+    '        if (feld.setRangeText) feld.setRangeText(m + text + m, a, b, "end");',
+    '        else feld.value = feld.value.slice(0, a) + m + text + m + feld.value.slice(b);',
+    '        /* Ohne Markierung steht der Zeiger jetzt hinter den schliessenden',
+    '           Zeichen. Dann gehoert er dazwischen — sonst tippt man neben die',
+    '           Auszeichnung statt hinein. */',
+    '        if (a === b) { var pos = a + m.length; feld.setSelectionRange(pos, pos); }',
+    '        feld.focus();',
+    '      });',
+    '    });',
+    '  }',
     '  function when(ts) {',
     '    if (!ts || !ts.toDate) return "";',
     '    var d = ts.toDate();',
@@ -673,7 +954,8 @@ export function script(lang) {
     '          "<div><h3><a href=\\"?t=" + esc(doc.id) + "\\">" + esc(d.deleted ? L.deleted : d.title) + "</a></h3></div>" +',
     '          "<span class=\\"verdict v-unscanned\\">" + esc(label) + "</span>" +',
     '          "<div class=\\"meta\\">" + esc(d.authorName || "?") + "<span>·</span>" + when(d.createdAt) +',
-    '          "<span>·</span>" + n + " " + esc(n === 1 ? L.replyOne : L.replies) + "</div></article>";',
+    '          "<span>&middot;</span>" + n + " " + esc(n === 1 ? L.replyOne : L.replies) +',
+    '          "<span>&middot;</span>" + (d.score || 0) + " &#9650;</div></article>";',
     '      });',
     '      box.innerHTML = html;',
     '    }, function () {',
@@ -682,69 +964,187 @@ export function script(lang) {
     '    });',
     '  }',
     '',
+    '  /*',
+    '   * VERFASSEN ALS DIALOG',
+    '   *',
+    '   * Vorher klappte das Formular oben in der Liste auf. Das hatte zwei',
+    '   * Nachteile, die man erst merkt, wenn man es benutzt: die Liste sprang',
+    '   * nach unten weg, und auf einem Telefon stand das Feld ausserhalb des',
+    '   * Bildes, weil oben die Reiterleiste klebt.',
+    '   *',
+    '   * <dialog> und nicht ein selbstgebauter Kasten mit position: fixed. Das',
+    '   * Element bringt mit, was man sonst von Hand nachbaut und dabei vergisst:',
+    '   * Escape schliesst, der Tastaturweg bleibt im Dialog gefangen, alles',
+    '   * dahinter ist fuer Vorlesehilfen inaktiv, und der Hintergrund kommt vom',
+    '   * Browser statt von einem zusaetzlichen Element.',
+    '   */',
     '  function composer() {',
-    '    var host = document.getElementById("composer");',
-    '    var opts = CATS.map(function (c) { return "<option value=\\"" + esc(c.id) + "\\">" + esc(c.label) + "</option>"; }).join("");',
-    '    host.innerHTML =',
-    '      "<div class=\\"card\\" style=\\"margin-bottom:16px\\">" +',
-    '      "<label class=\\"small muted\\">" + esc(L.titleLabel) + "</label>" +',
-    '      "<input id=\\"nt\\" class=\\"fld\\" maxlength=\\"140\\" placeholder=\\"" + esc(L.titlePlaceholder) + "\\">" +',
-    '      "<label class=\\"small muted\\">" + esc(L.categoryLabel) + "</label>" +',
-    '      "<select id=\\"nc\\" class=\\"fld\\">" + opts + "</select>" +',
-    '      "<label class=\\"small muted\\">" + esc(L.bodyLabel) + "</label>" +',
-    '      "<textarea id=\\"nb2\\" class=\\"fld\\" rows=\\"6\\" maxlength=\\"8000\\" placeholder=\\"" + esc(L.bodyPlaceholder) + "\\"></textarea>" +',
-    '      "<div class=\\"btn-row\\"><button class=\\"btn btn-primary\\" id=\\"submitBtn\\">" + esc(L.post) + "</button>" +',
-    '      "<button class=\\"btn\\" id=\\"cancelBtn\\">" + esc(L.cancel) + "</button></div></div>";',
+    '    if (!canPost()) { melde(L.signInToPost, "fehler"); return; }',
+    '    var alt = document.getElementById("foDialog");',
+    '    if (alt) alt.remove();',
     '',
-    '    document.getElementById("cancelBtn").addEventListener("click", function () { host.innerHTML = ""; });',
+    '    var opts = CATS.map(function (c) {',
+    '      return "<option value=\\"" + esc(c.id) + "\\"" + (c.id === cat ? " selected" : "") + ">" + esc(c.label) + "</option>";',
+    '    }).join("");',
+    '',
+    '    var dlg = document.createElement("dialog");',
+    '    dlg.id = "foDialog";',
+    '    dlg.className = "fo-dialog";',
+    '    dlg.innerHTML =',
+    '      "<form method=\\"dialog\\" class=\\"fo-dialog-in\\">" +',
+    '      "<h2 class=\\"fo-dialog-kopf\\">" + esc(L.newThread) + "</h2>" +',
+    '      "<label class=\\"fo-l\\" for=\\"nt\\">" + esc(L.titleLabel) + "</label>" +',
+    '      "<input id=\\"nt\\" class=\\"fld\\" maxlength=\\"140\\" placeholder=\\"" + esc(L.titlePlaceholder) + "\\">" +',
+    '      "<label class=\\"fo-l\\" for=\\"nc\\">" + esc(L.categoryLabel) + "</label>" +',
+    '      "<select id=\\"nc\\" class=\\"fld\\">" + opts + "</select>" +',
+    '      "<label class=\\"fo-l\\" for=\\"nb2\\">" + esc(L.bodyLabel) + "</label>" +',
+    '      werkzeugleiste("nb2") +',
+    '      "<textarea id=\\"nb2\\" class=\\"fld\\" rows=\\"8\\" maxlength=\\"8000\\" placeholder=\\"" + esc(L.bodyPlaceholder) + "\\"></textarea>" +',
+    '      "<p class=\\"fo-hinweis\\">" + esc(L.fmtHint) + "</p>" +',
+    '      "<div class=\\"fo-dialog-fuss\\">" +',
+    '      "<button type=\\"button\\" class=\\"btn\\" id=\\"cancelBtn\\">" + esc(L.cancel) + "</button>" +',
+    '      "<button type=\\"button\\" class=\\"btn btn-primary\\" id=\\"submitBtn\\">" + esc(L.post) + "</button>" +',
+    '      "</div></form>";',
+    '    document.body.appendChild(dlg);',
+    '    werkzeugeVerdrahten(dlg);',
+    '    dlg.showModal();',
+    '    document.getElementById("nt").focus();',
+    '',
+    '    /* Beim Schliessen wieder abraeumen. Sonst sammeln sich bei jedem Oeffnen',
+    '       weitere Dialoge im Dokument an, alle mit denselben ids — und',
+    '       getElementById findet dann den erstbesten, nicht den sichtbaren. */',
+    '    dlg.addEventListener("close", function () { dlg.remove(); });',
+    '    document.getElementById("cancelBtn").addEventListener("click", function () { dlg.close(); });',
+    '',
     '    document.getElementById("submitBtn").addEventListener("click", function (e) {',
     '      var btn = e.currentTarget;',
-    '      var title = document.getElementById("nt").value.trim();',
-    '      var bodyTxt = document.getElementById("nb2").value.trim();',
-    '      if (title.length < 6 || bodyTxt.length < 10) { melde(L.errTooShort, "fehler"); return; }',
+    '      var titel = document.getElementById("nt").value.trim();',
+    '      var kategorie = document.getElementById("nc").value;',
+    '      var text = document.getElementById("nb2").value.trim();',
+    '      /* Dieselben Grenzen wie in firestore.rules. Hier stehen sie, damit man',
+    '         eine Antwort bekommt, bevor man absendet — nicht, weil sie hier',
+    '         durchgesetzt wuerden. Durchgesetzt werden sie dort. */',
+    '      if (titel.length < 6) { melde(L.titleTooShort, "fehler"); return; }',
+    '      if (text.length < 10) { melde(L.bodyTooShort, "fehler"); return; }',
     '      btn.disabled = true; btn.textContent = L.posting;',
     '      fb.addDoc(fb.collection(db, "threads"), {',
-    '        title: title, body: bodyTxt, category: document.getElementById("nc").value,',
-    '        authorUid: user.uid, authorName: user.displayName || "anon", authorAvatar: user.photoURL || "",',
+    '        title: titel, body: text, category: kategorie,',
+    '        authorUid: user.uid, authorName: user.displayName || "anon",',
     '        createdAt: fb.serverTimestamp(), lastActivity: fb.serverTimestamp(),',
-    '        replyCount: 0, deleted: false',
+    '        replyCount: 0, score: 0, deleted: false',
     '      }).then(',
-    '        /*',
-    '         * ZWEI ARGUMENTE UND KEIN .catch DAHINTER.',
-    '         *',
-    '         * Vorher stand hier `.then(erfolg).catch(fehler)`. Damit faengt der',
-    '         * Fehlerzweig auch alles, was im ERFOLGSZWEIG schiefgeht — und dort',
-    '         * steht eine Navigation. Das Thema war angelegt, die Liste zeigte es',
-    '         * bereits, und darueber stand "Das hat nicht geklappt". Wer das',
-    '         * liest, schickt es ein zweites Mal.',
-    '         *',
-    '         * Mit zwei Argumenten sieht der Fehlerzweig nur, was addDoc selbst',
-    '         * meldet.',
-    '         */',
-    '        function (ref) { location.search = "?t=" + ref.id; },',
+    '        function (r) { dlg.close(); location.search = "?t=" + r.id; },',
+    '        /* Zwei Argumente und kein .catch dahinter: mit einem angehaengten',
+    '           .catch faengt man auch die Fehler des Erfolgszweigs und meldet',
+    '           einen gespeicherten Beitrag als misslungen. */',
     '        function () { btn.disabled = false; btn.textContent = L.post; melde(L.errGeneric, "fehler"); }',
     '      );',
     '    });',
     '  }',
     '',
     '  // ── thread ──────────────────────────────────────────────────────────',
+    '  /*',
+    '   * DIE BEITRAGSSEITE',
+    '   *',
+    '   * Vorher waren das drei Karten untereinander: Titel, Text, Antworten. Das',
+    '   * las sich wie ein aufgeklappter Listeneintrag und nicht wie ein Ort, auf',
+    '   * den man verlinkt. Jetzt hat der Beitrag einen Kopf, eine Stimmspalte an',
+    '   * der Seite und darunter die Antworten als eigenen Abschnitt mit eigener',
+    '   * Ueberschrift und Zaehler.',
+    '   *',
+    '   * Die Adresse ?t=<id> gab es vorher schon. Was gefehlt hat, war die Gestalt,',
+    '   * die dazu passt.',
+    '   */',
     '  function renderThread(id) {',
     '    root.innerHTML = "<p class=\\"muted\\">" + esc(L.loading) + "</p>";',
     '    var ref = fb.doc(db, "threads", id);',
     '',
+    '    /* Die eigene Stimme steht in einem Dokument, das wie die uid heisst.',
+    '       Abgemeldet wird gar nicht erst gelesen — es gaebe keinen Pfad dahin. */',
+    '    function meineStimme(pfad) {',
+    '      if (!user) return Promise.resolve(0);',
+    '      return fb.getDoc(fb.doc.apply(null, [db].concat(pfad, ["votes", user.uid])))',
+    '        .then(function (d) { return d.exists() ? (d.data().v || 0) : 0; }, function () { return 0; });',
+    '    }',
+    '',
+    '    /* Ein zweiter Klick auf denselben Pfeil nimmt die Stimme zurueck. Ohne das',
+    '       gaebe es keinen Weg heraus, und wer sich verklickt hat, bliebe fuer',
+    '       immer dabei. */',
+    '    function pfeileVerdrahten(leiste, pfad, stand) {',
+    '      [].forEach.call(leiste.querySelectorAll(".fo-pfeil"), function (kn) {',
+    '        kn.addEventListener("click", function () {',
+    '          var wunsch = Number(kn.dataset.v);',
+    '          var neu = stand.wert === wunsch ? 0 : wunsch;',
+    '          var alt = stand.wert;',
+    '          stimmeSetzen(pfad, alt, neu).then(function (ok) {',
+    '            if (!ok) return;',
+    '            stand.wert = neu;',
+    '            malen(leiste, neu);',
+    '          });',
+    '        });',
+    '      });',
+    '    }',
+    '    function malen(leiste, v) {',
+    '      [].forEach.call(leiste.querySelectorAll(".fo-pfeil"), function (x) {',
+    '        x.setAttribute("aria-pressed", String(Number(x.dataset.v) === v));',
+    '      });',
+    '    }',
+    '',
+    '    var meinThema = { wert: 0 };',
+    '',
     '    fb.onSnapshot(ref, function (snap) {',
     '      if (!snap.exists()) { root.innerHTML = "<div class=\\"empty\\">404</div>"; return; }',
     '      var d = snap.data();',
+    '      var label = (CATS.filter(function (c) { return c.id === d.category; })[0] || {}).label || d.category;',
+    '      var wer = d.authorName || "?";',
+    '      var meins = user && d.authorUid === user.uid;',
+    '',
     '      root.innerHTML =',
-    '        "<p><a href=\\"./\\">" + esc(L.back) + "</a></p>" +',
-    '        "<article class=\\"card\\" style=\\"margin-bottom:18px\\"><h2>" + esc(d.deleted ? L.deleted : d.title) + "</h2>" +',
-    '        "<div class=\\"meta small muted\\">" + esc(d.authorName || "?") + " · " + when(d.createdAt) + "</div>" +',
-    '        "<div class=\\"prose\\">" + (d.deleted ? "" : para(d.body)) + "</div></article>" +',
+    '        "<a class=\\"fo-zurueck\\" href=\\"./\\">&#8592; " + esc(L.back) + "</a>" +',
+    '        "<article class=\\"fo-thema\\">" +',
+    '        stimmleiste(d.score, meinThema.wert) +',
+    '        "<div class=\\"fo-thema-in\\">" +',
+    '        "<span class=\\"fo-kat\\">" + esc(label) + "</span>" +',
+    '        "<h1 class=\\"fo-titel\\">" + esc(d.deleted ? L.deleted : d.title) + "</h1>" +',
+    '        "<div class=\\"fo-wer\\"><span class=\\"fo-avatar\\" aria-hidden=\\"true\\">" +',
+    '        esc(wer.slice(0, 2).toUpperCase()) + "</span><span>" + esc(wer) +',
+    '        "<br><span class=\\"fo-zeit\\">" + when(d.createdAt) + "</span></span></div>" +',
+    '        "<div class=\\"prose fo-text\\">" + (d.deleted ? "" : mark(d.body)) + "</div>" +',
+    '        "<div class=\\"fo-tat\\">" +',
+    '        "<button type=\\"button\\" class=\\"fo-tat-knopf\\" id=\\"foTeilen\\">" + esc(L.share) + "</button>" +',
+    '        ((meins || canModerate()) && !d.deleted',
+    '          ? "<button type=\\"button\\" class=\\"fo-tat-knopf\\" id=\\"foLoeschen\\">" + esc(L.delete) + "</button>" : "") +',
+    '        "</div></div></article>" +',
+    '        "<h2 class=\\"fo-abschnitt\\" id=\\"foAntworten\\">" + esc(L.answersH) +',
+    '        " <span class=\\"fo-zahl\\">" + (d.replyCount || 0) + "</span></h2>" +',
     '        "<div id=\\"posts\\"></div>" +',
     '        (canPost()',
-    '          ? "<div class=\\"card\\" style=\\"margin-top:16px\\"><textarea id=\\"rb\\" class=\\"fld\\" rows=\\"4\\" maxlength=\\"8000\\" placeholder=\\"" + esc(L.replyPlaceholder) + "\\"></textarea>" +',
-    '            "<div class=\\"btn-row\\"><button class=\\"btn btn-primary\\" id=\\"replyBtn\\">" + esc(L.reply) + "</button></div></div>"',
-    '          : "<p class=\\"small muted\\" style=\\"margin-top:16px\\">" + esc(L.signInToPost) + "</p>");',
+    '          ? "<div class=\\"fo-schreiben\\">" + werkzeugleiste("rb") +',
+    '            "<textarea id=\\"rb\\" class=\\"fld\\" rows=\\"4\\" maxlength=\\"8000\\" placeholder=\\"" + esc(L.replyPlaceholder) + "\\"></textarea>" +',
+    '            "<div class=\\"btn-row\\"><button class=\\"btn btn-primary\\" id=\\"replyBtn\\">" + esc(L.reply) + "</button>" +',
+    '            "<span class=\\"fo-hinweis\\">" + esc(L.fmtHint) + "</span></div></div>"',
+    '          : "<div class=\\"fo-einladung\\"><p>" + esc(L.signInToPost) + "</p>" +',
+    '            "<a class=\\"btn btn-primary\\" href=\\"" + ANMELDEN + "?weiter=" +',
+    '            encodeURIComponent(location.pathname + location.search) + "\\">" + esc(L.signIn) + "</a></div>");',
+    '',
+    '      meineStimme(["threads", id]).then(function (v) {',
+    '        meinThema.wert = v;',
+    '        var leiste = root.querySelector(".fo-stimmen");',
+    '        if (!leiste) return;',
+    '        malen(leiste, v);',
+    '        pfeileVerdrahten(leiste, ["threads", id], meinThema);',
+    '      });',
+    '',
+    '      var tl = document.getElementById("foTeilen");',
+    '      if (tl) tl.addEventListener("click", function () { teilen(d.title); });',
+    '',
+    '      var lo = document.getElementById("foLoeschen");',
+    '      if (lo) lo.addEventListener("click", function () {',
+    '        if (!confirm(L.confirmDelete)) return;',
+    '        fb.updateDoc(ref, { deleted: true }).catch(function () { melde(L.errGeneric, "fehler"); });',
+    '      });',
+    '',
+    '      werkzeugeVerdrahten(root);',
     '',
     '      var rb = document.getElementById("replyBtn");',
     '      if (rb) rb.addEventListener("click", function (e) {',
@@ -754,21 +1154,14 @@ export function script(lang) {
     '        btn.disabled = true; btn.textContent = L.posting;',
     '        fb.addDoc(fb.collection(db, "threads", id, "posts"), {',
     '          body: txt, authorUid: user.uid, authorName: user.displayName || "anon",',
-    '          authorAvatar: user.photoURL || "", createdAt: fb.serverTimestamp(), deleted: false',
+    '          authorAvatar: user.photoURL || "", createdAt: fb.serverTimestamp(), deleted: false, score: 0',
     '        }).then(',
     '          function () {',
     '            document.getElementById("rb").value = "";',
     '            btn.disabled = false; btn.textContent = L.reply;',
-    '            /*',
-    '             * Der Zaehler wird NACHGEZOGEN und nicht mitgemeldet.',
-    '             *',
-    '             * Vorher hing er in derselben Kette: schlug das Hochzaehlen fehl',
-    '             * — etwa weil die Regeln es nicht erlauben —, stand da "Das hat',
-    '             * nicht geklappt", obwohl die Antwort laengst gespeichert war.',
-    '             * Eine Zahl, die danebenliegt, ist ein kleiner Fehler; eine',
-    '             * Meldung, die eine gelungene Antwort fuer misslungen erklaert,',
-    '             * ist ein grosser.',
-    '             */',
+    '            /* Der Zaehler wird NACHGEZOGEN und nicht mitgemeldet: schlaegt er',
+    '               fehl, ist eine Zahl schief. Meldete man ihn mit, waere eine',
+    '               gespeicherte Antwort als misslungen ausgewiesen. */',
     '            fb.updateDoc(ref, { replyCount: (d.replyCount || 0) + 1, lastActivity: fb.serverTimestamp() })',
     '              .catch(function () {});',
     '          },',
@@ -779,27 +1172,50 @@ export function script(lang) {
     '      fb.onSnapshot(fb.query(fb.collection(db, "threads", id, "posts"), fb.orderBy("createdAt", "asc")), function (ps) {',
     '        var box = document.getElementById("posts");',
     '        if (!box) return;',
-    '        var html = "";',
-    '        ps.forEach(function (p) {',
-    '          var pd = p.data();',
+    '        if (ps.empty) { box.innerHTML = "<div class=\\"empty\\">" + esc(L.noComments) + "</div>"; return; }',
+    '        var html = "", ids = [];',
+    '        ps.forEach(function (pp) {',
+    '          var pd = pp.data();',
     '          var mine = user && pd.authorUid === user.uid;',
-    '          html += "<article class=\\"card\\" style=\\"margin-bottom:10px\\">" +',
-    '            "<div class=\\"meta small muted\\">" + esc(pd.authorName || "?") + " · " + when(pd.createdAt) +',
+    '          var nam = pd.authorName || "?";',
+    '          ids.push(pp.id);',
+    '          html += "<article class=\\"fo-antwort\\" data-post=\\"" + esc(pp.id) + "\\">" +',
+    '            stimmleiste(pd.score, 0) +',
+    '            "<div class=\\"fo-antwort-in\\">" +',
+    '            "<div class=\\"fo-wer\\"><span class=\\"fo-avatar klein\\" aria-hidden=\\"true\\">" +',
+    '            esc(nam.slice(0, 2).toUpperCase()) + "</span><span>" + esc(nam) +',
+    '            " <span class=\\"fo-zeit\\">" + when(pd.createdAt) + "</span></span>" +',
     '            ((mine || canModerate()) && !pd.deleted',
-    '              ? " · <a href=\\"#\\" data-del=\\"" + esc(p.id) + "\\">" + esc(L.delete) + "</a>" : "") +',
-    '            "</div><div class=\\"prose\\">" + (pd.deleted ? "<em>" + esc(L.deleted) + "</em>" : para(pd.body)) + "</div></article>";',
+    '              ? "<button type=\\"button\\" class=\\"fo-tat-knopf klein\\" data-del=\\"" + esc(pp.id) + "\\">" + esc(L.delete) + "</button>" : "") +',
+    '            "</div><div class=\\"prose fo-text\\">" +',
+    '            (pd.deleted ? "<em>" + esc(L.deleted) + "</em>" : mark(pd.body)) + "</div></div></article>";',
     '        });',
     '        box.innerHTML = html;',
-    '        [].forEach.call(box.querySelectorAll("[data-del]"), function (a) {',
-    '          a.addEventListener("click", function (ev) {',
-    '            ev.preventDefault();',
+    '',
+    '        [].forEach.call(box.querySelectorAll("[data-del]"), function (kn) {',
+    '          kn.addEventListener("click", function () {',
     '            if (!confirm(L.confirmDelete)) return;',
-    '            fb.updateDoc(fb.doc(db, "threads", id, "posts", a.dataset.del), { deleted: true, body: "" })',
+    '            fb.updateDoc(fb.doc(db, "threads", id, "posts", kn.dataset.del), { deleted: true, body: "" })',
     '              .catch(function () { melde(L.errGeneric, "fehler"); });',
     '          });',
     '        });',
+    '',
+    '        /* Die eigenen Stimmen fuer alle Antworten in EINEM Rutsch. Nacheinander',
+    '           waeren es gleich viele Abfragen, aber die Pfeile wuerden sichtbar',
+    '           einer nach dem anderen umspringen. */',
+    '        if (user) Promise.all(ids.map(function (pid) { return meineStimme(["threads", id, "posts", pid]); }))',
+    '          .then(function (werte) {',
+    '            ids.forEach(function (pid, k) {',
+    '              var art = box.querySelector("[data-post=\\"" + pid + "\\"]");',
+    '              if (!art) return;',
+    '              var stand = { wert: werte[k] };',
+    '              var leiste = art.querySelector(".fo-stimmen");',
+    '              malen(leiste, stand.wert);',
+    '              pfeileVerdrahten(leiste, ["threads", id, "posts", pid], stand);',
+    '            });',
+    '          });',
     '      });',
-    '    });',
+    '    }, function () { root.innerHTML = "<div class=\\"empty\\">" + esc(L.errGeneric) + "</div>"; });',
     '  }',
     '',
     '  function route() {',
