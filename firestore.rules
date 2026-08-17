@@ -111,7 +111,10 @@ service cloud.firestore {
         && request.resource.data.category in ['help', 'skills', 'false-positives', 'misses', 'ideas', 'showcase']
         && freshTimestamp(request.resource.data.createdAt)
         && request.resource.data.replyCount == 0
-        && request.resource.data.deleted == false;
+        && request.resource.data.deleted == false
+        // Angepinnt wird nicht beim Anlegen. Sonst schreibt sich jeder seinen
+        // eigenen Beitrag nach oben, und "oben" heisst dann nichts mehr.
+        && (!('pinned' in request.resource.data) || request.resource.data.pinned == false);
 
       // The author may edit their own text or tombstone the thread. Reply count
       // and last-activity move on every reply, so they are writable by any
@@ -122,7 +125,12 @@ service cloud.firestore {
             && request.resource.data.authorUid == resource.data.authorUid
             && request.resource.data.createdAt == resource.data.createdAt
             && textOk(request.resource.data.title, 6, 140)
-            && textOk(request.resource.data.body, 10, 8000))
+            && textOk(request.resource.data.body, 10, 8000)
+            // Der Verfasser darf seinen Text aendern und sonst nichts hier.
+            // Ohne diese Zeile koennte er beim Bearbeiten `pinned` mitsetzen —
+            // eine Berechtigung, die durch die Hintertuer kommt, ist die
+            // schlimmere Sorte, weil sie in keiner Regel steht.
+            && !('pinned' in request.resource.data.diff(resource.data).affectedKeys()))
         || request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['replyCount', 'lastActivity'])
         || scoreStepOnly()
