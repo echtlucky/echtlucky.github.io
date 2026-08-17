@@ -27,7 +27,7 @@ const warnings = [];
 const fail = (id, msg) => errors.push(`${id}: ${msg}`);
 
 const REQUIRED = ['id', 'name', 'author', 'source', 'url', 'license', 'tags', 'title', 'description'];
-const VERDICTS = new Set(['pass', 'review', 'block', 'unscanned']);
+const VERDICTS = new Set(['pass', 'review', 'block', 'unscanned', 'unscannable']);
 const ID = /^[a-z0-9][a-z0-9-]*$/;
 
 // ── structure ───────────────────────────────────────────────────────────────
@@ -72,7 +72,27 @@ for (const s of catalog.skills) {
    * A validator that is wrong about its own data is worse than no validator:
    * it teaches the person reading the output to ignore warnings.
    */
-  if (s.scan === null || s.scan === undefined) {
+  /*
+   * An entry that CANNOT be scanned is a third case, and it used to fall
+   * through to the warning below with two remedies that were both wrong.
+   *
+   * `mcp-registry` is the official MCP registry: a service that verifies
+   * namespace ownership through GitHub, DNS or HTTP. There is no SKILL.md to
+   * read. `npm run rescan` skips it forever (no localPath), and removing it
+   * would drop a genuinely relevant entry — it is a different axis of trust,
+   * which is exactly why it is listed.
+   *
+   * So it declares why, in both languages, and the index prints that reason on
+   * the card. The rule from the comment above applies to this warning too: one
+   * that fires where neither of its remedies applies teaches the reader to
+   * ignore warnings.
+   */
+  if (s.unscannable) {
+    if (s.scan) fail(id, 'an entry cannot be both unscannable and carry a scan');
+    else if (!s.unscannable.en || !s.unscannable.de) {
+      fail(id, 'unscannable must say why, in both languages');
+    }
+  } else if (s.scan === null || s.scan === undefined) {
     warnings.push(`${id}: no verdict recorded — run "npm run rescan" or remove the entry`);
   }
 }

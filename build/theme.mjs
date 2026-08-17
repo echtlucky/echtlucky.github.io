@@ -473,6 +473,10 @@ tr:last-child td { border-bottom: 0; }
 .skill.verdict-review { border-left-color: #bf8700; }
 .skill.verdict-block { border-left-color: var(--danger); }
 .skill.verdict-unscanned { border-left-color: var(--border-strong); }
+/* Nicht scannbar traegt eine GESTRICHELTE Kante. "Noch nicht geprueft" und
+   "hier gibt es nichts zu pruefen" duerfen nicht gleich aussehen -- sonst
+   liest sich das zweite als das erste, also als offene Aufgabe. */
+.skill.verdict-unscannable { border-left-color: var(--border-strong); border-left-style: dashed; }
 .skill h3 { font-size: 1rem; }
 .skill .meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8rem; color: var(--fg-subtle); font-family: var(--mono); }
 .skill .desc { grid-column: 1; color: var(--fg-muted); font-size: 0.92rem; }
@@ -485,6 +489,7 @@ tr:last-child td { border-bottom: 0; }
 .v-review { color: #bf8700; }
 .v-block { color: var(--danger); }
 .v-unscanned { color: var(--fg-subtle); }
+.v-unscannable { color: var(--fg-subtle); border-style: dashed; }
 .empty { padding: 40px; text-align: center; color: var(--fg-muted); border: 1px dashed var(--border); border-radius: var(--radius); }
 
 /* ── notes ──────────────────────────────────────────────────────────────── */
