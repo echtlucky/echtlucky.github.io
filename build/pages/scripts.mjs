@@ -84,7 +84,13 @@ const SPIELE = [
 ];
 
 const N_PRICED = PRODUCTS.filter((p) => typeof p.price === 'number').length;
-const N_SHOT = PRODUCTS.filter((p) => Array.isArray(p.media) && p.media.length > 0).length;
+const MEDIEN = (p) => (Array.isArray(p.media) ? p.media : []);
+/* Zwei Zahlen und nicht eine: die Oberflaechen sind aus den echten Dateien
+   gezeichnet, die Aufnahmen kommen aus dem laufenden Spiel. Beides unter
+   „Aufnahme" zu zaehlen waere bequem und gelogen. */
+const N_UI = PRODUCTS.filter((p) => MEDIEN(p).some((m) => m.kind === 'ui')).length;
+const N_SHOT = PRODUCTS.filter((p) => MEDIEN(p).some((m) => m.kind !== 'ui')).length;
+const N_MEDIA = PRODUCTS.filter((p) => MEDIEN(p).length > 0).length;
 const N_STABLE = PRODUCTS.filter((p) => !/^0\./.test(String(p.version))).length;
 
 /** Every headline on this page counts something, and a catalogue of one is a
@@ -137,9 +143,9 @@ const T = {
       ],
       [
         'Screenshots that do not exist',
-        N_SHOT === 0
-          ? 'There is no recording of any of these scripts yet. Rather than invent one, every preview is an empty frame that says what belongs there.'
-          : `A recording exists for ${N_SHOT} of ${N} scripts. The others show an empty frame that says what belongs there, instead of something invented.`,
+        N_MEDIA === 0
+          ? 'There is nothing to show for any of these scripts yet. Rather than invent something, every preview is an empty frame that says what belongs there.'
+          : `${N_UI} of ${N} scripts show their interface, drawn from the real files with sample data. ${N_SHOT === 0 ? 'None' : String(N_SHOT)} show a recording from the running game. The remaining ${N - N_MEDIA} show an empty frame that says what belongs there, instead of something invented.`,
       ],
     ],
 
@@ -154,6 +160,7 @@ const T = {
       'No recording of this script exists yet. A screenshot or a short clip from the game belongs here — this frame is a gap, not a picture of anything.',
     noShotLabel: 'No material',
     shotCaption: 'A recording from the game.',
+    uiCaption: 'The interface of the script, with sample data. Rendered from the real files, not a mock-up.',
 
     versionH: 'What the version number on each card means',
     versionP: `It is the <code>version</code> from the resource's own <code>fxmanifest.lua</code>, unchanged. Nothing on this page derives a status from it: anything below 1.0.0 is unfinished, and the description is the best guide to what that means in each case. Today: ${N_STABLE} of ${N} at 1.0.0 or above.`,
@@ -230,9 +237,9 @@ const T = {
       ],
       [
         'Screenshots, die es nicht gibt',
-        N_SHOT === 0
-          ? 'Zu keinem dieser Skripte liegt bisher eine Aufnahme vor. Statt eine zu erfinden, steht in jeder Vorschau ein leerer Rahmen, der sagt, was dort hingehört.'
-          : `Zu ${N_SHOT} von ${N} Skripten liegt eine Aufnahme vor. Die übrigen zeigen einen leeren Rahmen, der sagt, was dort hingehört — statt etwas Erfundenes.`,
+        N_MEDIA === 0
+          ? 'Zu keinem dieser Skripte liegt bisher etwas vor. Statt etwas zu erfinden, steht in jeder Vorschau ein leerer Rahmen, der sagt, was dort hingehört.'
+          : `${N_UI} von ${N} Skripten zeigen ihre Oberfläche, aus den echten Dateien mit Beispieldaten gezeichnet. ${N_SHOT === 0 ? 'Keines' : String(N_SHOT)} zeigt eine Aufnahme aus dem laufenden Spiel. Die übrigen ${N - N_MEDIA} zeigen einen leeren Rahmen, der sagt, was dort hingehört — statt etwas Erfundenes.`,
       ],
     ],
 
@@ -247,6 +254,7 @@ const T = {
       'Zu diesem Skript gibt es noch keine Aufnahme. Hier gehört ein Screenshot oder ein kurzer Ausschnitt aus dem Spiel hin — dieser Rahmen ist eine Leerstelle, kein Bild von irgendetwas.',
     noShotLabel: 'Kein Material',
     shotCaption: 'Eine Aufnahme aus dem Spiel.',
+    uiCaption: 'Die Oberfläche des Skripts, mit Beispieldaten. Aus den echten Dateien gezeichnet, kein Entwurf.',
 
     versionH: 'Was die Fassung auf jeder Karte bedeutet',
     versionP: `Es ist die <code>version</code> aus der <code>fxmanifest.lua</code> der Ressource, unverändert. Diese Seite leitet daraus keinen Status ab: Alles unter 1.0.0 ist nicht fertig, und was das im Einzelfall heißt, sagt am ehesten die Beschreibung. Stand heute: ${N_STABLE} von ${N} bei 1.0.0 oder höher.`,
@@ -345,7 +353,11 @@ function preview(p, t, lang) {
         `<video controls playsinline preload="none" width="${Number(m.w) || 1600}" height="${Number(m.h) || 900}"><source src="${esc(m.src)}"></video>`
       : `<img src="${esc(m.src)}" width="${Number(m.w) || 1600}" height="${Number(m.h) || 900}" loading="lazy" decoding="async" alt="${alt}">`;
 
-  return `<figure class="sh-shot">${media}<figcaption class="small muted">${esc(t.shotCaption)}</figcaption></figure>`;
+  /* Zwei Arten Material, zwei Saetze. Eine Oberflaeche, die mit
+     Beispieldaten aus ihren eigenen Dateien gezeichnet wurde, ist keine
+     Aufnahme aus dem Spiel — und darf auch nicht so heissen. */
+  const unter = m.kind === 'ui' ? t.uiCaption : t.shotCaption;
+  return `<figure class="sh-shot">${media}<figcaption class="small muted">${esc(unter)}</figcaption></figure>`;
 }
 
 function card(p, t, lang) {

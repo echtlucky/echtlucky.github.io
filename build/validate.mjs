@@ -205,12 +205,16 @@ errors.push(...shopErrors);
 // ── report ──────────────────────────────────────────────────────────────────
 
 const priced = (shop.products ?? []).filter((p) => typeof p.price === 'number').length;
-const shot = (shop.products ?? []).filter((p) => Array.isArray(p.media) && p.media.length).length;
+const medien = (p) => (Array.isArray(p.media) ? p.media : []);
+// Getrennt gezaehlt wie auf der Seite selbst: eine gezeichnete Oberflaeche
+// ist keine Aufnahme aus dem Spiel.
+const ui = (shop.products ?? []).filter((p) => medien(p).some((m) => m.kind === 'ui')).length;
+const shot = (shop.products ?? []).filter((p) => medien(p).some((m) => m.kind !== 'ui')).length;
 
 process.stdout.write(
   `\nskill index — ${catalog.skills.length} entries` +
     ` · script catalogue — ${(shop.products ?? []).length} products,` +
-    ` ${priced} priced, ${shot} with a recording\n\n`,
+    ` ${priced} priced, ${ui} with an interface, ${shot} with a recording\n\n`,
 );
 for (const w of warnings) process.stdout.write(`  ! ${w}\n`);
 for (const e of errors) process.stdout.write(`  ✗ ${e}\n`);
