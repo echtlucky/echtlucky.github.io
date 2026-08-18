@@ -600,9 +600,7 @@ export function body(lang) {
   </div>
 </section>
 
-<hr class="divider">
-
-<section>
+<section class="anschluss">
   <div class="wrap stack">
     <h2>${t.exportsH}</h2>
     <p class="muted narrow">${t.exportsP}</p>
@@ -622,9 +620,7 @@ export function body(lang) {
   </div>
 </section>
 
-<hr class="divider">
-
-<section>
+<section class="anschluss">
   <div class="wrap stack">
     <h2>${t.stagesH}</h2>
     <p class="muted narrow">${t.stagesP0}</p>

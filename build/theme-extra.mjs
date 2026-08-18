@@ -94,6 +94,52 @@ export const CSS_EXTRA = `
 .stats .n.n2 { color: var(--nexus); }
 .stats .n.i { color: var(--accent-idx); }
 
+/*
+ * Der Anschluss-Abschnitt: kein Trennstrich, aber mehr Luft.
+ *
+ * Wo eine Linie faellt, muss der Abstand die Arbeit uebernehmen — sonst
+ * rutschen zwei Abschnitte zu einem zusammen und man liest die zweite
+ * Ueberschrift als Unterpunkt der ersten.
+ */
+.anschluss { padding-top: clamp(56px, 7vw, 96px); }
+
+/*
+ * ══ DAS BEWEISSTUECK ══════════════════════════════════════════════════════
+ *
+ * Steht hier und nicht in der CSS einer einzelnen Seite, weil es inzwischen
+ * ZWEI Seiten benutzen: die Startseite und AIRLOCK. Eine zweite Kopie waere
+ * die, die als erste veraltet — und es sind fuenfzehn Zeilen, die dafuer auf
+ * jeder Seite mitfahren. Der Tausch lohnt sich.
+ *
+ * Die Kopfzeile und das <pre> teilen sich einen Rahmen — deshalb verliert das
+ * <pre> hier seinen eigenen Rahmen und seine oberen Radien. Zwei Kanten
+ * uebereinander, wie es ohne diese Zeile aussaehe, liest man als zwei
+ * Kaesten, die zufaellig aneinanderstossen.
+ *
+ * Die Bildunterschrift steht AUSSERHALB des Rahmens: sie gehoert zum Leser,
+ * nicht zur Ausgabe. Was im Rahmen steht, hat das Programm geschrieben; was
+ * darunter steht, sage ich.
+ */
+.beweis { margin: 0; }
+.beweis-kopf {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border); border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  font-family: var(--mono); font-size: 0.74rem;
+}
+.beweis-marke {
+  letter-spacing: 0.12em; font-weight: 700; color: var(--airlock);
+}
+.beweis-kopf code { color: var(--fg-subtle); background: none; padding: 0; }
+.beweis .terminal { border-radius: 0 0 var(--radius) var(--radius); border-top: 0; }
+.beweis-fuss {
+  margin-top: 12px; color: var(--fg-muted);
+  font-size: 0.88rem; line-height: 1.6; max-width: 68ch;
+}
+
+
 /* ── cards with presence ────────────────────────────────────────────────── */
 .card {
   transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease),

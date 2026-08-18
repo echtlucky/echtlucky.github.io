@@ -650,9 +650,8 @@ export function body(lang) {
   </div>
 </section>
 
-<hr class="divider">
-
-<section>
+<!-- Keine Trennlinie: Was die Fassungsnummer bedeutet, erklaert die Karten direkt darueber. Getrennt durch eine Linie sucht man den Bezug. -->
+<section class="anschluss">
   <div class="wrap stack narrow">
     <h2>${t.versionH}</h2>
     <p class="muted">${t.versionP}</p>
@@ -669,9 +668,8 @@ export function body(lang) {
   </div>
 </section>
 
-<hr class="divider">
-
-<section>
+<!-- Keine Trennlinie: Was vor einer Bestellung zu klaeren ist, schliesst an den Absatz darueber an. -->
+<section class="anschluss">
   <div class="wrap stack narrow">
     <h2>${t.askH}</h2>
     <p class="muted">${t.askP}</p>
