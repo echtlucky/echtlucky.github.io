@@ -21,6 +21,8 @@ const T = {
     h1: 'How AI assistants get tricked, and what you can do.',
     lede:
       'No fear-mongering and no jargon wall. Every section comes at two depths — pick the one you want, switch any time. Nothing here needs you to be a programmer.',
+    tocTitle: 'On this page',
+    tocLabel: 'Sections of this page',
     basic: 'Plain language',
     deep: 'Technical detail',
     toggleLabel: 'Choose a depth',
@@ -133,6 +135,8 @@ airlock verify ~/.claude/skills</pre>
     h1: 'Wie KI-Assistenten ausgetrickst werden — und was du tun kannst.',
     lede:
       'Keine Panikmache und keine Fachbegriff-Wand. Jeder Abschnitt kommt in zwei Tiefen — nimm die, die du willst, wechsle jederzeit. Nichts hier setzt voraus, dass du programmieren kannst.',
+    tocTitle: 'Auf dieser Seite',
+    tocLabel: 'Abschnitte dieser Seite',
     basic: 'Klartext',
     deep: 'Technisches Detail',
     toggleLabel: 'Tiefe wählen',
@@ -244,6 +248,49 @@ airlock verify ~/.claude/skills</pre>
 export function body(lang) {
   const t = T[lang];
 
+  /*
+   * ══ EIN VERZEICHNIS, WEIL DIE SEITE FUENF BILDSCHIRME LANG IST ═════════
+   *
+   * Gemessen: 4087px Hoehe, sieben Abschnitte, kein einziger Hinweis auf die
+   * Form des Ganzen. Wer hier landet, sieht eine Ueberschrift und danach
+   * Text — er weiss nicht, wie lang es wird, wo er steht, und kann nicht zu
+   * der einen Frage springen, die er wirklich hat.
+   *
+   * Der Anker kommt aus `anchorHeadings` in layout.mjs und wird hier mit
+   * DERSELBEN Regel gebildet: kleingeschrieben, alles ausser Buchstaben und
+   * Ziffern zu Bindestrichen. Zwei Listen von Hand waeren zwei, die
+   * auseinanderlaufen — deshalb entsteht das Verzeichnis aus derselben
+   * Datenquelle wie die Abschnitte darunter.
+   */
+  const anker = (text) => String(text)
+    .toLowerCase()
+    .replace(/<[^>]*>/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  const verzeichnis = `
+<nav class="wegweiser" aria-label="${t.tocLabel}">
+  <span class="wegweiser-titel">${t.tocTitle}</span>
+  <ol>
+    ${[
+      ...t.topics.map((topic) => [topic.n, topic.h]),
+      /*
+       * Die letzten beiden Abschnitte stehen nicht in `topics`, sondern als
+       * feste Bloecke am Seitenende — sie sind trotzdem Abschnitte dieser
+       * Seite. Ohne sie zaehlte das Verzeichnis fuenf, waehrend sieben
+       * Ueberschriften da sind, und behauptete damit, die Seite ende frueher.
+       * Ein unvollstaendiges Verzeichnis ist schlechter als gar keins.
+       *
+       * Sie tragen keine Nummer, weil sie keine Lernabschnitte sind: der eine
+       * ist der naechste Schritt, der andere die Hilfe.
+       */
+      ['', t.ctaH],
+      ['', t.askH],
+    ].map(([n, h]) => `<li><a href="#${anker(h)}">
+      <span class="wegweiser-n">${n || '·'}</span>${h}</a></li>`).join('')}
+  </ol>
+</nav>`;
+
   const topics = t.topics
     .map(
       (topic) => `
@@ -268,6 +315,7 @@ export function body(lang) {
         <button type="button" data-level="deep" aria-pressed="false">${t.deep}</button>
       </div>
     </div>
+    ${verzeichnis}
   </div>
 </section>
 

@@ -462,6 +462,20 @@ tr:last-child td { border-bottom: 0; }
 }
 .chip:hover { border-color: var(--border-strong); color: var(--fg); }
 .chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+/*
+ * Die Zahl im Filterknopf sagt, wie viele Eintraege dahinter liegen.
+ *
+ * Sie ist der Grund, warum die Reihe kurz sein darf: ein Filter ohne Zahl ist
+ * ein Versprechen, ein Filter mit Zahl ist eine Auskunft. Wer "community 8"
+ * liest, weiss vor dem Klick, ob sich der Klick lohnt.
+ *
+ * Tabellenziffern, damit die Zahlen untereinander nicht wackeln.
+ */
+.chip-n {
+  margin-left: 7px; opacity: 0.55;
+  font-variant-numeric: tabular-nums; font-size: 0.9em;
+}
+.chip[aria-pressed="true"] .chip-n { opacity: 0.7; }
 
 .skill-list { display: grid; gap: 12px; }
 .skill {
