@@ -104,6 +104,46 @@ export const CSS_EXTRA = `
 .anschluss { padding-top: clamp(56px, 7vw, 96px); }
 
 /*
+ * ══ DER WEGWEISER ═════════════════════════════════════════════════════════
+ *
+ * Ein Verzeichnis am Anfang einer langen Leseseite. Es ist kein Menue: es
+ * sagt zuerst, WIE LANG das hier wird, und erst danach, wohin man springen
+ * kann. Deshalb steht die Nummer vor dem Titel und nicht ein Aufzaehlpunkt.
+ *
+ * Zwei Spalten ab Tablettbreite, damit sieben Zeilen nicht selbst zu einer
+ * halben Bildschirmhoehe werden — das waere derselbe Fehler wie die
+ * Schlagwortwand auf der Indexseite.
+ */
+.wegweiser {
+  margin-top: 1.6rem; padding: 18px 20px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--e1), var(--sheen);
+  max-width: 62ch;
+}
+.wegweiser-titel {
+  display: block; margin-bottom: 10px;
+  font-family: var(--anzeige); font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.13em; text-transform: uppercase; color: var(--fg-subtle);
+}
+.wegweiser ol {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 1px 26px;
+}
+@media (min-width: 620px) { .wegweiser ol { grid-template-columns: 1fr 1fr; } }
+.wegweiser a {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 5px 8px; margin-inline: -8px; border-radius: var(--radius);
+  color: var(--fg-muted); font-size: 0.92rem;
+  transition: color var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.wegweiser a:hover { color: var(--fg); background: var(--surface-2); text-decoration: none; }
+/* Tabellenziffern: sieben Nummern untereinander duerfen nicht wackeln. */
+.wegweiser-n {
+  font-family: var(--mono); font-size: 0.78rem; color: var(--fg-subtle);
+  font-variant-numeric: tabular-nums; flex: none;
+}
+
+/*
  * ══ DAS BEWEISSTUECK ══════════════════════════════════════════════════════
  *
  * Steht hier und nicht in der CSS einer einzelnen Seite, weil es inzwischen

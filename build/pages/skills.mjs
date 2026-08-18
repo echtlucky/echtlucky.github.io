@@ -135,11 +135,36 @@ export function body(lang) {
   const t = T[lang];
   const skills = payload(lang);
   const n = skills.length;
-  const tags = [...new Set(skills.flatMap((s) => s.tags))].sort();
+  /*
+   * ══ NUR SCHLAGWOERTER, DIE WIRKLICH ORDNEN ════════════════════════════
+   *
+   * Hier standen ALLE Schlagwoerter aus dem Katalog — vierzig Knoepfe in drei
+   * Reihen, 125px hoch. Nachgezaehlt:
+   *
+   *     39 Schlagwoerter auf 21 Eintraege
+   *     32 davon treffen GENAU EINEN Eintrag
+   *
+   * Das sind keine Filter. Wer auf "signing" klickt, bekommt eine Karte — und
+   * um das herauszufinden, muss er erst zwischen vierzig gleich aussehenden
+   * Knoepfen suchen. Die Reihe drueckte die erste Karte auf y = 863 bei 900px
+   * Fensterhoehe: man sah einen Index, ohne einen einzigen Eintrag zu sehen.
+   *
+   * Ein Filter verdient seinen Platz erst, wenn er etwas TEILT. Ab zwei
+   * Treffern. Die uebrigen stehen weiter auf den Karten, wo sie hingehoeren,
+   * und die Volltextsuche findet sie ohnehin — sie durchsucht die Schlagwoerter
+   * mit.
+   */
+  const haeufigkeit = skills.flatMap((s) => s.tags)
+    .reduce((z, tag) => (z[tag] = (z[tag] || 0) + 1, z), {});
+  const tags = [...new Set(skills.flatMap((s) => s.tags))]
+    .filter((tag) => haeufigkeit[tag] >= 2)
+    .sort((a, b) => haeufigkeit[b] - haeufigkeit[a] || a.localeCompare(b));
 
   const chips = [
     `<button class="chip" data-tag="" aria-pressed="true">${t.all}</button>`,
-    ...tags.map((tag) => `<button class="chip" data-tag="${tag}" aria-pressed="false">${tag}</button>`),
+    ...tags.map((tag) =>
+      `<button class="chip" data-tag="${tag}" aria-pressed="false">${tag}` +
+      `<span class="chip-n" aria-hidden="true">${haeufigkeit[tag]}</span></button>`),
   ].join('');
 
   return `
