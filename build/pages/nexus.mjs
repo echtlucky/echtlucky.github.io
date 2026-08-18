@@ -161,9 +161,9 @@ export function body(lang) {
   </div>
 </section>
 
-<hr class="divider">
-
-<section>
+<!-- Keine Trennlinie: warum es neben AIRLOCK steht, ist die Fortsetzung der
+     Haltung darueber und kein neues Thema. -->
+<section class="anschluss">
   <div class="wrap grid grid-2">
     <div class="stack">
       <h2>${t.togetherH}</h2>

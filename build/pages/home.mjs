@@ -274,15 +274,6 @@ const BEREICH_CSS = `
  * um jede Gruppe noetig waere -- die Karten haben schon genug Kanten.
  */
 /*
- * Der Anschluss-Abschnitt: kein Trennstrich, aber mehr Luft.
- *
- * Wo eine Linie faellt, muss der Abstand die Arbeit uebernehmen — sonst
- * rutschen zwei Abschnitte zu einem zusammen und man liest die zweite
- * Ueberschrift als Unterpunkt der ersten.
- */
-.anschluss { padding-top: clamp(56px, 7vw, 96px); }
-
-/*
  * Die Schlussnotiz.
  *
  * Kleinere Ueberschrift, drei Spalten ohne Karten, ohne farbige Kante. Sie
@@ -304,37 +295,6 @@ const BEREICH_CSS = `
    Kaesten zu machen. Neutral und nicht gruen — das Farbbudget der Seite ist
    vergeben. */
 .notizreihe > div { border-top: 1px solid var(--border); padding-top: 12px; }
-
-/*
- * Das Beweisstueck: Kopfzeile, Ausgabe, Bildunterschrift als EIN Koerper.
- *
- * Die Kopfzeile und das <pre> teilen sich einen Rahmen — deshalb verliert das
- * <pre> hier seinen eigenen Rahmen und seine oberen Radien. Zwei Kanten
- * uebereinander, wie es ohne diese Zeile aussaehe, liest man als zwei
- * Kaesten, die zufaellig aneinanderstossen.
- *
- * Die Bildunterschrift steht AUSSERHALB des Rahmens: sie gehoert zum Leser,
- * nicht zur Ausgabe. Was im Rahmen steht, hat das Programm geschrieben; was
- * darunter steht, sage ich.
- */
-.beweis { margin: 0; }
-.beweis-kopf {
-  display: flex; align-items: center; gap: 12px;
-  padding: 9px 14px;
-  background: var(--surface-2);
-  border: 1px solid var(--border); border-bottom: 0;
-  border-radius: var(--radius) var(--radius) 0 0;
-  font-family: var(--mono); font-size: 0.74rem;
-}
-.beweis-marke {
-  letter-spacing: 0.12em; font-weight: 700; color: var(--airlock);
-}
-.beweis-kopf code { color: var(--fg-subtle); background: none; padding: 0; }
-.beweis .terminal { border-radius: 0 0 var(--radius) var(--radius); border-top: 0; }
-.beweis-fuss {
-  margin-top: 12px; color: var(--fg-muted);
-  font-size: 0.88rem; line-height: 1.6; max-width: 68ch;
-}
 
 .gruppentitel {
   display: flex; align-items: center; gap: 14px;
