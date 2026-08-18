@@ -1,3 +1,4 @@
+import { slugify } from '../search.mjs';
 import { href, SITE } from '../layout.mjs';
 
 export const slug = 'learn';
@@ -256,17 +257,16 @@ export function body(lang) {
    * Text — er weiss nicht, wie lang es wird, wo er steht, und kann nicht zu
    * der einen Frage springen, die er wirklich hat.
    *
-   * Der Anker kommt aus `anchorHeadings` in layout.mjs und wird hier mit
-   * DERSELBEN Regel gebildet: kleingeschrieben, alles ausser Buchstaben und
-   * Ziffern zu Bindestrichen. Zwei Listen von Hand waeren zwei, die
-   * auseinanderlaufen — deshalb entsteht das Verzeichnis aus derselben
-   * Datenquelle wie die Abschnitte darunter.
+   * Der Anker kommt aus DERSELBEN `slugify`, die auch `anchorHeadings` in
+   * layout.mjs benutzt — importiert, nicht nachgebaut.
+   *
+   * Nachgebaut stand hier zuerst `[^a-z0-9]+`. Das sieht richtig aus und ist
+   * es fuer Englisch auch. Im Deutschen zerhackt es jeden Umlaut: aus
+   * "Was laedt ein Assistent eigentlich?" wurde `was-l-dt-...`, waehrend die
+   * echte Regel mit \p{L} `was-laedt-...` bildet. Zwei tote Verweise, und
+   * zwar nur in einer Sprache — die englische Seite war fehlerfrei und hat
+   * mich die Pruefung fuer bestanden halten lassen.
    */
-  const anker = (text) => String(text)
-    .toLowerCase()
-    .replace(/<[^>]*>/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 
   const verzeichnis = `
 <nav class="wegweiser" aria-label="${t.tocLabel}">
@@ -286,7 +286,7 @@ export function body(lang) {
        */
       ['', t.ctaH],
       ['', t.askH],
-    ].map(([n, h]) => `<li><a href="#${anker(h)}">
+    ].map(([n, h]) => `<li><a href="#${slugify(h)}">
       <span class="wegweiser-n">${n || '·'}</span>${h}</a></li>`).join('')}
   </ol>
 </nav>`;

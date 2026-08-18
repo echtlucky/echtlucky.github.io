@@ -12,6 +12,7 @@
  */
 
 import { readFileSync, existsSync } from 'node:fs';
+import { slugify } from '../search.mjs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderMarkdown } from '../markdown.mjs';
@@ -72,11 +73,39 @@ export function legalPage(spec) {
           }</p></div>`
         : '';
 
+      /*
+       * ══ EIN VERZEICHNIS, WEIL NIEMAND EINEN RECHTSTEXT AM STUECK LIEST ═══
+       *
+       * Die Datenschutzerklaerung ist 6.1 Bildschirme lang und hat zehn
+       * Abschnitte. Wer sie oeffnet, sucht in aller Regel EINE Sache — was
+       * gespeichert wird, wer es bekommt, wie man widerspricht — und blaettert
+       * sonst daran vorbei.
+       *
+       * Die Ueberschriften kommen aus Markdown, also werden sie aus dem
+       * gerenderten HTML gelesen statt zweitgepflegt. Der Anker kommt aus
+       * DERSELBEN `slugify`, die `anchorHeadings` benutzt: nachgebaut wirft
+       * eine naive Regel jeden Umlaut weg, und das faellt in der englischen
+       * Fassung nicht auf.
+       */
+      const kapitel = [...html.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>/gi)]
+        .map((m) => m[1].replace(/<[^>]*>/g, '').trim())
+        .filter(Boolean);
+
+      const verzeichnis = kapitel.length < 4 ? '' : `
+<nav class="wegweiser" aria-label="${lang === 'de' ? 'Abschnitte dieses Dokuments' : 'Sections of this document'}">
+  <span class="wegweiser-titel">${lang === 'de' ? 'Auf dieser Seite' : 'On this page'}</span>
+  <ol>
+    ${kapitel.map((k, i) => `<li><a href="#${slugify(k)}">
+      <span class="wegweiser-n">${String(i + 1).padStart(2, '0')}</span>${k}</a></li>`).join('')}
+  </ol>
+</nav>`;
+
       return `
 <section class="hero" style="padding-bottom:20px">
   <div class="wrap stack">
     <span class="eyebrow">${spec.eyebrows[lang]}</span>
     <h1>${spec.headings[lang]}</h1>
+    ${verzeichnis}
   </div>
 </section>
 
