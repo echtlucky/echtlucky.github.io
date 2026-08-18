@@ -9,7 +9,7 @@
 
   "_price": "null means no price is set, and the page then shows no price at all. A number here is read as a value in \"currency\" and appears on the card and in the basket. Do not put a placeholder number in this field: a number somebody takes for real is worse than no number.",
 
-  "_media": "[] means there is no screenshot or recording of this resource yet, and the page then shows an empty frame that says so. An entry is { \"type\": \"image\" | \"video\", \"src\": \"/bilder/…\", \"w\": 1600, \"h\": 900, \"alt\": { \"de\": \"…\", \"en\": \"…\" } }. Width and height are required so the page does not jump while the file loads. What must never go in here: a rendering of a screen nobody has photographed. An honest gap is the correct content for a missing screenshot.",
+  "_media": "[] means there is nothing to show for this resource yet, and the page then shows an empty frame that says so. An entry is { \"type\": \"image\" | \"video\", \"kind\": \"ui\" | \"game\", \"src\": \"/bilder/…\", \"w\": 1600, \"h\": 900, \"alt\": { \"de\": \"…\", \"en\": \"…\" } }. Width and height are required so the page does not jump while the file loads. \"kind\" decides the caption and is not decoration: \"game\" is a recording from the running server; \"ui\" is the resource's own interface, rendered from its real html/css/js with sample data — the same files the player gets, not a redrawing of them. Both are the thing itself. What must never go in here is a picture of a screen that was invented rather than rendered or recorded. An honest gap is the correct content for a missing screenshot.",
 
   "_requires": "Other resources this one declares in its fxmanifest. Shown so a buyer can see before ordering that a script drags a second one along.",
 
@@ -84,7 +84,17 @@
         "en": "Banks across the whole island: blips, counters for paying in and out, transfers with a confirmation step, cash machines around the city, and a statement in which every entry names its reason."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_bank.webp",
+          "w": 1600, "h": 943,
+          "alt": {
+            "de": "Die Bankfiliale: Kontostand, Bargeld und die vier Schalter daneben.",
+            "en": "The bank branch: balance, cash and the four counters beside them."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_charakter",
@@ -96,7 +106,17 @@
         "en": "Several characters per player: selection, creation and starting point."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_charakter.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Die Charakterauswahl mit drei Figuren und einem freien Platz. In der Mitte steht im Spiel das Modell.",
+            "en": "Character selection with three characters and one free slot. The model stands in the middle in-game."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_chat",
@@ -108,7 +128,17 @@
         "en": "The chat: bottom left, understated, fading out. Roleplay channels with a range, and suggestions the server filters."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_chat.webp",
+          "w": 862, "h": 288,
+          "alt": {
+            "de": "Der Chat mit Zeitstempeln über dem Spielbild.",
+            "en": "The chat with timestamps over the game."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_fahrschule",
@@ -132,7 +162,17 @@
         "en": "Park vehicles and take them out again — the row in the database is the truth."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_garage.webp",
+          "w": 1600, "h": 976,
+          "alt": {
+            "de": "Die Garage mit drei Fahrzeugen, Zustandsanzeigen und der Gebühr.",
+            "en": "The garage with three vehicles, condition dials and the fee."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_haus",
@@ -180,7 +220,17 @@
         "en": "The server's map in one place — your own blips, other people's removed, and a workshop of your own."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_karte.webp",
+          "w": 1600, "h": 1137,
+          "alt": {
+            "de": "Die Werkstatt: Dienste mit Preisen, Lackierung und Finish.",
+            "en": "The workshop: services with prices, paint and finish."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_kofferraum",
@@ -277,7 +327,17 @@
         "en": "A pause menu of its own: who you currently are, what you can change, the way into the team and the way out."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_pause.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Das Pausenmenü mit acht Kacheln.",
+            "en": "The pause menu with eight tiles."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_phone",
@@ -349,7 +409,17 @@
         "en": "The tablet. Three columns, notes and pictures — not a second phone."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_tablet.webp",
+          "w": 1600, "h": 1085,
+          "alt": {
+            "de": "Das Tablet mit der Notizenliste.",
+            "en": "The tablet with its list of notes."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_tanken",
@@ -421,7 +491,17 @@
         "en": "Tools for the people building the server. Only with the dev.werkzeuge permission."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_werkbank.webp",
+          "w": 622, "h": 1282,
+          "alt": {
+            "de": "Die Werkbank: Animationen, Partikel, Bildeffekte und Maßband.",
+            "en": "The workbench: animations, particles, screen effects and tape measure."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_wetter",
@@ -469,7 +549,17 @@
         "en": "The Los Santos newspaper — what happened is on the newsstand the next morning."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_zeitung.webp",
+          "w": 1600, "h": 1414,
+          "alt": {
+            "de": "Eine Ausgabe der Zeitung mit Rubriken und Meldungen.",
+            "en": "An issue of the newspaper with sections and reports."
+          }
+        }
+      ]
     }
   ]
 }
