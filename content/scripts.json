@@ -208,7 +208,17 @@
         "en": "The faction construction kit: create factions in the game, ranks as a table, markers placed on the ground by standing where you want them, a boss menu with a faction account and payroll, and the seam to the Discord application system."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_jobs.webp",
+          "w": 1600, "h": 976,
+          "alt": {
+            "de": "Das Chefmenü: drei Fraktionen, Kasse, Mitglieder und Ränge.",
+            "en": "The boss menu: three factions, treasury, members and ranks."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_karte",
@@ -254,7 +264,17 @@
         "en": "The server's first screen — and the only one everybody sees."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_ladebildschirm.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Der Ladebildschirm mit Fortschritt, Tastenbelegung und wechselnden Hinweisen.",
+            "en": "The loading screen with progress, key bindings and rotating notes."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_lichtbild",
@@ -315,7 +335,17 @@
         "en": "The emergency call, with a dispatcher. Dial 110 and you are asked questions — and what arrives is what you said."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_notruf.webp",
+          "w": 1400, "h": 520,
+          "alt": {
+            "de": "Der Notruf: die Leitstelle fragt, was passiert ist.",
+            "en": "The emergency call: the dispatcher asks what happened."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_pause",
@@ -349,7 +379,17 @@
         "en": "The phone — numbers, messages, calls, and sharing with people nearby."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_phone.webp",
+          "w": 746, "h": 1566,
+          "alt": {
+            "de": "Das Handy: fünfzehn Apps auf dem Startbildschirm, Dock und Suche.",
+            "en": "The phone: fifteen apps on the home screen, dock and search."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_rennen",
