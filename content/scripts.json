@@ -36,7 +36,17 @@
         "en": "Administration over Discord: kick, time out, ban, screenshot — and the doorman on the server that enforces them."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_admin.webp",
+          "w": 518, "h": 572,
+          "alt": {
+            "de": "Das Dienstschild: Rang, laufende Werkzeuge, die Tastenkürzel und der Ticker darunter.",
+            "en": "The duty badge: rank, active tools, the keyboard shortcuts and the ticker below."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_ankunft",
@@ -48,7 +58,17 @@
         "en": "The arrival: the approach by air, the taxi ride, the first steps taken on a phone."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_ankunft.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Der Vorspann: Kinobalken, Ortstitel und der Wegweiser zur Meldestelle.",
+            "en": "The opening credits: letterbox bars, the location title and the pointer to the registration office."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_arbeit",
@@ -72,7 +92,17 @@
         "en": "The place where you buy a car. Around eighty vehicles from the base game, nothing to download."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_autohaus.webp",
+          "w": 1362, "h": 1280,
+          "alt": {
+            "de": "Der Katalog: Klassen links, Wagen mit Preis, gesperrte Motorräder ohne Führerschein.",
+            "en": "The catalogue: classes on the left, cars with prices, motorbikes locked without a licence."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_bank",
@@ -150,7 +180,17 @@
         "en": "A theory test, a practical test with an examiner, and a licence you have earned."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_fahrschule.webp",
+          "w": 1280, "h": 616,
+          "alt": {
+            "de": "Die Fahrschule: Auto, Motorrad und Lkw mit ihren Preisen.",
+            "en": "The driving school: car, motorbike and lorry with their prices."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_garage",
@@ -323,7 +363,17 @@
         "en": "Picking a lock, a terminal, cables — the skill games other scripts call into."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_minispiele.webp",
+          "w": 1040, "h": 800,
+          "alt": {
+            "de": "Schloss knacken: die Nadel, drei Stifte und die Zeitleiste darüber.",
+            "en": "Lockpicking: the needle, three pins and the timer above them."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_notruf",
@@ -483,7 +533,17 @@
         "en": "Marlon comes to pick you up. The number from the opening credits, actually connected."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_taxi.webp",
+          "w": 610, "h": 422,
+          "alt": {
+            "de": "Der Taxameter: Fahrpreis, gefahrene Strecke und Grundpreis.",
+            "en": "The taxi meter: fare, distance travelled and base rate."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_ui",
@@ -495,7 +555,17 @@
         "en": "The interface every Skillry script shares — notifications, announcements, HUD, instrument cluster and the quick-access wheel."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_ui.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Die gemeinsame Oberfläche im Bild: Geld oben rechts, Beruf und Zustände unten links, eine Meldung dazwischen.",
+            "en": "The shared interface in view: money top right, job and status bottom left, a notification between them."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_voice",
