@@ -80,7 +80,17 @@
         "en": "Ten ways to come by money. Seven of them legal, three not."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "shared-ui",
+          "src": "/bilder/oberflaechen/skillry_arbeit.webp",
+          "w": 850, "h": 422,
+          "alt": {
+            "de": "Zwei Meldungen einer Schicht: angetreten in Cypress Flats, ausbezahlt mit 240 $ für 12 Kisten.",
+            "en": "Two notifications from one shift: clocked in at Cypress Flats, paid 240 $ for 12 crates."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_autohaus",
@@ -236,7 +246,17 @@
         "en": "The HUD package: an instrument cluster fed by real vehicle data, a seatbelt that beeps and throws you out, a death screen, and announcements everybody sees."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "shared-ui",
+          "src": "/bilder/oberflaechen/skillry_hud.webp",
+          "w": 1600, "h": 900,
+          "alt": {
+            "de": "Der HUD im Wagen: Geld oben rechts, Beruf, Kompass und Zustände unten links, das Kombiinstrument mit Tempo, Tank und Gang unten rechts.",
+            "en": "The HUD while driving: money top right, job, compass and vitals bottom left, the instrument cluster with speed, fuel and gear bottom right."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_jobs",
@@ -521,7 +541,17 @@
         "en": "Refuelling at every pump on the map — yourself, with the hose and a held key, or stay in the seat and let an attendant come to you."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "shared-ui",
+          "src": "/bilder/oberflaechen/skillry_tanken.webp",
+          "w": 822, "h": 432,
+          "alt": {
+            "de": "Der Tankvorgang: die Leiste bei 30 Prozent, darunter die Taste zum Abbrechen und der Preis je Liter.",
+            "en": "Refuelling in progress: the bar at 30 per cent, below it the key to cancel and the price per litre."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_taxi",
@@ -577,7 +607,17 @@
         "en": "Proximity speech at three levels, muffling inside vehicles, and radio channels by profession. The transport itself sits behind a layer you can swap out."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "shared-ui",
+          "src": "/bilder/oberflaechen/skillry_voice.webp",
+          "w": 572, "h": 92,
+          "alt": {
+            "de": "Die Stimmzeile: grünes Mikrofon beim Senden, Reichweite „Rufen“ und 24 Meter auf der Leiste.",
+            "en": "The voice row: green microphone while transmitting, range “shouting” and 24 metres on the bar."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_wache",
@@ -637,7 +677,7 @@
       "price": null,
       "media": [
         {
-          "type": "image", "kind": "ui",
+          "type": "image", "kind": "shared-ui",
           "src": "/bilder/oberflaechen/skillry_wheel.webp",
           "w": 992, "h": 992,
           "alt": {

@@ -208,8 +208,9 @@ const priced = (shop.products ?? []).filter((p) => typeof p.price === 'number').
 const medien = (p) => (Array.isArray(p.media) ? p.media : []);
 // Getrennt gezaehlt wie auf der Seite selbst: eine gezeichnete Oberflaeche
 // ist keine Aufnahme aus dem Spiel.
-const ui = (shop.products ?? []).filter((p) => medien(p).some((m) => m.kind === 'ui')).length;
-const shot = (shop.products ?? []).filter((p) => medien(p).some((m) => m.kind !== 'ui')).length;
+const oberflaeche = (m) => m.kind === 'ui' || m.kind === 'shared-ui';
+const ui = (shop.products ?? []).filter((p) => medien(p).some(oberflaeche)).length;
+const shot = (shop.products ?? []).filter((p) => medien(p).some((m) => !oberflaeche(m))).length;
 
 process.stdout.write(
   `\nskill index — ${catalog.skills.length} entries` +
