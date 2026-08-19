@@ -635,7 +635,17 @@
         "en": "The quick-access wheel, with something in it — vehicle, emotes, interaction and the job."
       },
       "price": null,
-      "media": []
+      "media": [
+        {
+          "type": "image", "kind": "ui",
+          "src": "/bilder/oberflaechen/skillry_wheel.webp",
+          "w": 992, "h": 992,
+          "alt": {
+            "de": "Das Schnellzugriffsrad: sieben Segmente, „Fahrzeug“ unter dem Zeiger, „Werkbank“ gesperrt, weil keine in der Nähe steht.",
+            "en": "The quick-access wheel: seven segments, “Vehicle” under the pointer, “Workbench” locked because there is none nearby."
+          }
+        }
+      ]
     },
     {
       "id": "skillry_wirtschaft",
