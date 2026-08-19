@@ -88,8 +88,9 @@ const MEDIEN = (p) => (Array.isArray(p.media) ? p.media : []);
 /* Zwei Zahlen und nicht eine: die Oberflaechen sind aus den echten Dateien
    gezeichnet, die Aufnahmen kommen aus dem laufenden Spiel. Beides unter
    „Aufnahme" zu zaehlen waere bequem und gelogen. */
-const N_UI = PRODUCTS.filter((p) => MEDIEN(p).some((m) => m.kind === 'ui')).length;
-const N_SHOT = PRODUCTS.filter((p) => MEDIEN(p).some((m) => m.kind !== 'ui')).length;
+const OBERFLAECHE = (m) => m.kind === 'ui' || m.kind === 'shared-ui';
+const N_UI = PRODUCTS.filter((p) => MEDIEN(p).some(OBERFLAECHE)).length;
+const N_SHOT = PRODUCTS.filter((p) => MEDIEN(p).some((m) => !OBERFLAECHE(m))).length;
 const N_MEDIA = PRODUCTS.filter((p) => MEDIEN(p).length > 0).length;
 const N_STABLE = PRODUCTS.filter((p) => !/^0\./.test(String(p.version))).length;
 
@@ -161,6 +162,7 @@ const T = {
     noShotLabel: 'No material',
     shotCaption: 'A recording from the game.',
     uiCaption: 'The interface of the script, with sample data. Rendered from the real files, not a mock-up.',
+    sharedCaption: 'What this script puts on screen — drawn by the shared interface skillry_ui, with sample data from the real files.',
 
     versionH: 'What the version number on each card means',
     versionP: `It is the <code>version</code> from the resource's own <code>fxmanifest.lua</code>, unchanged. Nothing on this page derives a status from it: anything below 1.0.0 is unfinished, and the description is the best guide to what that means in each case. Today: ${N_STABLE} of ${N} at 1.0.0 or above.`,
@@ -255,6 +257,7 @@ const T = {
     noShotLabel: 'Kein Material',
     shotCaption: 'Eine Aufnahme aus dem Spiel.',
     uiCaption: 'Die Oberfläche des Skripts, mit Beispieldaten. Aus den echten Dateien gezeichnet, kein Entwurf.',
+    sharedCaption: 'Was dieses Skript auf den Schirm bringt — gezeichnet von der gemeinsamen Oberfläche skillry_ui, mit Beispieldaten aus den echten Dateien.',
 
     versionH: 'Was die Fassung auf jeder Karte bedeutet',
     versionP: `Es ist die <code>version</code> aus der <code>fxmanifest.lua</code> der Ressource, unverändert. Diese Seite leitet daraus keinen Status ab: Alles unter 1.0.0 ist nicht fertig, und was das im Einzelfall heißt, sagt am ehesten die Beschreibung. Stand heute: ${N_STABLE} von ${N} bei 1.0.0 oder höher.`,
@@ -356,7 +359,12 @@ function preview(p, t, lang) {
   /* Zwei Arten Material, zwei Saetze. Eine Oberflaeche, die mit
      Beispieldaten aus ihren eigenen Dateien gezeichnet wurde, ist keine
      Aufnahme aus dem Spiel — und darf auch nicht so heissen. */
-  const unter = m.kind === 'ui' ? t.uiCaption : t.shotCaption;
+  /* Manche Skripte haben gar keine eigene Oberflaeche und zeichnen durch
+     skillry_ui. Ihr Bild ist echt, aber es ist nicht ihr Fenster — und
+     „Die Oberflaeche des Skripts" waere dafuer die falsche Zeile. */
+  const unter = m.kind === 'ui' ? t.uiCaption
+    : m.kind === 'shared-ui' ? t.sharedCaption
+    : t.shotCaption;
   return `<figure class="sh-shot">${media}<figcaption class="small muted">${esc(unter)}</figcaption></figure>`;
 }
 
