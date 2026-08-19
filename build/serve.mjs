@@ -21,6 +21,11 @@ const TYPES = {
   '.json': 'application/json',
   '.css': 'text/css',
   '.js': 'text/javascript',
+  // Ohne diese zwei liefert der Vorschauserver Bilder und Schriften als
+  // application/octet-stream aus. Browser raten das Bild noch richtig,
+  // eine Schrift nicht immer — und auf GitHub Pages faellt es nie auf.
+  '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
 };
 
 createServer((req, res) => {
