@@ -23,6 +23,7 @@ import * as learn from './pages/learn.mjs';
 import * as scripts from './pages/scripts.mjs';
 import * as api from './pages/api.mjs';
 import * as forum from './pages/forum.mjs';
+import * as geobingo from './pages/geobingo.mjs';
 import * as anmelden from './pages/anmelden.mjs';
 import * as konto from './pages/konto.mjs';
 import * as uebergabe from './pages/uebergabe.mjs';
@@ -35,7 +36,7 @@ const STATISCH = join(ROOT, 'static');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
-const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, anmelden, konto, uebergabe, impressum, privacy];
+const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, geobingo, anmelden, konto, uebergabe, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 
@@ -66,6 +67,9 @@ for (const lang of LANGS) {
       // Impressum zu laden waere dieselbe Nachlaessigkeit, gegen die der
       // Kommentar darueber schon argumentiert.
       bewegung: typeof page.bewegung === 'number' ? page.bewegung : 0,
+      // Eine Seite ohne Rahmen. Siehe renderBlank() in layout.mjs — und den
+      // Grund dafuer, der dort steht, weil er kein Geschmacksurteil ist.
+      blank: page.blank === true,
     });
 
     const dir = join(OUT, base(lang).replace(/^\//, ''), page.slug);
@@ -75,6 +79,10 @@ for (const lang of LANGS) {
     written.push([href(lang, page.slug), Buffer.byteLength(html)]);
 
     // Index the rendered page, so search only ever finds what a reader can see.
+    // Ausser sie soll gar nicht gefunden werden: eine `blank`-Seite haengt
+    // hinter einem Code, und in der Suche dieser Website zu stehen waere genau
+    // die Tuer, die der Code zumachen soll.
+    if (page.blank) continue;
     searchIndex.push(...indexPage({
       lang,
       url: href(lang, page.slug),
@@ -95,6 +103,7 @@ const ORIGIN = SITE_CFG.origin;
 const urls = [];
 for (const lang of LANGS) {
   for (const page of PAGES) {
+    if (page.blank) continue;
     const loc = `${ORIGIN}${href(lang, page.slug)}`;
     const alts = LANGS.map(
       (l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}"/>`,

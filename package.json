@@ -11,6 +11,7 @@
     "linkcheck": "node build/linkcheck.mjs",
     "serve": "node build/serve.mjs 8080",
     "check": "npm run validate && npm run build && node scripts/skriptpruefung.mjs",
-    "test:rules": "node test/rules.mjs"
+    "test:rules": "node test/rules.mjs",
+    "trocken": "node test/trocken/bauen.mjs && node build/serve.mjs 8123"
   }
 }

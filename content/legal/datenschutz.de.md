@@ -15,7 +15,7 @@ Ein Datenschutzbeauftragter ist nicht bestellt; die gesetzlichen Voraussetzungen
 
 - Kein Tracking, keine Analyse-Werkzeuge, keine Werbung, keine Profilbildung.
 - Keine Cookies. Was im Browser abgelegt wird, bleibt im Browser.
-- Keine Schriftarten, Skripte oder Bilder von fremden Servern — **außer** auf der Forum-Seite, siehe Abschnitt 5.
+- Keine Schriftarten, Skripte oder Bilder von fremden Servern — **außer** auf der Forum-Seite (Abschnitt 5) und bei GeoBingo (Abschnitt 6).
 - Ohne Anmeldung im Forum entsteht kein Konto und keine dauerhaft bei mir gespeicherte Angabe zu Ihrer Person.
 
 ---
@@ -32,17 +32,23 @@ Beim Abruf verarbeitet GitHub technisch notwendige Verbindungsdaten, insbesonder
 
 # 4. Was in Ihrem Browser gespeichert wird
 
-Diese Seite setzt keine Cookies. Sie legt bis zu drei Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
+Diese Seite setzt keine Cookies. Sie legt bis zu sieben Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
 
 | Schlüssel | Inhalt | Zweck |
 | --- | --- | --- |
 | `theme` | `light` oder `dark` | merkt sich die gewählte Darstellung |
+| `skillry:hinweis` | dass Sie den Hinweis unten links weggeklickt haben | zeigt ihn nicht bei jedem Seitenaufruf erneut |
 | `level` | die gewählte Tiefe im Lernbereich | zeigt beim nächsten Besuch dieselbe Stufe |
 | `skillry:who` | Ihr Anzeigename und ob Ihre E-Mail-Adresse bestätigt ist | zeigt in der Kopfleiste, dass Sie angemeldet sind |
+| `gb:zutritt` | dass Sie den Zugangscode von GeoBingo eingegeben haben | fragt ihn nicht bei jedem Besuch erneut ab |
+| `gb:name` | der Name, den Sie sich bei GeoBingo gegeben haben | steht dann schon im Feld |
+| `gb:lobby` | der Code der zuletzt betretenen Lobby | bringt Sie nach einem Neuladen in dieselbe Runde zurück |
 
-Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden.
+Der Hinweis unten links ist **kein Einwilligungsbanner**, und er gibt auch nicht vor, eines zu sein: es gibt hier nichts einzuwilligen, weil nichts gesetzt wird, was einer Einwilligung bedürfte. Er sagt, was lokal liegt, und verweist hierher. Ein „Alle akzeptieren"-Knopf ohne etwas zu akzeptieren wäre eine Formalie, die Leute darauf trainiert, wegzuklicken, was anderswo wirklich zählt.
 
-`skillry:who` verdient eine Erklärung, weil er der Grund ist, warum die Kopfleiste Sie begrüßen kann, ohne dass irgendeine Seite mit Google spricht. Der Anmeldezustand liegt eigentlich bei Firebase; ihn dort abzufragen hieße, das Firebase-SDK auf **jeder** Seite zu laden — und damit wäre die Zusage aus Abschnitt 5, dass alle Seiten außer dem Forum nichts von fremden Servern laden, nicht mehr wahr. Stattdessen schreibt die Anmeldung diesen einen Wert lokal, und alle anderen Seiten lesen nur ihn. Er enthält kein Token und keine E-Mail-Adresse, er berechtigt zu nichts — wer ihn im Browser von Hand fälscht, bekommt einen fremden Namen in die Ecke des Bildschirms und von der Datenbank eine Ablehnung.
+Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden. Die letzten drei entstehen nur, wenn Sie GeoBingo öffnen; der Lobby-Code verschwindet, sobald Sie die Runde verlassen. Keiner der Werte enthält ein Token, und keiner wird irgendwohin gesendet.
+
+`skillry:who` verdient eine Erklärung, weil er der Grund ist, warum die Kopfleiste Sie begrüßen kann, ohne dass irgendeine Seite mit Google spricht. Der Anmeldezustand liegt eigentlich bei Firebase; ihn dort abzufragen hieße, das Firebase-SDK auf **jeder** Seite zu laden — und damit wäre die Zusage aus Abschnitt 5, dass alle Seiten außer dem Forum und GeoBingo nichts von fremden Servern laden, nicht mehr wahr. Stattdessen schreibt die Anmeldung diesen einen Wert lokal, und alle anderen Seiten lesen nur ihn. Er enthält kein Token und keine E-Mail-Adresse, er berechtigt zu nichts — wer ihn im Browser von Hand fälscht, bekommt einen fremden Namen in die Ecke des Bildschirms und von der Datenbank eine Ablehnung.
 
 Keiner der drei Werte wird an mich oder an Dritte übertragen, und alle lassen sich jederzeit über die Einstellungen Ihres Browsers löschen.
 
@@ -58,7 +64,7 @@ Das Forum ist der einzige Teil dieser Seite, der personenbezogene Daten dauerhaf
 
 ## 5.1 Verbindungsaufbau
 
-Sobald Sie die Forum-Seite öffnen, lädt Ihr Browser das Firebase-SDK von `www.gstatic.com` und baut eine Verbindung zu Google-Servern auf. Dabei wird Ihre IP-Adresse an Google übertragen — **auch dann, wenn Sie sich nicht anmelden**. Alle übrigen Seiten dieses Angebots laden nichts von fremden Servern.
+Sobald Sie die Forum-Seite öffnen, lädt Ihr Browser das Firebase-SDK von `www.gstatic.com` und baut eine Verbindung zu Google-Servern auf. Dabei wird Ihre IP-Adresse an Google übertragen — **auch dann, wenn Sie sich nicht anmelden**. Alle übrigen Seiten dieses Angebots laden nichts von fremden Servern — mit einer Ausnahme: GeoBingo, siehe Abschnitt 6. Dieser Satz stand hier bis zum 26.08.2026 ohne die Einschränkung. Er wurde geändert, weil er sonst nicht mehr gestimmt hätte.
 
 **Rechtsgrundlage:** Art. 6 Abs. 1 lit. f DSGVO. Das berechtigte Interesse ist der Betrieb eines Forums ohne eigene Serverinfrastruktur.
 
@@ -84,17 +90,50 @@ Beiträge werden beim Löschen nicht hart entfernt, sondern als gelöscht markie
 
 Google verarbeitet Daten auch in den USA. Grundlage sind die Standardvertragsklauseln der EU-Kommission nach Art. 46 Abs. 2 lit. c DSGVO; Google LLC ist unter dem EU-U.S. Data Privacy Framework zertifiziert. Über einen Auftragsverarbeitungsvertrag nach Art. 28 DSGVO (Google Cloud Data Processing Addendum) ist die Verarbeitung geregelt. Datenschutzerklärung von Google: [policies.google.com/privacy](https://policies.google.com/privacy).
 
-# 6. GitHub Discussions
+# 6. GeoBingo
+
+GeoBingo ist ein Spiel auf dieser Seite, das in **Google Street View** stattfindet. Es ist neben dem Forum der zweite Teil dieses Angebots, der mit einem fremden Server spricht, und der einzige, der das mit Google Maps Platform tut.
+
+## 6.1 Wann überhaupt etwas geladen wird
+
+Solange Sie die Seite nur lesen, wird von Google nichts geladen. Erst wenn Sie eine Lobby aufmachen oder einer beitreten, lädt Ihr Browser das Firebase-SDK von `www.gstatic.com`. Erst wenn eine Runde tatsächlich beginnt, lädt er zusätzlich die Kartenbibliothek von `maps.googleapis.com`. Ab dem jeweiligen Zeitpunkt ist Ihre IP-Adresse bei Google angekommen.
+
+Diese Reihenfolge ist Absicht: Wer den Erklärtext liest und wieder geht, hat mit Google nicht gesprochen.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO. Ohne Street View gibt es das Spiel nicht, und Sie starten es selbst.
+
+## 6.2 Was Google dabei erfährt
+
+Beim Anzeigen eines Panoramas und beim Nachbauen eines Fundbildes übermittelt Ihr Browser an Google: Ihre IP-Adresse, Angaben zu Browser und Gerät, die Kennung des angeforderten Panoramas samt Blickrichtung, sowie die Adresse dieser Seite als Referrer. Es gelten die Nutzungsbedingungen von Google Maps Platform und die Datenschutzerklärung von Google: [policies.google.com/privacy](https://policies.google.com/privacy).
+
+**Ihr eigener Standort wird nicht abgefragt.** Die Standortabfrage des Browsers wird an keiner Stelle benutzt, und die Bewegungssensoren des Geräts sind im Panorama ausdrücklich abgeschaltet. Die Orte, an denen Sie im Spiel landen, sind gewürfelt und haben mit Ihrem nichts zu tun.
+
+## 6.3 Was in der Datenbank steht
+
+Eine Lobby liegt in derselben Cloud Firestore wie das Forum (siehe Abschnitt 5) und enthält: den fünfstelligen Code, den Anzeigenamen jedes Mitspielers und dessen Nutzerkennung, die Wortliste, und je Fund die Kennung des Panoramas mit Blickrichtung, Neigung, Bildwinkel und Koordinate.
+
+**Ein Fund ist kein Bild.** Es wird nichts hochgeladen und keine Bilddatei gespeichert — nur die fünf Zahlen, aus denen Google dasselbe Bild wieder aufbaut.
+
+Eine Lobby ist ausschließlich über ihren Code erreichbar. Eine Liste aller Lobbys gibt es nicht: die Datenbankregel erlaubt das Abrufen eines einzelnen Codes und verbietet das Auflisten. Wer die Runde verlässt oder den Tab schließt, wird aus der Spielerliste entfernt. Verlässt der Gastgeber die Lobby, wird sie mitsamt Wörtern und Funden gelöscht; eine liegengebliebene Lobby entfernt eine Aufräumregel von Firestore 24 Stunden nach ihrer Anlage.
+
+## 6.4 Kein Konto, keine Anmeldung
+
+**GeoBingo hat keine Anmeldung.** Sie geben sich einen Namen, und Firebase legt dafür eine anonyme Nutzerkennung an — eine Zeichenfolge ohne Bezug zu Ihrer Person. Es werden weder E-Mail-Adresse noch Passwort verarbeitet, und mit dem Forum-Konto aus Abschnitt 5 hat das nichts zu tun. Der Name steht nur in der Lobby und nur so lange, wie es sie gibt.
+
+Vor der Seite liegt ein Zugangscode. Er hält sie unauffällig, nicht verschlossen: die Seite ist eine statische Datei, der Code steht darin, und wer entschlossen genug sucht, findet ihn. Sie ist nirgends verlinkt, steht nicht in der Sitemap, nicht in der Suche dieser Website und trägt `noindex`. Der Hinweistext auf dem Code-Feld sagt das in denselben Worten — ein Schutz, der mehr verspricht als er hält, ist schlechter als gar keiner.
+
+# 7. GitHub Discussions
 
 An mehreren Stellen wird auf GitHub Discussions verlinkt. Das ist ein externes Angebot; wenn Sie dort schreiben, gelten die Bedingungen und die Datenschutzerklärung von GitHub, und es ist ausschließlich ein Konto beteiligt, das Sie ohnehin selbst verwalten.
 
-# 7. Speicherdauer
+# 8. Speicherdauer
 
 - **Server-Protokolle bei GitHub:** nach den Fristen von GitHub, ohne mein Zutun.
 - **Konto und Beiträge:** bis Sie das Konto löschen oder die Löschung verlangen.
+- **Lobbys und Funde bei GeoBingo:** bis der Gastgeber die Lobby verlässt, spätestens 24 Stunden nach ihrer Anlage.
 - **Werte im lokalen Speicher:** bis Sie sie im Browser löschen.
 
-# 8. Ihre Rechte
+# 9. Ihre Rechte
 
 Sie haben nach der DSGVO das Recht auf Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und **Widerspruch gegen Verarbeitungen auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (Art. 21)**. Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen.
 
@@ -104,10 +143,10 @@ Unabhängig davon steht Ihnen ein Beschwerderecht bei einer Aufsichtsbehörde zu
 
 > Landesbeauftragte für Datenschutz und Informationsfreiheit Nordrhein-Westfalen, Kavalleriestraße 2–4, 40213 Düsseldorf — [ldi.nrw.de](https://www.ldi.nrw.de/)
 
-# 9. Keine automatisierte Entscheidungsfindung
+# 10. Keine automatisierte Entscheidungsfindung
 
 Es findet keine automatisierte Entscheidungsfindung einschließlich Profiling nach Art. 22 DSGVO statt. Die Prüfergebnisse im Skill-Index beziehen sich auf Software, nicht auf Personen.
 
-# 10. Änderungen
+# 11. Änderungen
 
 Diese Erklärung wird angepasst, wenn sich am Angebot etwas ändert, das hier beschrieben ist. Die jeweils aktuelle Fassung liegt unter dieser Adresse; ihre Entwicklung ist im öffentlichen Quellcode-Verlauf nachvollziehbar.

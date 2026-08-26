@@ -243,7 +243,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -293,7 +293,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -420,6 +420,13 @@ function footer(lang, t) {
       ])}
       ${col(f.community, [
         [f.forum, href(lang, 'forum')],
+        /*
+         * GeoBingo steht im Fuss und sonst nirgends: nicht in der Navigation,
+         * nicht im Menue, nicht in der Suche, nicht in der sitemap.xml. Der
+         * Fuss ist der Ort fuer etwas, das es gibt, das aber niemand suchen
+         * soll — und hinter dem Link steht ohnehin noch der Zugangscode.
+         */
+        [t.nav.geobingo, href(lang, 'geobingo')],
         [f.discussions, SITE.discussions],
         [f.submit, `${SITE.repoSite}/blob/main/README.md#submitting-a-skill`],
         [f.security, `${SITE.repoAirlock}/security/advisories/new`],
@@ -450,6 +457,99 @@ function footer(lang, t) {
  * Deliberately the only blocking script on the page.
  */
 const THEME_BOOT = `(function(){try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+
+/**
+ * Der Hinweis unten links.
+ *
+ * **Er ist kein Einwilligungsbanner, und er tut auch nicht so.** Diese Website
+ * setzt keine Cookies, misst nichts und wirbt nicht; gespeichert wird im
+ * Browser nur, was jemand selbst eingestellt hat. Für so etwas gibt es nach
+ * § 25 Abs. 2 TDDDG nichts einzuwilligen, und ein „Alle akzeptieren"-Knopf
+ * ohne etwas zu akzeptieren wäre die unehrlichste Sorte Formalie: er trainiert
+ * Leute darauf, wegzuklicken, was anderswo wirklich zählt.
+ *
+ * Was es tatsächlich zu sagen gibt, sagt er: was lokal liegt, dass Forum und
+ * GeoBingo mit Google sprechen sobald man sie benutzt, und wo das ausführlich
+ * steht. Ein Knopf, ein Link, weg.
+ *
+ * Gemerkt wird das Wegklicken in `localStorage` — womit der Hinweis das
+ * einzige ist, was er beschreibt. Ohne `localStorage` (privates Fenster,
+ * gesperrter Speicher) erscheint er wieder; das ist die richtige Richtung,
+ * falsch zu liegen.
+ */
+const HINWEIS_CSS = `
+.ck {
+  position: fixed; left: 16px; bottom: 16px; z-index: 70;
+  width: min(calc(100vw - 32px), 330px);
+  padding: 14px 16px 13px;
+  background: var(--surface); color: var(--fg);
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  box-shadow: var(--e3);
+  font-size: 0.82rem; line-height: 1.5;
+  transform: translateY(8px); opacity: 0;
+  animation: ck-auf 0.28s 0.5s ease forwards;
+}
+@keyframes ck-auf { to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ck { animation-delay: 0s; animation-duration: 0.01s; } }
+.ck[hidden] { display: none; }
+.ck h2 {
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--fg-muted); margin: 0 0 6px;
+}
+.ck p { margin: 0 0 10px; color: var(--fg-muted); }
+.ck .ck-zeile { display: flex; align-items: center; gap: 12px; }
+.ck button {
+  padding: 7px 14px; font: inherit; font-weight: 600; font-size: 0.8rem; cursor: pointer;
+  background: var(--fg); color: var(--bg); border: 1px solid var(--fg); border-radius: var(--radius);
+}
+.ck button:hover { opacity: 0.88; }
+.ck a { font-size: 0.8rem; }
+@media (max-width: 480px) { .ck { left: 10px; right: 10px; bottom: 10px; width: auto; } }
+`;
+
+const HINWEIS_TEXT = {
+  en: {
+    h: 'No cookies',
+    p: 'This site sets none, measures nothing and advertises nothing. Your browser only stores what you set yourself. The forum and GeoBingo talk to Google once you use them.',
+    ok: 'Got it',
+    mehr: 'Privacy policy',
+  },
+  de: {
+    h: 'Keine Cookies',
+    p: 'Diese Seite setzt keine, misst nichts und wirbt nicht. Im Browser liegt nur, was Sie selbst eingestellt haben. Forum und GeoBingo sprechen mit Google, sobald Sie sie benutzen.',
+    ok: 'Verstanden',
+    mehr: 'Datenschutz',
+  },
+};
+
+const hinweis = (lang) => {
+  const t = HINWEIS_TEXT[lang];
+  return `<aside class="ck" id="ckHinweis" hidden aria-label="${t.h}">
+  <h2>${t.h}</h2>
+  <p>${t.p}</p>
+  <div class="ck-zeile">
+    <button type="button" id="ckOk">${t.ok}</button>
+    <a href="${href(lang, 'datenschutz')}">${t.mehr}</a>
+  </div>
+</aside>`;
+};
+
+/*
+ * Erst einblenden, wenn feststeht, dass er noch nicht weggeklickt wurde —
+ * sonst blitzt er bei jedem Seitenwechsel kurz auf, obwohl er längst erledigt
+ * ist. Deshalb steht er mit `hidden` im Markup und wird hier freigegeben.
+ */
+const HINWEIS_JS = `
+(function () {
+  var box = document.getElementById('ckHinweis');
+  if (!box) return;
+  try { if (localStorage.getItem('skillry:hinweis') === '1') return; } catch (e) {}
+  box.hidden = false;
+  document.getElementById('ckOk').addEventListener('click', function () {
+    box.hidden = true;
+    try { localStorage.setItem('skillry:hinweis', '1'); } catch (e) {}
+  });
+})();`;
 
 const THEME_TOGGLE = `
 document.getElementById('themeBtn')?.addEventListener('click', function () {
@@ -484,7 +584,58 @@ const searchStrings = (t) => ({
  * @param {{ lang: string, slug: string, title: string, description: string,
  *           body: string, script?: string, head?: string }} page
  */
+/**
+ * Eine Seite ohne alles.
+ *
+ * `blank: true` an einem Seitenmodul heisst: kein Kopf, kein Fuss, keine
+ * Szene, kein Korn, keine Designsprache — nur der Rumpf, den die Seite selbst
+ * mitbringt. Es gibt genau einen Grund dafuer, und es ist kein aesthetischer:
+ *
+ * GeoBingo ist eine Spielflaeche, die im Vollbild neben einem Stream steht.
+ * Der Kopf dieser Website ist 1800 Zeilen Navigation, Suche und Anmeldung mit
+ * eigenem Blatt und eigenem Skript; theme.mjs, theme-extra, Szenen und Korn
+ * kommen dazu. Auf einer Seite mit einer laufenden Uhr und einem WebGL-Panorama
+ * ist das alles Arbeit, die der Browser jedes Bild lang mitschleppt, fuer
+ * nichts — auf dieser Seite ist keine Zeile davon sichtbar.
+ *
+ * Eine `blank`-Seite traegt dafuer die volle Verantwortung fuer ihr Aussehen.
+ * Sie erbt keine Farben und keine Schrift; was sie nicht in `head()` schreibt,
+ * gibt es dort nicht.
+ *
+ * `noindex` gehoert dazu und nicht daneben: eine Seite ohne Weg dorthin, die
+ * trotzdem in einer Suchmaschine steht, ist keine unauffaellige Seite.
+ */
+function renderBlank(page) {
+  return `<!doctype html>
+<html lang="${page.lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${page.title}</title>
+<meta name="description" content="${page.description}">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#07090D">
+<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0B0E13"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="#5BE0A8" stroke-width="2.4"/><circle cx="16" cy="16" r="2.6" fill="#5BE0A8"/></svg>',
+  )}">
+${page.head ?? ''}
+</head>
+<body>
+${page.body}
+<script>${page.script ?? ''}</script>
+</body>
+</html>
+`;
+}
+
+/**
+ * @param {{ lang: string, slug: string, title: string, description: string,
+ *           body: string, script?: string, head?: string }} page
+ */
 export function render(page) {
+  if (page.blank) return renderBlank(page);
+
   const t = UI[page.lang];
   const alt = LANGS.filter((l) => l !== page.lang)
     .map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}">`)
@@ -522,7 +673,7 @@ ${alt}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}${href(DEFAULT_LANG, page.slug)}">
 <script>${THEME_BOOT}${page.bewegung ? BEWEGUNG_BOOT : ''}</script>
 ${page.bewegung ? BEWEGUNG_SCRIPTS : ''}
-<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}${GRAIN_CSS}${page.bewegung ? BEWEGUNG_CSS : ''}</style>
+<style>${CSS}${CSS_EXTRA}${WORDMARK_CSS}${HEADER_CSS}${SCENE_CSS}${GRAIN_CSS}${HINWEIS_CSS}${page.bewegung ? BEWEGUNG_CSS : ''}</style>
 ${page.head ?? ''}
 </head>
 <body>
@@ -533,7 +684,9 @@ ${header(page.lang, page.slug, t, { auth: FIREBASE_READY })}
 ${anchorHeadings(page.body)}
 </main>
 ${footer(page.lang, t)}
+${hinweis(page.lang)}
 <script>
+${HINWEIS_JS}
 ${THEME_TOGGLE}
 ${HEADER_JS({
   lang: page.lang,

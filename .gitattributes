@@ -1,0 +1,28 @@
+# Zeilenenden und Binärdateien.
+#
+# `core.autocrlf` steht auf dieser Maschine auf `true`. Für Text ist das
+# richtig — für Binärdateien ist es die stille Sorte Datenverlust: git
+# ersetzt beim Ein- und Auschecken Byte-Folgen, die zufällig wie Zeilenenden
+# aussehen, und eine Schriftdatei ist danach kaputt, ohne dass irgendetwas
+# fehlgeschlagen wäre.
+#
+# Bisher ging das gut, weil git Binärdateien an ihren NUL-Bytes selbst
+# erkennt. Diese Datei verlässt sich nicht darauf. In `skillry-maps` hat
+# genau diese Annahme einmal jede `.ydr` zerstört, und dort steht seitdem
+# `* -text` aus demselben Grund.
+
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.gif   binary
+*.ico   binary
+*.mp4   binary
+*.webm  binary
+
+# Alles Übrige ist Text und bekommt im Repository LF.
+* text=auto eol=lf
