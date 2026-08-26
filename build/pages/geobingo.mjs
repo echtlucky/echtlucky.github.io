@@ -113,8 +113,12 @@ export const TEXTE = {
     lobbyLaeuft: 'That round is already running.',
 
     verlassen: 'Leave',
-    linkKopieren: 'Copy link',
-    kopiert: 'Link copied.',
+    einladelink: 'Invite link',
+    linkKopieren: 'Copy',
+    kopiert: 'Invite link copied.',
+    kopierenGeht: 'The clipboard is not available here. The link is now visible — careful if you are streaming.',
+    aufdecken: 'Reveal',
+    aufdeckenHinweis: 'Covered so it cannot end up on stream. Click reveals it; it covers itself again after 15 seconds. Copying works without revealing.',
 
     woerterH: 'Words',
     woerterP: 'Your own words are the point. The packs below are only a quick way to fill the list.',
@@ -225,8 +229,12 @@ export const TEXTE = {
     lobbyLaeuft: 'Diese Runde läuft schon.',
 
     verlassen: 'Verlassen',
-    linkKopieren: 'Link kopieren',
-    kopiert: 'Link kopiert.',
+    einladelink: 'Einladelink',
+    linkKopieren: 'Kopieren',
+    kopiert: 'Einladelink kopiert.',
+    kopierenGeht: 'Die Zwischenablage geht hier nicht. Der Link ist jetzt sichtbar — Vorsicht, wenn du streamst.',
+    aufdecken: 'Aufdecken',
+    aufdeckenHinweis: 'Verdeckt, damit er nicht im Stream landet. Klick deckt ihn auf, nach 15 Sekunden verdeckt er sich wieder. Kopieren geht auch verdeckt.',
 
     woerterH: 'Wörter',
     woerterP: 'Eigene Wörter sind der Sinn der Sache. Die Pakete darunter sind nur der schnelle Weg zu einer vollen Liste.',
@@ -526,8 +534,52 @@ input::placeholder { color: #6a748c; }
 .gb-lobbykopf { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
 .gb-lobbykopf h1 { margin: 0; }
 .gb-lobbykopf > *:last-child { margin-left: auto; }
-.gb-codeblock { display: flex; align-items: center; gap: 14px; }
-.gb-grosscode { font: 700 1.85rem/1 var(--mono); letter-spacing: .2em; color: var(--violett-hell); }
+/*
+ * Verdeckte Felder.
+ *
+ * Der Wert steht wirklich im Markup — verdeckt wird mit blur(), und das ist
+ * ausdruecklich KEIN Schutz gegen jemanden mit einer Entwicklerkonsole. Es ist
+ * Schutz gegen eine Kamera: gegen den einen Moment, in dem der Einladelink im
+ * Stream steht und der Chat in der Lobby sitzt. Genau dagegen hilft
+ * Unschaerfe, und gegen mehr muss sie hier nicht helfen.
+ *
+ * user-select: none im verdeckten Zustand gehoert dazu: sonst markiert man den
+ * unscharfen Text und liest ihn aus der Auswahl.
+ */
+.gb-geheim {
+  position: relative; display: block; width: 100%; text-align: left;
+  padding: 9px 12px; border: 1px solid var(--kante); border-radius: var(--r);
+  background: rgba(0,0,0,.28); color: var(--schrift);
+  font: 400 .84rem/1.3 var(--mono); overflow: hidden;
+  transition: border-color .12s ease, background .12s ease;
+}
+.gb-geheim:hover { border-color: var(--kante-stark); background: rgba(0,0,0,.4); }
+.gb-geheimwert {
+  display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: filter .18s ease, opacity .18s ease;
+}
+.gb-geheim[aria-expanded="false"] .gb-geheimwert {
+  filter: blur(6px); opacity: .55; user-select: none; -webkit-user-select: none;
+}
+.gb-geheimhinweis {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font: 600 .68rem/1 var(--sans); letter-spacing: .09em; text-transform: uppercase;
+  color: var(--violett-hell); pointer-events: none;
+  transition: opacity .18s ease;
+}
+.gb-geheim[aria-expanded="true"] .gb-geheimhinweis { opacity: 0; }
+.gb-geheimhinweis { white-space: nowrap; }
+.gb-geheim-gross .gb-geheimwert { font: 700 1.5rem/1.15 var(--mono); letter-spacing: .2em; color: var(--violett-hell); text-align: center; }
+.gb-geheim-gross { padding: 8px 14px; min-width: 168px; }
+.gb-geheim-gross[aria-expanded="false"] .gb-geheimwert { filter: blur(10px); }
+.gb-einladefuss { font-size: .72rem; color: var(--leise); line-height: 1.35; }
+
+.gb-einladung { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; flex: 1; min-width: 0; }
+.gb-einladeteil { display: grid; gap: 6px; min-width: 0; }
+.gb-einladeteil > .gb-etikett { justify-self: start; }
+.gb-einladebreit { flex: 1; min-width: 240px; }
+.gb-einladezeile { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
+.gb-einladezeile .gb-geheim { flex: 1; min-width: 0; }
 .gb-lobbygitter { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,.8fr); gap: 18px; align-items: start; }
 
 .gb-wortform { display: grid; grid-template-columns: 1fr auto auto; gap: 9px; margin: 14px 0 12px; }

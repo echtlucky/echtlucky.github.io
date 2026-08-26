@@ -868,6 +868,65 @@
 
   // ── Bildschirm: Lobby ─────────────────────────────────────────────────────
 
+  /*
+   * Der Einladelink — und warum er verdeckt ist.
+   *
+   * Er traegt beides: den Zugangscode der Seite UND den Lobby-Code. Wer ihn
+   * bekommt, ist mit einem Klick drin, ohne irgendetwas abzutippen. Genau
+   * deshalb ist er auf einem Stream das Gefaehrlichste auf dem Bildschirm:
+   * einmal kurz sichtbar, und die ganze Twitch-Chat sitzt in der Lobby.
+   *
+   * Also steht er unscharf da, bis jemand ihn absichtlich aufdeckt, und
+   * verdeckt sich nach 15 Sekunden von selbst wieder — Aufdecken ist ein
+   * Handgriff, Zudecken darf keiner sein, den man vergisst. Kopieren geht die
+   * ganze Zeit, ohne dass er je sichtbar wird; das ist der uebliche Weg.
+   *
+   * Der Lobby-Code daneben bekommt dieselbe Behandlung. Er ist dasselbe
+   * Geheimnis in kurz, und einen davon zu verdecken und den anderen nicht,
+   * waere ein Schloss neben einem offenen Fenster.
+   */
+  function einladeLink() {
+    var u = location.origin + location.pathname + '?k=' + encodeURIComponent(C.zugang) + '&lobby=' + code;
+    return u;
+  }
+
+  function geheim(wert, gross) {
+    return '<button class="gb-geheim' + (gross ? ' gb-geheim-gross' : '') + '" data-geheim aria-expanded="false"'
+      + ' title="' + esc(L.aufdeckenHinweis) + '">'
+      + '<span class="gb-geheimwert">' + esc(wert) + '</span>'
+      + '<span class="gb-geheimhinweis">' + esc(L.aufdecken) + '</span>'
+      + '</button>';
+  }
+
+  function einladung() {
+    return '<div class="gb-einladung">'
+      + '<div class="gb-einladeteil"><span class="gb-etikett">' + esc(L.code) + '</span>'
+      + geheim(code, true) + '</div>'
+      + '<div class="gb-einladeteil gb-einladebreit"><span class="gb-etikett">' + esc(L.einladelink) + '</span>'
+      + '<div class="gb-einladezeile">' + geheim(einladeLink(), false)
+      + '<button class="gb-knopf gb-klein" data-tu="teilen">' + esc(L.linkKopieren) + '</button></div>'
+      + '<span class="gb-einladefuss">' + esc(L.aufdeckenHinweis) + '</span></div>'
+      + '</div>';
+  }
+
+  /*
+   * Aufdecken, und nach 15 Sekunden wieder zu. Der Zeitgeber haengt am Element
+   * selbst, damit zwei aufgedeckte Felder sich nicht gegenseitig die Uhr
+   * ueberschreiben.
+   */
+  var geheimUhren = [];
+  function geheimZeigen(el) {
+    var auf = el.getAttribute('aria-expanded') !== 'true';
+    el.setAttribute('aria-expanded', auf ? 'true' : 'false');
+    for (var i = 0; i < geheimUhren.length; i++) {
+      if (geheimUhren[i].el === el) { clearTimeout(geheimUhren[i].t); geheimUhren.splice(i, 1); break; }
+    }
+    if (!auf) return;
+    geheimUhren.push({ el: el, t: setTimeout(function () {
+      el.setAttribute('aria-expanded', 'false');
+    }, 15000) });
+  }
+
   function lobbyBild() {
     var e = lobby.einst;
     var gast = ichBinGastgeber();
@@ -886,9 +945,7 @@
     return '<div class="gb-lobbyseite">'
       + '<header class="gb-lobbykopf">'
       + marke()
-      + '<div class="gb-codeblock"><span class="gb-etikett">' + esc(L.code) + '</span>'
-      + '<strong class="gb-grosscode">' + esc(code) + '</strong>'
-      + '<button class="gb-knopf gb-klein" data-tu="teilen">' + esc(L.linkKopieren) + '</button></div>'
+      + einladung()
       + '<button class="gb-knopf gb-klein" data-tu="verlassen">' + esc(L.verlassen) + '</button>'
       + '</header>'
 
@@ -1269,11 +1326,12 @@
     gebunden = true;
 
     document.addEventListener('click', function (ev) {
-      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code]');
+      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code],[data-geheim]');
       if (!t) return;
       var d = t.dataset;
 
       if (d.wort) { ev.preventDefault(); if (d.gefunden === '1') loesen(d.wort); else fangen(d.wort); return; }
+      if (t.hasAttribute('data-geheim')) { geheimZeigen(t); return; }
       if (d.klapp) { klappen(d.klapp); return; }
       if (d.code && d.tu === 'beitretenAus') { beitreten(d.code); return; }
       if (d.schau) { schau(d.schau); return; }
@@ -1405,9 +1463,25 @@
     if (!code) lobbyAusAdresse();
   }
 
+  /*
+   * Der Unterschied zwischen „jemand hat einen Einladelink geoeffnet" und
+   * „hier lag noch ein Code vom letzten Mal", und er ist wichtiger als er
+   * aussieht.
+   *
+   * Steht der Code in der Adresse, ist das eine Absicht: jemand hat einen Link
+   * bekommen und angeklickt. Geht das schief — Lobby aufgeloest, Runde laeuft
+   * schon —, MUSS die Seite das sagen. Vorher liefen beide Faelle still, und
+   * wer einem Einladelink folgte, landete kommentarlos auf der Startseite und
+   * hielt das Spiel fuer kaputt.
+   *
+   * Der gemerkte Code aus dem letzten Besuch bleibt still: danach hat niemand
+   * gefragt, und eine rote Leiste auf einer Seite, an der noch niemand etwas
+   * getan hat, ist Laerm.
+   */
   function lobbyAusAdresse() {
-    var c = new URLSearchParams(location.search).get('lobby') || holen('gb:lobby');
-    if (c) beitreten(c, true);
+    var ausAdresse = new URLSearchParams(location.search).get('lobby');
+    var c = ausAdresse || holen('gb:lobby');
+    if (c) beitreten(c, !ausAdresse);
   }
 
   function lobbyStarten() {
@@ -1508,11 +1582,27 @@
     })));
   }
 
+  /*
+   * Kopieren, ohne den Link je zu zeigen. Faellt die Zwischenablage aus
+   * (kein HTTPS, verweigerte Berechtigung), wird der Link NICHT in die
+   * Meldeleiste geschrieben — auf einem Stream waere das genau der Unfall,
+   * den das Verdecken verhindern soll. Stattdessen deckt sich das Feld auf,
+   * und der Gastgeber entscheidet selbst, was er damit tut.
+   */
   function teilen() {
-    var url = location.origin + location.pathname + '?lobby=' + code;
+    var url = einladeLink();
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(function () { melde(L.kopiert, 'gut'); }, function () { melde(url, 'info'); });
-    } else melde(url, 'info');
+      navigator.clipboard.writeText(url).then(
+        function () { melde(L.kopiert, 'gut'); },
+        function () { kopierenGescheitert(); },
+      );
+    } else kopierenGescheitert();
+  }
+
+  function kopierenGescheitert() {
+    melde(L.kopierenGeht, 'fehler');
+    var feld = wurzel.querySelector('.gb-einladezeile [data-geheim]');
+    if (feld && feld.getAttribute('aria-expanded') !== 'true') geheimZeigen(feld);
   }
 
   function losGehts() {
