@@ -98,11 +98,14 @@ export const TEXTE = {
     weiter: 'Continue',
     nameZuKurz: 'At least two characters.',
 
-    neueRunde: 'New round',
-    neueRundeP: 'Open a lobby, get a five-character code, hand it to whoever is playing.',
-    lobbyAufmachen: 'Open a lobby',
-    beitretenH: 'Join',
-    beitretenP: 'Type the five characters somebody read out, or just open their link.',
+    heimZeile: 'Street View, a word list, and a clock. Spot the thing, click the word.',
+    jetztSpielen: 'Play now',
+    lobbysDurchsuchen: 'Browse lobbies',
+    mitCodeBeitreten: 'Join with code',
+    discord: 'Join our Discord',
+    keineLobbys: 'No public lobbies right now. Open one — you can make it public in the settings.',
+    oeffentlich: 'Public lobby',
+    oeffentlichHinweis: 'Shows up under "Browse lobbies" for everyone with access to this page. Off means the code is the only way in.',
     code: 'Lobby code',
     beitreten: 'Join',
     codeFalsch: 'A lobby code is five characters.',
@@ -207,11 +210,14 @@ export const TEXTE = {
     weiter: 'Weiter',
     nameZuKurz: 'Mindestens zwei Zeichen.',
 
-    neueRunde: 'Neue Runde',
-    neueRundeP: 'Lobby aufmachen, fünfstelligen Code bekommen, an alle weitergeben, die mitspielen.',
-    lobbyAufmachen: 'Lobby aufmachen',
-    beitretenH: 'Beitreten',
-    beitretenP: 'Die fünf Zeichen eintippen, die dir jemand vorgelesen hat — oder einfach seinen Link öffnen.',
+    heimZeile: 'Street View, eine Wortliste und eine Uhr. Ding sehen, Wort klicken.',
+    jetztSpielen: 'Jetzt spielen',
+    lobbysDurchsuchen: 'Lobbys durchsuchen',
+    mitCodeBeitreten: 'Mit Code beitreten',
+    discord: 'Discord beitreten',
+    keineLobbys: 'Gerade keine öffentlichen Lobbys. Mach eine auf — öffentlich stellen geht in den Einstellungen.',
+    oeffentlich: 'Öffentliche Lobby',
+    oeffentlichHinweis: 'Taucht unter „Lobbys durchsuchen" auf, für jeden mit Zugang zu dieser Seite. Aus heißt: nur über den Code.',
     code: 'Lobby-Code',
     beitreten: 'Beitreten',
     codeFalsch: 'Ein Lobby-Code sind fünf Zeichen.',
@@ -470,9 +476,50 @@ input::placeholder { color: #6a748c; }
 }
 .gb-icon:hover { color: var(--schrift); border-color: var(--kante-stark); background: var(--flaeche-2); }
 
+/* ── Startseite ──────────────────────────────────────────────────────────── */
+/*
+ * Alles untereinander und mittig. Der grosse Knopf oben, die schmaleren
+ * darunter — die Reihenfolge ist die Aussage: fast jeder will spielen, und nur
+ * wer einen Code vorgelesen bekommen hat, will das Feld.
+ */
+.gb-heim { width: min(100%, 430px); text-align: center; }
+.gb-heimkopf { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: clamp(28px, 8vh, 64px); }
+.gb-heimtitel { font: 700 clamp(2.6rem, 1.9rem + 3.2vw, 4.2rem)/1 var(--sans); margin: 0 0 .5rem; letter-spacing: -.01em; }
+.gb-heimzeile { color: var(--still); font-size: 1.02rem; margin: 0 auto clamp(24px, 4vh, 38px); max-width: 34ch; }
+.gb-heimknoepfe { display: grid; gap: 10px; }
+.gb-heimknoepfe .gb-knopf { justify-content: center; }
+.gb-gross { padding: 17px 20px; font-size: 1.12rem; }
+.gb-discord {
+  display: flex; align-items: center; justify-content: center; gap: 9px; text-decoration: none;
+  color: #c7d2fe; border-color: rgba(88,101,242,.4); background: rgba(88,101,242,.12);
+}
+.gb-discord:hover { background: rgba(88,101,242,.22); border-color: rgba(88,101,242,.65); color: #e0e7ff; }
+
+/* Codefeld und Lobby-Browser klappen erst auf Klick auf — dauerhaft gezeigt
+   fuellen sie den Bildschirm mit dem, was die Minderheit braucht. */
+.gb-ausklapp {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows .22s ease, opacity .18s ease, margin-top .22s ease;
+  margin-top: 0;
+}
+.gb-ausklapp > * { overflow: hidden; min-height: 0; }
+.gb-ausklapp[data-da="1"] { grid-template-rows: 1fr; opacity: 1; margin-top: 14px; }
+.gb-ausklapp .gb-reihe { flex-wrap: nowrap; }
+.gb-ausklapp .gb-codefeld { flex: 1; min-width: 0; }
+
+.gb-lobbyliste { list-style: none; margin: 0; padding: 2px; display: grid; gap: 7px; max-height: 44dvh; overflow-y: auto; }
+.gb-lobbyliste button {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 12px 14px; border: 1px solid var(--kante); border-radius: var(--r);
+  background: rgba(0,0,0,.22); color: var(--schrift);
+  transition: border-color .12s ease, background .12s ease;
+}
+.gb-lobbyliste button:hover { border-color: var(--violett-rand); background: rgba(127,34,254,.12); }
+.gb-lobbycode { font: 700 1.05rem/1 var(--mono); letter-spacing: .16em; color: var(--violett-hell); }
+.gb-lobbyinfo { flex: 1; min-width: 0; font-size: .82rem; color: var(--leise); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-lobbypfeil { font-size: 1.3rem; line-height: 1; color: var(--leise); }
+
 .gb-kopfzeile { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
-.gb-zweispalt { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.gb-zweispalt > section > h2 { margin-bottom: .4rem; }
 
 /* ── Lobby ───────────────────────────────────────────────────────────────── */
 .gb-lobbyseite, .gb-blattseite { max-width: 1520px; margin: 0 auto; padding: 22px clamp(14px, 3vw, 30px) 44px; }
@@ -741,7 +788,7 @@ input::placeholder { color: #6a748c; }
   .gb-lobbygitter > section:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 760px) {
-  .gb-zweispalt, .gb-lobbygitter { grid-template-columns: 1fr; }
+  .gb-lobbygitter { grid-template-columns: 1fr; }
   .gb-lobbygitter > section:last-child { grid-column: auto; }
   .gb-grosscode { font-size: 1.45rem; }
   /* Auf dem Handy unten quer statt seitlich: seitliche Kaesten liessen vom
@@ -794,6 +841,7 @@ export function script(lang) {
     sdk: FB.sdkVersion || '11.0.2',
     maps: KARTE,
     zugang: GB.zugangscode,
+    discord: GB.discord || '',
     standard: GB.standard,
     regionen: GB.regionen.map((r) => ({
       id: r.id, name: r[lang], boxen: r.boxen || null, staedte: r.staedte || null,

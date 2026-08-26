@@ -32,16 +32,19 @@ When a page is requested, GitHub processes the technically necessary connection 
 
 # 4. What is stored in your browser
 
-This site sets no cookies. It writes up to six values into your browser's `localStorage`:
+This site sets no cookies. It writes up to seven values into your browser's `localStorage`:
 
 | Key | Content | Purpose |
 | --- | --- | --- |
 | `theme` | `light` or `dark` | remembers the appearance you picked |
+| `skillry:hinweis` | that you dismissed the notice in the bottom left | so it is not shown on every page |
 | `level` | the depth you chose in the Learn section | shows the same level on your next visit |
 | `skillry:who` | your display name, and whether your email address is confirmed | lets the header show that you are signed in |
 | `gb:zutritt` | that you entered the GeoBingo access code | so it is not asked on every visit |
 | `gb:name` | the name you gave yourself in GeoBingo | so the field is already filled in |
 | `gb:lobby` | the code of the last lobby you joined | puts you back in the same round after a reload |
+
+The notice in the bottom left is **not a consent banner** and does not pretend to be one: there is nothing here to consent to, because nothing is set that would require it. It says what is stored locally and points here. An "accept all" button with nothing to accept is a formality that trains people to click away the ones that do matter.
 
 The first two are written only if you actually use the toggle. The third appears only when you sign in, and goes away when you sign out. The last three appear only if you open GeoBingo, and the lobby code goes away when you leave the round. None of them holds a token, and none is ever sent anywhere.
 

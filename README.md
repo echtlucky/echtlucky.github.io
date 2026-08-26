@@ -137,6 +137,13 @@ the site. It has no header, no footer, no navigation, is linked from nowhere,
 is excluded from the sitemap and the search, carries `noindex`, and sits behind
 an access code. It exists to be played full-screen next to a stream.
 
+The start screen is one column: play, browse lobbies, join with code, Discord.
+A lobby is private by default and reachable only through its code; a host can
+switch it to public, and then it appears under **Browse lobbies**. That is a
+database rule and not an interface choice — `allow list` requires
+`resource.data.oeffentlich == true`, so a query without that filter is refused
+outright and a private lobby cannot show up there even if this code were wrong.
+
 A lobby has a five-character code. Everybody in it edits one shared word list —
 **own words first, the packs are only a quick way to fill it** — and agrees on
 length to the minute, movement, teams or free-for-all, which regions are in
@@ -205,6 +212,19 @@ Content-Security-Policy that blocks the static image host outright rather than
 painting over it. Lobby, round, review, teams and result all run, and nothing
 reaches Google. It does not check the security rules, and it cannot tell you
 whether a picture really shows a hydrant.
+
+## The notice in the bottom left
+
+Not a consent banner, and it does not pretend to be one. This site sets no
+cookies, measures nothing and advertises nothing; what lands in the browser is
+what somebody set themselves. There is nothing to consent to under § 25 (2)
+TDDDG, and an "accept all" button with nothing to accept is the dishonest kind
+of formality — it trains people to click away the ones that do matter.
+
+So it says the true thing instead: what is stored locally, that the forum and
+GeoBingo talk to Google once you use them, and where the long version is. One
+button, one link, gone. Dismissing it writes `skillry:hinweis` to
+`localStorage`, which makes the notice the only thing it describes.
 
 ## How this site behaves
 

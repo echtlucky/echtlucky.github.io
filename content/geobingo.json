@@ -10,8 +10,12 @@
   "_apis": "Welche drei Dienste im Google-Cloud-Projekt freigeschaltet sein muessen.",
   "apis": ["Maps JavaScript API", "Street View Static API"],
 
+  "_discord": "Der Einladungslink hinter dem Discord-Knopf auf der Startseite. Leer lassen blendet den Knopf aus, statt ins Leere zu fuehren.",
+  "discord": "https://discord.gg/y8ArGP9Zem",
+
   "_standard": "Vorgaben fuer eine neue Runde. In der Lobby ist jede davon aenderbar.",
   "standard": {
+    "oeffentlich": false,
     "minuten": 10,
     "bewegung": "frei",
     "modus": "einzeln",

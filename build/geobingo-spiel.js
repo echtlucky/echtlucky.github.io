@@ -357,6 +357,10 @@
       host: user.uid,
       zustand: 'lobby',
       offen: true,
+      /* Oberstes Feld, nicht unter `einst`: die Regel fuer `list` prueft
+         `resource.data.oeffentlich`, und verschachtelte Felder sind in einer
+         Firestore-Abfrage nicht so filterbar. Neue Lobbys sind privat. */
+      oeffentlich: C.standard.oeffentlich === true,
       einst: einst,
       angelegt: fb.serverTimestamp()
     }).then(function () { return c; })
@@ -757,21 +761,109 @@
 
   // ── Bildschirm: Start ─────────────────────────────────────────────────────
 
+  /*
+   * Die Startseite: ein Titel und darunter die Knoepfe, einer unter dem
+   * anderen.
+   *
+   * Vorher standen „Neue Runde" und „Beitreten" als zwei Spalten
+   * nebeneinander, und das las sich wie zwei gleichrangige Angebote. Es sind
+   * aber keine zwei gleichrangigen: fast jeder, der hier ankommt, will
+   * spielen, und nur wer einen Code vorgelesen bekommen hat, will das Feld.
+   * Deshalb ein grosser Knopf und darunter die schmaleren — die Reihenfolge
+   * IST die Aussage.
+   *
+   * Das Codefeld und der Lobby-Browser klappen erst auf Klick auf. Beide
+   * dauerhaft zu zeigen hiesse, den Bildschirm mit dem zu fuellen, was die
+   * Minderheit braucht.
+   */
   function startBild() {
-    return '<div class="gb-mitte"><div class="gb-tafel">'
-      + '<div class="gb-kopfzeile">' + marke()
+    var knopf = function (tu, text, extra) {
+      return '<button class="gb-knopf gb-breit' + (extra || '') + '" data-tu="' + tu + '">' + esc(text) + '</button>';
+    };
+
+    return '<div class="gb-mitte"><div class="gb-heim">'
+      + '<div class="gb-heimkopf">' + marke()
       + '<button class="gb-still-knopf" data-tu="umbenennen">' + esc(meinName()) + '</button></div>'
-      + '<div class="gb-zweispalt">'
-      + '<section><h2>' + esc(L.neueRunde) + '</h2>'
-      + '<p class="gb-still">' + esc(L.neueRundeP) + '</p>'
-      + '<button class="gb-knopf gb-haupt gb-breit" data-tu="anlegen">' + esc(L.lobbyAufmachen) + '</button></section>'
-      + '<section><h2>' + esc(L.beitretenH) + '</h2>'
-      + '<p class="gb-still">' + esc(L.beitretenP) + '</p>'
+
+      + '<h1 class="gb-heimtitel">GeoBingo</h1>'
+      + '<p class="gb-heimzeile">' + esc(L.heimZeile) + '</p>'
+
+      + '<div class="gb-heimknoepfe">'
+      + knopf('anlegen', L.jetztSpielen, ' gb-haupt gb-gross')
+      + knopf('lobbys', L.lobbysDurchsuchen)
+      + knopf('codeZeigen', L.mitCodeBeitreten)
+      + (C.discord
+        ? '<a class="gb-knopf gb-breit gb-discord" href="' + esc(C.discord) + '" target="_blank" rel="noopener noreferrer">'
+          + '<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.865-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.65 12.65 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .078-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .079.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.363 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.056c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028ZM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418Zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418Z"/></svg>'
+          + esc(L.discord) + '</a>'
+        : '')
+      + '</div>'
+
+      + '<div class="gb-ausklapp" id="gbCodeBox" data-da="0">'
       + '<form class="gb-reihe" data-tu="beitreten">'
       + '<input id="gbCode" class="gb-codefeld" maxlength="5" autocomplete="off" spellcheck="false" placeholder="ABCDE" aria-label="' + esc(L.code) + '">'
-      + '<button class="gb-knopf" type="submit">' + esc(L.beitreten) + '</button>'
-      + '</form></section>'
-      + '</div></div></div>';
+      + '<button class="gb-knopf gb-haupt" type="submit">' + esc(L.beitreten) + '</button>'
+      + '</form></div>'
+
+      + '<div class="gb-ausklapp" id="gbLobbyBox" data-da="0"><div id="gbLobbyListe"></div></div>'
+      + '</div></div>';
+  }
+
+  /*
+   * Der Lobby-Browser.
+   *
+   * Sichtbar sind nur Lobbys, die ihr Gastgeber ausdruecklich auf „oeffentlich"
+   * gestellt hat — und das ist keine Bequemlichkeit der Oberflaeche, sondern
+   * eine Regel in der Datenbank: `allow list` verlangt
+   * `resource.data.oeffentlich == true`, und eine Abfrage ohne diese
+   * Einschraenkung wird abgewiesen. Eine private Lobby kann hier also nicht
+   * auftauchen, auch nicht durch einen Fehler in dieser Datei.
+   */
+  function lobbysLaden() {
+    var ziel = document.getElementById('gbLobbyListe');
+    if (!ziel) return;
+    ziel.innerHTML = '<div class="gb-warten"><span class="gb-kreisel"></span>' + esc(L.laden) + '</div>';
+
+    anmelden().then(function () {
+      return fb.getDocs(fb.query(
+        fb.collection(db, 'geobingo'),
+        fb.where('oeffentlich', '==', true),
+        fb.limit(30),
+      ));
+    }).then(function (q) {
+      var offen = [];
+      q.forEach(function (d) { if (d.data().offen) offen.push({ code: d.id, d: d.data() }); });
+      if (!offen.length) { ziel.innerHTML = '<p class="gb-fussnote">' + esc(L.keineLobbys) + '</p>'; return; }
+
+      ziel.innerHTML = '<ul class="gb-lobbyliste">' + offen.map(function (l) {
+        var e = l.d.einst || {};
+        return '<li><button data-tu="beitretenAus" data-code="' + esc(l.code) + '">'
+          + '<span class="gb-lobbycode">' + esc(l.code) + '</span>'
+          + '<span class="gb-lobbyinfo">' + (e.minuten || '?') + ' ' + esc(L.min)
+          + ' · ' + esc(bewegungName(e.bewegung))
+          + ' · ' + esc(e.modus === 'teams' ? L.modTeams : L.modEinzeln) + '</span>'
+          + '<span class="gb-lobbypfeil">&rsaquo;</span></button></li>';
+      }).join('') + '</ul>';
+    }).catch(function (e) {
+      ziel.innerHTML = '<p class="gb-fussnote">' + esc(fehlertext(e)) + '</p>';
+    });
+  }
+
+  function bewegungName(b) {
+    return b === 'aus' ? L.bewAus : b === 'pfeile' ? L.bewPfeile : L.bewFrei;
+  }
+
+  /** Einen der beiden Ausklapp-Bereiche zeigen und den anderen schliessen. */
+  function ausklappen(welcher) {
+    var a = document.getElementById('gbCodeBox');
+    var b = document.getElementById('gbLobbyBox');
+    if (!a || !b) return;
+    var ziel = welcher === 'code' ? a : b;
+    var offen = ziel.dataset.da !== '1';
+    a.dataset.da = '0'; b.dataset.da = '0';
+    ziel.dataset.da = offen ? '1' : '0';
+    if (offen && welcher === 'code') document.getElementById('gbCode').focus();
+    if (offen && welcher === 'lobbys') lobbysLaden();
   }
 
   // ── Bildschirm: Lobby ─────────────────────────────────────────────────────
@@ -863,6 +955,7 @@
       + '<div class="gb-kippen">'
       + kippschalter('nurStaedte', L.nurStaedte, e.nurStaedte, aus, L.nurStaedteHinweis)
       + kippschalter('punkteZeigen', L.punkteZeigen, e.punkteZeigen, aus, L.punkteZeigenHinweis)
+      + kippschalter('oeffentlich', L.oeffentlich, lobby.oeffentlich, aus, L.oeffentlichHinweis)
       + '</div>'
 
       + '<div class="gb-stellwerk">'
@@ -1176,12 +1269,13 @@
     gebunden = true;
 
     document.addEventListener('click', function (ev) {
-      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp]');
+      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code]');
       if (!t) return;
       var d = t.dataset;
 
       if (d.wort) { ev.preventDefault(); if (d.gefunden === '1') loesen(d.wort); else fangen(d.wort); return; }
       if (d.klapp) { klappen(d.klapp); return; }
+      if (d.code && d.tu === 'beitretenAus') { beitreten(d.code); return; }
       if (d.schau) { schau(d.schau); return; }
       if (d.ja) { stimmeAb(d.ja, 1); return; }
       if (d.nein) { stimmeAb(d.nein, -1); return; }
@@ -1194,7 +1288,15 @@
         return;
       }
       if (d.region) { regionKippen(d.region); return; }
-      if (d.kipp) { einstellen(d.kipp, !(lobby.einst[d.kipp])); return; }
+      if (d.kipp) {
+        /* `oeffentlich` steht als oberstes Feld auf dem Lobby-Dokument und
+           nicht unter `einst`. Nicht aus Ordnungsliebe: die Regel fuer `list`
+           prueft `resource.data.oeffentlich`, und verschachtelte Felder sind
+           dort nicht abfragbar. */
+        if (d.kipp === 'oeffentlich') { oeffentlichKippen(); return; }
+        einstellen(d.kipp, !(lobby.einst[d.kipp]));
+        return;
+      }
       if (d.bewegung) { einstellen('bewegung', d.bewegung); return; }
       if (d.modus) { einstellen('modus', d.modus); return; }
       if (d.min) { minutenAendern(parseInt(d.min, 10)); return; }
@@ -1209,6 +1311,8 @@
       else if (tu === 'nochmal') nochmal();
       else if (tu === 'zurueckZurPruefung') schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
       else if (tu === 'schauZu') schliesseSchau();
+      else if (tu === 'codeZeigen') ausklappen('code');
+      else if (tu === 'lobbys') ausklappen('lobbys');
       else if (tu === 'umbenennen') { bild = 'name'; zeichne(); }
       else if (tu === 'teamwechsel') teamWechseln();
       else if (tu === 'alleRegionen') einstellen('regionen', C.regionen.map(function (r) { return r.id; }));
@@ -1336,6 +1440,11 @@
   function minutenAendern(schritt) {
     if (!ichBinGastgeber()) return;
     einstellen('minuten', Math.max(1, Math.min(90, (lobby.einst.minuten || 10) + schritt)));
+  }
+
+  function oeffentlichKippen() {
+    if (!ichBinGastgeber()) return;
+    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { oeffentlich: !lobby.oeffentlich }));
   }
 
   function regionKippen(id) {

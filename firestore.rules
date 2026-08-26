@@ -234,12 +234,24 @@ service cloud.firestore {
       }
 
       allow get: if signedIn();
-      allow list: if false;
+
+      // Auflisten geht NUR fuer Lobbys, die ihr Gastgeber ausdruecklich
+      // oeffentlich gestellt hat.
+      //
+      // Firestore wertet eine `list`-Regel gegen jedes Dokument aus, das die
+      // Abfrage zurueckgeben wuerde. Eine Abfrage ohne
+      // `where('oeffentlich','==',true)` liefert damit zwangslaeufig ein
+      // privates Dokument mit, scheitert an dieser Zeile und wird komplett
+      // abgewiesen. Der Lobby-Browser kann private Lobbys also nicht anzeigen,
+      // auch nicht durch einen Fehler im Client — und `oeffentlich` liegt
+      // deshalb als oberstes Feld hier und nicht unter `einst`.
+      allow list: if signedIn() && resource.data.oeffentlich == true;
 
       allow create: if signedIn()
         && request.resource.data.host == request.auth.uid
         && request.resource.data.zustand == 'lobby'
         && request.resource.data.offen == true
+        && request.resource.data.oeffentlich is bool
         && einstOk(request.resource.data.einst)
         && freshTimestamp(request.resource.data.angelegt);
 
@@ -249,6 +261,7 @@ service cloud.firestore {
       allow update: if istGastgeber()
         && request.resource.data.host == resource.data.host
         && request.resource.data.zustand in ['lobby', 'laeuft', 'pruefung', 'ergebnis']
+        && request.resource.data.oeffentlich is bool
         && einstOk(request.resource.data.einst);
 
       allow delete: if istGastgeber();

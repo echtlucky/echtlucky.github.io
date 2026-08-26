@@ -32,16 +32,19 @@ Beim Abruf verarbeitet GitHub technisch notwendige Verbindungsdaten, insbesonder
 
 # 4. Was in Ihrem Browser gespeichert wird
 
-Diese Seite setzt keine Cookies. Sie legt bis zu sechs Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
+Diese Seite setzt keine Cookies. Sie legt bis zu sieben Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
 
 | Schlüssel | Inhalt | Zweck |
 | --- | --- | --- |
 | `theme` | `light` oder `dark` | merkt sich die gewählte Darstellung |
+| `skillry:hinweis` | dass Sie den Hinweis unten links weggeklickt haben | zeigt ihn nicht bei jedem Seitenaufruf erneut |
 | `level` | die gewählte Tiefe im Lernbereich | zeigt beim nächsten Besuch dieselbe Stufe |
 | `skillry:who` | Ihr Anzeigename und ob Ihre E-Mail-Adresse bestätigt ist | zeigt in der Kopfleiste, dass Sie angemeldet sind |
 | `gb:zutritt` | dass Sie den Zugangscode von GeoBingo eingegeben haben | fragt ihn nicht bei jedem Besuch erneut ab |
 | `gb:name` | der Name, den Sie sich bei GeoBingo gegeben haben | steht dann schon im Feld |
 | `gb:lobby` | der Code der zuletzt betretenen Lobby | bringt Sie nach einem Neuladen in dieselbe Runde zurück |
+
+Der Hinweis unten links ist **kein Einwilligungsbanner**, und er gibt auch nicht vor, eines zu sein: es gibt hier nichts einzuwilligen, weil nichts gesetzt wird, was einer Einwilligung bedürfte. Er sagt, was lokal liegt, und verweist hierher. Ein „Alle akzeptieren"-Knopf ohne etwas zu akzeptieren wäre eine Formalie, die Leute darauf trainiert, wegzuklicken, was anderswo wirklich zählt.
 
 Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden. Die letzten drei entstehen nur, wenn Sie GeoBingo öffnen; der Lobby-Code verschwindet, sobald Sie die Runde verlassen. Keiner der Werte enthält ein Token, und keiner wird irgendwohin gesendet.
 
