@@ -243,7 +243,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -293,7 +293,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -420,6 +420,13 @@ function footer(lang, t) {
       ])}
       ${col(f.community, [
         [f.forum, href(lang, 'forum')],
+        /*
+         * GeoBingo steht im Fuss und sonst nirgends: nicht in der Navigation,
+         * nicht im Menue, nicht in der Suche, nicht in der sitemap.xml. Der
+         * Fuss ist der Ort fuer etwas, das es gibt, das aber niemand suchen
+         * soll — und hinter dem Link steht ohnehin noch der Zugangscode.
+         */
+        [t.nav.geobingo, href(lang, 'geobingo')],
         [f.discussions, SITE.discussions],
         [f.submit, `${SITE.repoSite}/blob/main/README.md#submitting-a-skill`],
         [f.security, `${SITE.repoAirlock}/security/advisories/new`],
@@ -484,7 +491,58 @@ const searchStrings = (t) => ({
  * @param {{ lang: string, slug: string, title: string, description: string,
  *           body: string, script?: string, head?: string }} page
  */
+/**
+ * Eine Seite ohne alles.
+ *
+ * `blank: true` an einem Seitenmodul heisst: kein Kopf, kein Fuss, keine
+ * Szene, kein Korn, keine Designsprache — nur der Rumpf, den die Seite selbst
+ * mitbringt. Es gibt genau einen Grund dafuer, und es ist kein aesthetischer:
+ *
+ * GeoBingo ist eine Spielflaeche, die im Vollbild neben einem Stream steht.
+ * Der Kopf dieser Website ist 1800 Zeilen Navigation, Suche und Anmeldung mit
+ * eigenem Blatt und eigenem Skript; theme.mjs, theme-extra, Szenen und Korn
+ * kommen dazu. Auf einer Seite mit einer laufenden Uhr und einem WebGL-Panorama
+ * ist das alles Arbeit, die der Browser jedes Bild lang mitschleppt, fuer
+ * nichts — auf dieser Seite ist keine Zeile davon sichtbar.
+ *
+ * Eine `blank`-Seite traegt dafuer die volle Verantwortung fuer ihr Aussehen.
+ * Sie erbt keine Farben und keine Schrift; was sie nicht in `head()` schreibt,
+ * gibt es dort nicht.
+ *
+ * `noindex` gehoert dazu und nicht daneben: eine Seite ohne Weg dorthin, die
+ * trotzdem in einer Suchmaschine steht, ist keine unauffaellige Seite.
+ */
+function renderBlank(page) {
+  return `<!doctype html>
+<html lang="${page.lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${page.title}</title>
+<meta name="description" content="${page.description}">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#07090D">
+<link rel="icon" href="data:image/svg+xml,${encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0B0E13"/><circle cx="16" cy="16" r="8.5" fill="none" stroke="#5BE0A8" stroke-width="2.4"/><circle cx="16" cy="16" r="2.6" fill="#5BE0A8"/></svg>',
+  )}">
+${page.head ?? ''}
+</head>
+<body>
+${page.body}
+<script>${page.script ?? ''}</script>
+</body>
+</html>
+`;
+}
+
+/**
+ * @param {{ lang: string, slug: string, title: string, description: string,
+ *           body: string, script?: string, head?: string }} page
+ */
 export function render(page) {
+  if (page.blank) return renderBlank(page);
+
   const t = UI[page.lang];
   const alt = LANGS.filter((l) => l !== page.lang)
     .map((l) => `<link rel="alternate" hreflang="${l}" href="${ORIGIN}${href(l, page.slug)}">`)

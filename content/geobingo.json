@@ -1,0 +1,176 @@
+{
+  "_comment": "GeoBingo: Zugang, Kartenschluessel, Regionen und Wortpakete. Geaendert wird hier, nicht im Spielskript.",
+
+  "_zugangscode": "Der Code vor der Seite. Er haelt sie unauffaellig, nicht sicher: die Seite liegt als statische Datei bei GitHub Pages, und wer die Adresse und den Code hat, kommt rein — wer nur die Adresse hat, sieht ein Feld. Das reicht fuer den Zweck (eine Spielseite, die nicht in der Navigation steht und nicht in der Suche auftaucht) und ist ausdruecklich KEIN Passwortschutz. Wer sie wirklich verschliessen will, braucht einen Server davor. Gross- und Kleinschreibung sowie Bindestriche sind egal.",
+  "zugangscode": "zebra-hydrant-7",
+
+  "_mapsApiKey": "Google-Maps-Schluessel. LEER lassen, bis der Schluessel existiert und auf die Adresse eingeschraenkt ist: mit leerem Feld erklaert die Seite, was fehlt, statt eine Karte anzubieten, die nicht laedt. Anleitung: docs/SETUP-MAPS.md. Der Schluessel ist kein Geheimnis — er steht zwangslaeufig im Browser — aber er ist eine Rechnung. Seine Sicherheit haengt an der Referrer-Beschraenkung und am Budget-Deckel, nicht an Geheimhaltung.",
+  "mapsApiKey": "",
+
+  "_apis": "Welche drei Dienste im Google-Cloud-Projekt freigeschaltet sein muessen.",
+  "apis": ["Maps JavaScript API", "Street View Static API"],
+
+  "_standard": "Vorgaben fuer eine neue Runde. In der Lobby ist jede davon aenderbar.",
+  "standard": {
+    "minuten": 10,
+    "bewegung": "frei",
+    "modus": "einzeln",
+    "nurStaedte": true,
+    "punkteZeigen": true,
+    "regionen": ["de", "atch", "benelux", "fr", "ukie", "iberia", "it", "nordics", "east", "us"]
+  },
+
+  "_regionen": "Jede Region ist einzeln an- und abwaehlbar — so schliesst man Deutschland aus, ohne alles andere neu zu waehlen. `boxen` sind [sued, west, nord, ost] in Grad und decken die ganze Flaeche ab; `staedte` sind [breite, laenge] von Innenstaedten. Der Schalter 'nur Staedte' entscheidet, welche der beiden Listen benutzt wird: Innenstaedte haben mehr zu finden, die Flaeche hat mehr Ueberraschung. Der Zufallspunkt geht an Street View, das den naechsten Panoramapunkt sucht — diese Metadaten-Abfrage kostet nichts, deshalb darf beliebig oft gewuerfelt werden.",
+  "regionen": [
+    { "id": "de", "de": "Deutschland", "en": "Germany",
+      "boxen": [[47.3, 5.9, 55.0, 15.0]],
+      "staedte": [[52.52, 13.405], [53.551, 9.994], [48.137, 11.575], [50.938, 6.96], [50.11, 8.682], [51.34, 12.375], [51.05, 13.74], [53.08, 8.8], [49.45, 11.08], [48.78, 9.18], [51.51, 7.47], [51.23, 6.78]] },
+
+    { "id": "atch", "de": "Österreich & Schweiz", "en": "Austria & Switzerland",
+      "boxen": [[46.4, 9.5, 49.0, 17.1], [45.8, 5.9, 47.8, 10.5]],
+      "staedte": [[48.208, 16.373], [47.07, 15.44], [47.27, 11.39], [47.8, 13.05], [47.377, 8.541], [46.948, 7.447], [46.2, 6.14], [47.56, 7.59]] },
+
+    { "id": "benelux", "de": "Benelux", "en": "Benelux",
+      "boxen": [[49.4, 2.5, 53.6, 7.2]],
+      "staedte": [[52.37, 4.895], [51.92, 4.48], [52.08, 4.31], [51.44, 5.48], [50.851, 4.352], [51.22, 4.4], [51.05, 3.72], [49.61, 6.13]] },
+
+    { "id": "fr", "de": "Frankreich", "en": "France",
+      "boxen": [[42.4, -4.8, 51.1, 8.2]],
+      "staedte": [[48.857, 2.352], [45.764, 4.836], [43.297, 5.37], [43.6, 1.444], [47.218, -1.554], [44.838, -0.579], [48.584, 7.75], [43.7, 7.27]] },
+
+    { "id": "ukie", "de": "Großbritannien & Irland", "en": "Britain & Ireland",
+      "boxen": [[50.0, -10.5, 58.6, 1.8]],
+      "staedte": [[51.507, -0.128], [53.483, -2.244], [52.48, -1.9], [53.8, -1.55], [55.953, -3.188], [55.86, -4.25], [51.48, -3.18], [53.35, -6.26], [51.9, -8.47]] },
+
+    { "id": "iberia", "de": "Spanien & Portugal", "en": "Spain & Portugal",
+      "boxen": [[36.0, -9.5, 43.8, 3.3]],
+      "staedte": [[40.417, -3.704], [41.385, 2.173], [39.47, -0.376], [37.389, -5.984], [43.263, -2.935], [38.722, -9.139], [41.158, -8.629], [37.018, -7.93]] },
+
+    { "id": "it", "de": "Italien", "en": "Italy",
+      "boxen": [[36.7, 6.6, 47.1, 18.5]],
+      "staedte": [[41.903, 12.496], [45.464, 9.19], [40.852, 14.268], [45.07, 7.687], [43.77, 11.256], [45.44, 12.32], [44.494, 11.343], [38.116, 13.361]] },
+
+    { "id": "nordics", "de": "Skandinavien", "en": "Nordics",
+      "boxen": [[55.0, 4.6, 65.5, 25.0], [63.3, -24.6, 66.6, -13.5]],
+      "staedte": [[59.329, 18.069], [57.71, 11.97], [55.605, 13.0], [55.677, 12.569], [56.16, 10.2], [59.914, 10.752], [60.39, 5.32], [60.17, 24.938], [64.146, -21.94]] },
+
+    { "id": "east", "de": "Polen & Osteuropa", "en": "Poland & Eastern Europe",
+      "boxen": [[45.7, 12.1, 57.6, 28.5]],
+      "staedte": [[52.23, 21.012], [50.06, 19.94], [51.11, 17.03], [54.35, 18.65], [50.076, 14.438], [49.195, 16.606], [48.148, 17.107], [47.498, 19.04], [56.95, 24.11], [54.687, 25.28]] },
+
+    { "id": "balkan", "de": "Balkan, Türkei & Israel", "en": "Balkans, Türkiye & Israel",
+      "boxen": [[36.0, 13.5, 47.5, 30.0], [36.0, 26.0, 42.1, 38.0], [29.6, 34.3, 33.3, 35.7]],
+      "staedte": [[44.787, 20.449], [45.815, 15.982], [46.056, 14.508], [42.698, 23.322], [44.427, 26.103], [37.984, 23.728], [40.63, 22.94], [41.008, 28.978], [38.42, 27.13], [39.93, 32.86], [32.085, 34.781], [31.78, 35.22]] },
+
+    { "id": "us", "de": "USA", "en": "United States",
+      "boxen": [[25.0, -87.6, 47.5, -67.0], [26.0, -104.0, 49.0, -87.6], [32.5, -124.4, 49.0, -104.0]],
+      "staedte": [[40.713, -74.006], [41.878, -87.63], [34.052, -118.244], [37.775, -122.419], [29.76, -95.37], [33.749, -84.388], [39.952, -75.165], [42.36, -71.058], [47.606, -122.332], [25.774, -80.194], [39.74, -104.99], [30.267, -97.743]] },
+
+    { "id": "camx", "de": "Kanada & Mexiko", "en": "Canada & Mexico",
+      "boxen": [[43.0, -123.5, 52.0, -63.0], [16.0, -106.0, 29.5, -97.0], [18.0, -90.0, 21.6, -86.7]],
+      "staedte": [[43.653, -79.383], [45.502, -73.567], [49.283, -123.121], [51.045, -114.057], [45.42, -75.7], [19.433, -99.133], [20.677, -103.347], [25.686, -100.316], [21.161, -86.851]] },
+
+    { "id": "latam", "de": "Südamerika", "en": "South America",
+      "boxen": [[-30.2, -53.5, -12.0, -38.5], [-41.0, -73.5, -30.0, -55.0], [-16.0, -79.5, 6.0, -72.0]],
+      "staedte": [[-23.551, -46.633], [-22.907, -43.173], [-25.43, -49.27], [-30.03, -51.23], [-34.604, -58.382], [-31.42, -64.18], [-34.9, -56.16], [-33.449, -70.669], [4.711, -74.072], [-12.046, -77.043], [-0.18, -78.47]] },
+
+    { "id": "jp", "de": "Japan", "en": "Japan",
+      "boxen": [[31.0, 130.0, 43.5, 145.8], [24.0, 122.9, 26.9, 128.4]],
+      "staedte": [[35.682, 139.759], [34.694, 135.502], [35.011, 135.768], [35.181, 136.907], [43.062, 141.354], [33.59, 130.402], [34.385, 132.455], [26.212, 127.679]] },
+
+    { "id": "krtw", "de": "Korea & Taiwan", "en": "Korea & Taiwan",
+      "boxen": [[34.3, 126.1, 38.3, 129.4], [22.0, 120.0, 25.3, 122.0]],
+      "staedte": [[37.567, 126.978], [35.18, 129.076], [35.87, 128.6], [37.456, 126.705], [25.033, 121.565], [22.627, 120.302], [24.147, 120.673]] },
+
+    { "id": "sea", "de": "Südostasien", "en": "South-East Asia",
+      "boxen": [[1.2, 98.0, 23.5, 109.5], [-8.8, 106.0, 6.5, 119.5]],
+      "staedte": [[13.756, 100.502], [18.788, 98.985], [7.885, 98.388], [1.352, 103.82], [3.139, 101.687], [-6.208, 106.846], [-8.65, 115.216], [10.823, 106.63], [21.028, 105.834]] },
+
+    { "id": "aunz", "de": "Australien & Neuseeland", "en": "Australia & New Zealand",
+      "boxen": [[-38.5, 138.0, -25.0, 153.6], [-43.6, 144.5, -40.6, 148.5], [-35.2, 115.0, -30.5, 119.0], [-46.8, 166.5, -34.4, 178.6]],
+      "staedte": [[-33.869, 151.209], [-37.814, 144.963], [-27.47, 153.028], [-34.928, 138.6], [-31.953, 115.857], [-42.882, 147.327], [-36.849, 174.763], [-41.286, 174.776], [-43.532, 172.636]] },
+
+    { "id": "africa", "de": "Afrika", "en": "Africa",
+      "boxen": [[-34.9, 17.8, -25.5, 32.0], [-7.5, 32.5, 2.0, 40.5], [4.5, -17.6, 14.8, 8.5]],
+      "staedte": [[-33.925, 18.424], [-26.204, 28.047], [-29.858, 31.021], [-25.746, 28.188], [-1.292, 36.822], [-6.792, 39.208], [0.347, 32.582], [5.604, -0.187], [6.524, 3.379], [14.716, -17.467]] }
+  ],
+
+  "_pakete": "Wortpakete sind der schnelle Weg zu einer vollen Liste, nicht der Hauptweg. Gedacht ist die Runde mit EIGENEN Woertern — deshalb steht das Eingabefeld in der Lobby oben und die Pakete darunter. `p` sind die Punkte.",
+  "pakete": [
+    {
+      "id": "start",
+      "en": "Everyday things",
+      "de": "Alltag",
+      "enD": "On almost every street.",
+      "deD": "In fast jeder Straße.",
+      "woerter": [
+        { "de": "Ampel", "en": "Traffic light", "p": 1 },
+        { "de": "Zebrastreifen", "en": "Zebra crossing", "p": 1 },
+        { "de": "Bushaltestelle", "en": "Bus stop", "p": 1 },
+        { "de": "Fahrrad", "en": "Bicycle", "p": 1 },
+        { "de": "Hydrant", "en": "Fire hydrant", "p": 1 },
+        { "de": "Briefkasten", "en": "Post box", "p": 1 },
+        { "de": "Kirche", "en": "Church", "p": 1 },
+        { "de": "Tankstelle", "en": "Petrol station", "p": 1 },
+        { "de": "Baustelle", "en": "Roadworks", "p": 1 },
+        { "de": "Mülltonne", "en": "Wheelie bin", "p": 1 },
+        { "de": "Sitzbank", "en": "Bench", "p": 1 },
+        { "de": "Einbahnstraße", "en": "One-way sign", "p": 1 },
+        { "de": "Bäckerei", "en": "Bakery", "p": 1 },
+        { "de": "Supermarkt", "en": "Supermarket", "p": 1 },
+        { "de": "Brücke", "en": "Bridge", "p": 1 },
+        { "de": "Graffiti", "en": "Graffiti", "p": 1 }
+      ]
+    },
+    {
+      "id": "mittel",
+      "en": "Takes a look around",
+      "de": "Genauer hinsehen",
+      "enD": "There, but not on every corner.",
+      "deD": "Gibt es, aber nicht an jeder Ecke.",
+      "woerter": [
+        { "de": "Hund", "en": "Dog", "p": 2 },
+        { "de": "Katze", "en": "Cat", "p": 2 },
+        { "de": "Polizeiauto", "en": "Police car", "p": 2 },
+        { "de": "Krankenwagen", "en": "Ambulance", "p": 2 },
+        { "de": "Traktor", "en": "Tractor", "p": 2 },
+        { "de": "Windrad", "en": "Wind turbine", "p": 2 },
+        { "de": "Solaranlage", "en": "Solar panels", "p": 2 },
+        { "de": "Friedhof", "en": "Cemetery", "p": 2 },
+        { "de": "Spielplatz", "en": "Playground", "p": 2 },
+        { "de": "Leuchtturm", "en": "Lighthouse", "p": 2 },
+        { "de": "Straßenbahn", "en": "Tram", "p": 2 },
+        { "de": "Wohnwagen", "en": "Caravan", "p": 2 },
+        { "de": "Boot", "en": "Boat", "p": 2 },
+        { "de": "Statue", "en": "Statue", "p": 2 },
+        { "de": "Springbrunnen", "en": "Fountain", "p": 2 },
+        { "de": "Marktstand", "en": "Market stall", "p": 2 }
+      ]
+    },
+    {
+      "id": "schwer",
+      "en": "Rare sightings",
+      "de": "Seltene Funde",
+      "enD": "A round can end without a single one of these.",
+      "deD": "Eine Runde kann ohne einen einzigen davon enden.",
+      "woerter": [
+        { "de": "Hochzeit", "en": "Wedding", "p": 3 },
+        { "de": "Regenbogen", "en": "Rainbow", "p": 3 },
+        { "de": "Heißluftballon", "en": "Hot-air balloon", "p": 3 },
+        { "de": "Pferd", "en": "Horse", "p": 3 },
+        { "de": "Schneemann", "en": "Snowman", "p": 3 },
+        { "de": "Riesenrad", "en": "Ferris wheel", "p": 3 },
+        { "de": "Kirmes", "en": "Funfair", "p": 3 },
+        { "de": "Baukran", "en": "Construction crane", "p": 3 },
+        { "de": "Flugzeug am Himmel", "en": "Aeroplane in the sky", "p": 3 },
+        { "de": "Weihnachtsbaum", "en": "Christmas tree", "p": 3 },
+        { "de": "Doppeldeckerbus", "en": "Double-decker bus", "p": 3 },
+        { "de": "Tuk-Tuk", "en": "Tuk-tuk", "p": 3 },
+        { "de": "Kamel", "en": "Camel", "p": 3 },
+        { "de": "Das Google-Auto im Spiegel", "en": "The Google car in a reflection", "p": 3 },
+        { "de": "Jemand winkt in die Kamera", "en": "Somebody waving at the camera", "p": 3 },
+        { "de": "Kirchturmuhr", "en": "Church clock", "p": 3 }
+      ]
+    }
+  ]
+}

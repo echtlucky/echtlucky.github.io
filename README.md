@@ -35,13 +35,19 @@ build/
   layout.mjs      page shell: header, nav, language switch, footer
   theme.mjs       design tokens and the stylesheet
   pages/          one module per page, content in both languages
+  geobingo-spiel.js  the GeoBingo client, plain JS rather than a string array
   rescan.mjs      re-derives skill index verdicts from the real engine
-  validate.mjs    structure, "nobody types their own verdict", and the
-                  script catalogue's price and image rules
+  validate.mjs    structure, "nobody types their own verdict", the script
+                  catalogue's price and image rules, and that the game never
+                  reads a string neither language has
   linkcheck.mjs   every internal link must resolve
 content/
   catalog.json    the skill index
   scripts.json    the FiveM script catalogue behind /scripts/
+  geobingo.json   the game's key, start regions and word packs
+test/
+  rules.mjs       proves the forum rules against the live project
+  trocken/        plays GeoBingo with Firebase and Street View stubbed out
 dist/             generated, not committed
 ```
 
@@ -124,18 +130,107 @@ and `<details>` opens on its own. JavaScript adds the grid/list switch, opening
 a card from a `#produkt-…` link, and the basket — and the controls for those are
 hidden by a `<noscript>` stylesheet rather than shown and dead.
 
+## GeoBingo
+
+A live bingo round in Street View, and the one page here that is not part of
+the site. It has no header, no footer, no navigation, is linked from nowhere,
+is excluded from the sitemap and the search, carries `noindex`, and sits behind
+an access code. It exists to be played full-screen next to a stream.
+
+A lobby has a five-character code. Everybody in it edits one shared word list —
+**own words first, the packs are only a quick way to fill it** — and agrees on
+length to the minute, movement, teams or free-for-all, which regions are in
+play, and whether scores are visible while the round runs. During the round a
+left-click on a word records the view you are looking at, zoom included, so
+zooming in on a dog and then clicking "Hund" saves the dog. When the clock runs
+out everybody lands in the review together, where any picture can be opened as
+a real 3D panorama and argued about.
+
+Six things carry it, and most of them are about what it refuses to do.
+
+**A find is five numbers, not a screenshot.** The panorama renders into a WebGL
+surface the browser will not let anyone read back — `canvas.toDataURL()` throws
+there, and no trick changes that. So a find stores the panorama id, heading,
+pitch, field of view and coordinate. The Street View Static API rebuilds the
+picture from them, and the same numbers put a real panorama back at that exact
+spot in the review. Nothing is uploaded, nothing is stored as a file, a find is
+120 bytes, and nobody can crop a screenshot after the fact.
+
+**Movement is a setting because it is a bill.** Google charges dynamic Street
+View *per panorama*, walking included. A round on `Fest` is one charged
+panorama per player; a round on `Frei` is however many streets somebody
+wandered down. `docs/SETUP-MAPS.md` says what each mode costs rather than
+leaving it to be discovered on an invoice. Searching for a random start
+location is free — Street View metadata is not billed — which is why the game
+may roll forty times to find a place with panoramas.
+
+**The card is patched, never rebuilt.** `innerHTML` on the word list would
+replace every image on every snapshot, and each replaced image is another
+billed request for a picture already in the browser. With several players
+clicking at once that is hundreds of pointless requests, so the buttons are
+built once and only their state changes afterwards. The panorama element is
+under the same rule for the same reason, plus one more: rebuilding it would put
+the player back at their starting point mid-round.
+
+**A find fails only if everybody else votes it down.** Not a majority: doing
+nothing lets a find count, and one grump cannot kill it. A thumbs-up therefore
+never makes a find worse — it is agreement you can give without it being
+needed.
+
+**The page carries its own stylesheet.** It is the only `blank` page in the
+build (see `renderBlank()` in `build/layout.mjs`): no `theme.mjs`, no header,
+no scenes, no grain. That is not taste, it is the 167 KB of chrome a page with
+a running clock and a WebGL panorama would otherwise repaint for nothing. The
+page is 23 KB.
+
+**Nothing claims to verify a find.** No database rule can check whether a
+panorama really shows a hydrant, and the score is computed in the browser.
+`firestore.rules` says both out loud where the rules stop. The check that
+works is the review, which is why it is not decoration.
+
+The page is off until `content/geobingo.json` has a Maps key, and it renders an
+explanation of which piece is missing rather than a button that fails.
+`npm run validate` ends with `maps key set` or `maps key EMPTY`.
+
+### Playing it for free
+
+```bash
+npm run trocken     # then http://localhost:8123/trocken/
+```
+
+`test/trocken/` replaces Firebase and Street View with stand-ins and rebuilds
+the real built page around them — an import map for the Firebase modules, a
+fake `google.maps` that is already present so the loader never fetches, and a
+Content-Security-Policy that blocks the static image host outright rather than
+painting over it. Lobby, round, review, teams and result all run, and nothing
+reaches Google. It does not check the security rules, and it cannot tell you
+whether a picture really shows a hydrant.
+
 ## How this site behaves
 
-No trackers, no analytics, no cookies. The only thing stored in your browser is
-the light/dark setting and which depth you picked in the Learn section — both
-local, neither ever sent anywhere.
+No trackers, no analytics, no cookies. What is stored in your browser is the
+light/dark setting, which depth you picked in the Learn section, and — if you
+play GeoBingo — the code of the lobby you are in. All local, none of it ever
+sent anywhere.
 
-Every page except the forum is self-contained: no fonts, scripts or images from
-anyone else. The forum is the exception and says so. It loads the Firebase SDK
-from `gstatic.com` and talks to Firebase Authentication and Firestore, which
-means an IP address reaches Google there even without signing in. Reading needs
-no account; posting needs a confirmed email address. Firebase hashes the
-password — this codebase never sees it.
+**Two pages are not self-contained, and both say so.** Everything else fetches
+nothing from anybody.
+
+The forum loads the Firebase SDK from `gstatic.com` and talks to Firebase
+Authentication and Firestore, which means an IP address reaches Google there
+even without signing in. Reading needs no account; posting needs a confirmed
+email address. Firebase hashes the password — this codebase never sees it.
+
+GeoBingo additionally loads Google Maps. It is staged: Firebase loads when you
+open or join a lobby, the Maps library only once a round actually starts.
+Somebody who types the access code and then leaves has not spoken to Google at
+all. It has no accounts — every player is an anonymous Firebase id and a name
+that lives in the lobby and nowhere else.
+
+That used to be one exception rather than two, and the privacy policy said in
+so many words that *every* page but the forum fetches nothing from anyone else.
+That sentence was rewritten rather than left standing — the same correction
+this README made about GSAP above, for the same reason.
 
 `content/legal/` holds the Impressum and the privacy policy as Markdown, so they
 can be revised without touching code. A missing file renders as a visible

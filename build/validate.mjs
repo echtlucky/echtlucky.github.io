@@ -202,6 +202,92 @@ if (!shop.handoff?.email || !shop.handoff.email.includes('@')) {
 
 errors.push(...shopErrors);
 
+// ── GeoBingo: kein Text, den es nicht gibt ──────────────────────────────────
+//
+// Der Spielclient (build/geobingo-spiel.js) greift über `L.xyz` auf die Texte
+// des Seitenmoduls zu. Fällt einer davon weg oder wird er umbenannt, schreibt
+// der Client stumm "undefined" auf einen Knopf — kein Fehler, keine Ausnahme,
+// nur ein Wort, das niemand gemeint hat. Genau das ist beim Bauen einmal
+// passiert (`L.regeln` war im Seitenmodul ein Array und kein Satz), und genau
+// deshalb steht die Prüfung jetzt hier statt im Gedächtnis.
+//
+// Die zweite Hälfte ist die Sprachparität: eine Seite, die in beiden Sprachen
+// gebaut wird, hat in beiden dieselben Schlüssel — sonst bekommt eine davon
+// Löcher, die niemand sieht, der nur die andere liest.
+
+const gbFehler = [];
+
+{
+  const { TEXTE } = await import(pathToFileURL(join(ROOT, 'build', 'pages', 'geobingo.mjs')).href);
+  const quelle = readFileSync(join(ROOT, 'build', 'geobingo-spiel.js'), 'utf8');
+  const benutzt = new Set([...quelle.matchAll(/\bL\.([A-Za-z0-9_]+)/g)].map((m) => m[1]));
+
+  for (const lang of ['en', 'de']) {
+    for (const key of benutzt) {
+      const wert = TEXTE[lang][key];
+      if (wert === undefined) {
+        gbFehler.push(`geobingo: das Spiel liest L.${key}, aber TEXTE.${lang} kennt den Schlüssel nicht`);
+      } else if (typeof wert !== 'string') {
+        gbFehler.push(`geobingo: L.${key} ist in TEXTE.${lang} kein Satz, sondern ${Array.isArray(wert) ? 'ein Array' : typeof wert}`);
+      }
+    }
+  }
+
+  const en = Object.keys(TEXTE.en);
+  const de = Object.keys(TEXTE.de);
+  for (const k of en) if (!de.includes(k)) gbFehler.push(`geobingo: TEXTE.de fehlt "${k}"`);
+  for (const k of de) if (!en.includes(k)) gbFehler.push(`geobingo: TEXTE.en fehlt "${k}"`);
+
+  // Regionen und Pakete werden genauso in beide Sprachen gebaut.
+  const gb = JSON.parse(readFileSync(join(ROOT, 'content', 'geobingo.json'), 'utf8'));
+
+  const ids = new Set();
+  for (const r of gb.regionen) {
+    if (ids.has(r.id)) gbFehler.push(`geobingo: Region "${r.id}" gibt es zweimal`);
+    ids.add(r.id);
+    for (const f of ['en', 'de']) if (!r[f]) gbFehler.push(`geobingo: Region "${r.id}" hat keinen ${f}-Namen`);
+    if (!r.boxen?.length) gbFehler.push(`geobingo: Region "${r.id}" hat keine boxen — mit "nur Innenstädte" aus wäre sie leer`);
+    if (!r.staedte?.length) gbFehler.push(`geobingo: Region "${r.id}" hat keine staedte — mit "nur Innenstädte" an wäre sie leer`);
+
+    for (const b of r.boxen ?? []) {
+      if (b.length !== 4) gbFehler.push(`geobingo: Region "${r.id}" hat einen Kasten, der nicht [süd, west, nord, ost] ist`);
+      // Ein verdrehter Kasten fällt sonst erst auf, wenn ein Spieler mitten im
+      // Atlantik landet und die Runde ohne Panorama endet.
+      else if (b[0] >= b[2] || b[1] >= b[3]) gbFehler.push(`geobingo: Region "${r.id}" hat einen verdrehten Kasten [${b}]`);
+    }
+    for (const s of r.staedte ?? []) {
+      if (s.length !== 2 || Math.abs(s[0]) > 90 || Math.abs(s[1]) > 180) {
+        gbFehler.push(`geobingo: Region "${r.id}" hat eine Stadt, die nicht [breite, länge] ist: [${s}]`);
+      } else if (r.boxen?.length && !r.boxen.some((b) => s[0] >= b[0] && s[0] <= b[2] && s[1] >= b[1] && s[1] <= b[3])) {
+        // Eine Stadt ausserhalb ihrer eigenen Kästen ist fast immer ein
+        // vertauschtes Zahlenpaar — und die einzige Art Tippfehler hier, die
+        // trotzdem eine gültige Koordinate ergibt.
+        gbFehler.push(`geobingo: Region "${r.id}" hat eine Stadt ausserhalb ihrer eigenen Kästen: [${s}]`);
+      }
+    }
+  }
+
+  for (const id of gb.standard.regionen ?? []) {
+    if (!ids.has(id)) gbFehler.push(`geobingo: standard.regionen nennt "${id}", das es nicht gibt`);
+  }
+  if (!(gb.standard.regionen ?? []).length) gbFehler.push('geobingo: standard.regionen ist leer — jede neue Lobby könnte so nicht starten');
+  if (!gb.zugangscode || String(gb.zugangscode).replace(/[^a-z0-9]/gi, '').length < 6) {
+    gbFehler.push('geobingo: zugangscode fehlt oder ist kürzer als sechs Zeichen');
+  }
+
+  for (const p of gb.pakete) {
+    for (const f of ['en', 'de', 'enD', 'deD']) if (!p[f]) gbFehler.push(`geobingo: Paket "${p.id}" hat kein ${f}`);
+    for (const w of p.woerter ?? []) {
+      if (!w.en || !w.de) gbFehler.push(`geobingo: ein Wort in "${p.id}" fehlt in einer Sprache`);
+      // Drei Punkte ist keine Hausmeinung, sondern das, was die Firestore-Regel
+      // durchlässt. Eine Vier hier wäre ein Wort, das kein Spieler je fangen kann.
+      if (![1, 2, 3].includes(w.p)) gbFehler.push(`geobingo: "${w.de ?? '?'}" hat ${w.p} Punkte — erlaubt sind 1, 2 oder 3`);
+    }
+  }
+}
+
+errors.push(...gbFehler);
+
 // ── report ──────────────────────────────────────────────────────────────────
 
 const priced = (shop.products ?? []).filter((p) => typeof p.price === 'number').length;
@@ -212,10 +298,19 @@ const oberflaeche = (m) => m.kind === 'ui' || m.kind === 'shared-ui';
 const ui = (shop.products ?? []).filter((p) => medien(p).some(oberflaeche)).length;
 const shot = (shop.products ?? []).filter((p) => medien(p).some((m) => !oberflaeche(m))).length;
 
+const gbCfg = JSON.parse(readFileSync(join(ROOT, 'content', 'geobingo.json'), 'utf8'));
+const gbWoerter = gbCfg.pakete.reduce((n, p) => n + p.woerter.length, 0);
+const gbOrte = gbCfg.regionen.reduce((n, r) => n + (r.staedte?.length ?? 0), 0);
+
 process.stdout.write(
   `\nskill index — ${catalog.skills.length} entries` +
     ` · script catalogue — ${(shop.products ?? []).length} products,` +
-    ` ${priced} priced, ${ui} with an interface, ${shot} with a recording\n\n`,
+    ` ${priced} priced, ${ui} with an interface, ${shot} with a recording` +
+    // Ob der Schluessel da ist, gehoert in die Zusammenfassung und nicht in die
+    // Fehlerliste: eine leere Zeile ist hier kein Fehler, sondern der Zustand
+    // "noch nicht eingeschaltet" — aber einer, den man sehen soll.
+    ` · geobingo — ${gbWoerter} words, ${gbCfg.regionen.length} regions, ${gbOrte} cities,` +
+    ` maps key ${gbCfg.mapsApiKey ? 'set' : 'EMPTY (the page explains itself)'}\n\n`,
 );
 for (const w of warnings) process.stdout.write(`  ! ${w}\n`);
 for (const e of errors) process.stdout.write(`  ✗ ${e}\n`);

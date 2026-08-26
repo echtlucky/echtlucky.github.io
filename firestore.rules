@@ -186,6 +186,141 @@ service cloud.firestore {
       }
     }
 
+    // ── GeoBingo ───────────────────────────────────────────────────────────
+    //
+    // Eine Lobby ist etwas anderes als ein Forumsbeitrag, und diese Regeln sind
+    // deshalb an drei Stellen bewusst lockerer — jede mit einem Grund.
+    //
+    // 1. `signedIn()` statt `verified()`, anonyme Anmeldungen eingeschlossen.
+    //    Im Forum ist die bestaetigte Adresse die Huerde zwischen Forum und
+    //    offenem Relais: was dort steht, steht oeffentlich und dauerhaft. Eine
+    //    Lobby steht hinter einem Code, den nur bekommt wer ihn weitergereicht
+    //    kriegt, und sie ist nach einer Runde Geschichte. Wer fuer zehn Minuten
+    //    Bingo erst ein Konto anlegen und eine Mail oeffnen muss, spielt nicht.
+    //
+    // 2. `get` ja, `list` nein.
+    //    Ohne diese Trennung koennte jeder Angemeldete die Sammlung `geobingo`
+    //    abfragen und bekaeme jede offene Lobby mit ihrem Code. Eine Lobby
+    //    findet man ueber ihren Code, nie ueber eine Liste. Die Unter-Sammlungen
+    //    brauchen `list` (die Spielerliste ist eine Abfrage), aber dorthin kommt
+    //    nur, wer den Code schon hat.
+    //
+    // 3. WAS DIESE REGELN NICHT KOENNEN, und das ist die Haelfte der Wahrheit:
+    //    Ob auf einem Panorama wirklich ein Hund steht, kann keine
+    //    Datenbankregel pruefen. Ein Fund ist erlaubt, weil er formal richtig
+    //    aussieht, nicht weil er stimmt. Dagegen hilft nur die Auswertung, in
+    //    der die Mitspieler den Daumen heben oder senken — sie ist deshalb kein
+    //    Beiwerk, sondern die eigentliche Kontrolle. Genauso wird der
+    //    Punktestand im Browser gerechnet: wer die Konsole aufmacht, kann sich
+    //    in seiner eigenen Anzeige jede Zahl hinschreiben. Er aendert damit kein
+    //    Dokument, also sehen die anderen weiter den richtigen Stand.
+    match /geobingo/{code} {
+
+      function lobby() {
+        return get(/databases/$(database)/documents/geobingo/$(code)).data;
+      }
+      function istGastgeber() {
+        return signedIn() && lobby().host == request.auth.uid;
+      }
+      function dabei() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/geobingo/$(code)/spieler/$(request.auth.uid));
+      }
+      function einstOk(e) {
+        return e.minuten is int && e.minuten >= 1 && e.minuten <= 90
+          && e.bewegung in ['frei', 'pfeile', 'aus']
+          && e.modus in ['einzeln', 'teams']
+          && e.regionen is list && e.regionen.size() <= 40;
+      }
+
+      allow get: if signedIn();
+      allow list: if false;
+
+      allow create: if signedIn()
+        && request.resource.data.host == request.auth.uid
+        && request.resource.data.zustand == 'lobby'
+        && request.resource.data.offen == true
+        && einstOk(request.resource.data.einst)
+        && freshTimestamp(request.resource.data.angelegt);
+
+      // Nur der Gastgeber schaltet weiter und stellt ein, und der Gastgeber
+      // selbst ist unveraenderlich. Ohne die zweite Zeile koennte sich jeder,
+      // der den Code kennt, zum Gastgeber machen und die Runde abbrechen.
+      allow update: if istGastgeber()
+        && request.resource.data.host == resource.data.host
+        && request.resource.data.zustand in ['lobby', 'laeuft', 'pruefung', 'ergebnis']
+        && einstOk(request.resource.data.einst);
+
+      allow delete: if istGastgeber();
+
+      match /spieler/{uid} {
+        allow read: if signedIn();
+        allow create, update: if isSelf(uid)
+          && textOk(request.resource.data.name, 1, 24)
+          && request.resource.data.team in ['a', 'b'];
+        // Sich selbst austragen darf jeder, hinauswerfen nur der Gastgeber.
+        allow delete: if isSelf(uid) || istGastgeber();
+      }
+
+      match /woerter/{wortId} {
+        allow read: if signedIn();
+
+        allow create: if dabei()
+          && request.resource.data.vonUid == request.auth.uid
+          && textOk(request.resource.data.text, 1, 40)
+          && request.resource.data.p is int
+          && request.resource.data.p in [1, 2, 3]
+          && freshTimestamp(request.resource.data.angelegt);
+
+        // Ein Wort wird nicht umgeschrieben, es wird geloescht und neu angelegt.
+        // Sonst haette jemand mitten in der Runde aus "Ampel" einen
+        // "Heissluftballon" machen koennen, und alle Funde daran waeren
+        // ploetzlich Funde fuer etwas anderes gewesen.
+        allow update: if false;
+        allow delete: if signedIn() && (resource.data.vonUid == request.auth.uid || istGastgeber());
+      }
+
+      match /funde/{fundId} {
+        allow read: if signedIn();
+
+        // Die Kennung MUSS uid_wortId sein. Das ist die ganze Regel gegen den
+        // zweiten Fund fuer dasselbe Wort: ein erneuter Klick schreibt auf
+        // denselben Pfad und ueberschreibt, statt zu addieren.
+        allow create, update: if dabei()
+          && request.resource.data.uid == request.auth.uid
+          && fundId == request.auth.uid + '_' + request.resource.data.wortId
+          && request.resource.data.wortId is string
+          && textOk(request.resource.data.wortText, 1, 40)
+          && textOk(request.resource.data.pano, 1, 256)
+          && request.resource.data.heading is number
+          && request.resource.data.pitch is number
+          && request.resource.data.fov is number
+          && request.resource.data.fov >= 10
+          && request.resource.data.fov <= 120
+          && freshTimestamp(request.resource.data.angelegt);
+
+        allow delete: if signedIn() && (resource.data.uid == request.auth.uid || istGastgeber());
+
+        match /stimmen/{uid} {
+          allow read: if signedIn();
+
+          // Ueber den eigenen Fund stimmt niemand ab. Im Forum steht dieselbe
+          // Ueberlegung als Kommentar; hier ist sie eine Regel, weil eine Runde
+          // gegen drei Freunde sonst darin endet, dass jeder seine eigenen
+          // Funde durchwinkt.
+          allow create, update: if dabei() && isSelf(uid)
+            && request.resource.data.v is int
+            && request.resource.data.v in [1, -1]
+            && get(/databases/$(database)/documents/geobingo/$(code)/funde/$(fundId)).data.uid != uid;
+
+          // Auch der Gastgeber, und zwar nicht aus Machtgruenden: er raeumt
+          // beim Verlassen die ganze Lobby ab, und eine Stimme, die er nicht
+          // loeschen darf, bliebe als verwaister Pfad stehen.
+          allow delete: if isSelf(uid) || istGastgeber();
+        }
+      }
+    }
+
     // Anything not matched above is denied. Adding a collection means adding a
     // rule for it on purpose.
     match /{document=**} {
