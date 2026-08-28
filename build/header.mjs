@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 import { href, LANGS, FLAGS, SITE } from './layout.mjs';
 import { LOGO } from './logo.mjs';
+import { PORTAL } from './portal.mjs';
 
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -415,7 +416,7 @@ export function header(lang, current, t, opts = {}) {
         <li><a href="${href(lang, 'forum')}?new=1">${esc(t.quick.newPost)}</a></li>
         <li><a href="${href(lang, 'forum')}?mine=1">${esc(t.auth.myPosts)}</a></li>
         <li><a href="${href(lang, 'account')}">${esc(t.auth.konto)}</a></li>
-        <li><a href="https://lizenz.skillry.de/" id="ghPortalLink">${esc(t.auth.portal)}</a></li>
+        ${PORTAL ? `<li><a href="${PORTAL}/" id="ghPortalLink">${esc(t.auth.portal)}</a></li>` : ''}
       </ul>
       <button type="button" class="btn" data-signout>${esc(t.auth.signOut)}</button>
     </div>

@@ -24,6 +24,7 @@
  * "Unexpected identifier". Deshalb steht in den Kommentaren hier drin keiner.
  */
 import { href } from '../layout.mjs';
+import { PORTAL } from '../portal.mjs';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -471,7 +472,7 @@ export function body(lang) {
     <section class="ko-karte">
       <h2>${esc(t.navSignIn)}</h2>
       <ul class="ko-schnell">
-        <li><a href="https://lizenz.skillry.de/">${esc(t.toPortal)}</a></li>
+        ${PORTAL ? `<li><a href="${PORTAL}/">${esc(t.toPortal)}</a></li>` : ''}
         <li><a href="${href(lang, 'forum')}?mine=1">${esc(t.toPosts)}</a></li>
       </ul>
     </section>
