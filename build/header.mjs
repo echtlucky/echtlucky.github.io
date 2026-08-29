@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { href, LANGS, FLAGS, SITE } from './layout.mjs';
+import { href, FLAGS, SITE, SPRACHEN } from './layout.mjs';
 import { LOGO } from './logo.mjs';
 import { PORTAL } from './portal.mjs';
 
@@ -163,8 +163,9 @@ export const SITEMAP = {
       en: 'Play',
       de: 'Spielen',
       items: [
-        { l: { en: 'Reflex', de: 'Reflex' }, h: (lang) => `${href(lang, 'games')}#reflex` },
-        { l: { en: 'Pairs', de: 'Paare' }, h: (lang) => `${href(lang, 'games')}#paare` },
+        { l: { en: 'Reflex', de: 'Reflex' }, h: (lang) => href(lang, 'games/reflex') },
+        { l: { en: 'Pairs', de: 'Paare' }, h: (lang) => href(lang, 'games/pairs') },
+        { l: { en: 'Sequence', de: 'Sequenz' }, h: (lang) => href(lang, 'games/sequence') },
         { l: { en: 'Suggest a game', de: 'Ein Spiel vorschlagen' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
       ],
     },
@@ -396,10 +397,28 @@ export function header(lang, current, t, opts = {}) {
       aria-expanded="false" aria-controls="mega-${n.key}" aria-haspopup="true"${seiten(n).some((k) => k.slug === current) || (n.dazu ?? []).some((k) => k.slug === current) ? ' aria-current="page"' : ''}>${t.nav[n.key]}${I_CARET}</a>`,
   ).join('');
 
-  const langs = LANGS.map((l) => {
-    const name = l === 'en' ? 'English' : 'Deutsch';
-    return `<a href="${href(l, current)}" hreflang="${l}" aria-current="${l === lang}" title="${name}" data-lang="${l}">${FLAGS[l]}<span class="sr">${name}</span></a>`;
+  /*
+   * Der Sprachwaehler: ein Knopf mit der aktuellen Flagge, dahinter eine
+   * Liste. Live-Sprachen sind Links auf DIESELBE Seite in der anderen
+   * Sprache; angekuendigte stehen grau mit "bald" dabei — dieselbe Ordnung
+   * wie GTA VI im Skripte-Menue: Ankuendigung, kein Angebot. Die Liste ist
+   * fuer dreizehn und mehr Eintraege gebaut (eigene Rolle, eigener Ueberlauf),
+   * damit eine neue Sprache ein Eintrag ist und kein Umbau.
+   */
+  const aktuelle = SPRACHEN.find((s) => s.code === lang) ?? SPRACHEN[0];
+  const langListe = SPRACHEN.map((s) => {
+    if (s.live) {
+      return `<a href="${href(s.code, current)}" hreflang="${s.code}" lang="${s.code}"
+        aria-current="${s.code === lang}" data-lang="${s.code}">${FLAGS[s.code]}<span>${s.name}</span></a>`;
+    }
+    return `<span class="lang-bald" lang="${s.code}">${FLAGS[s.code]}<span>${s.name}</span><em>${esc(t.menu.bald)}</em></span>`;
   }).join('');
+  const langs = `
+    <button type="button" class="lang-btn" id="ghLangBtn" aria-expanded="false"
+      aria-controls="ghLangList" aria-haspopup="true" aria-label="${esc(t.act.lang)}">
+      ${FLAGS[lang]}<span class="lang-code">${lang.toUpperCase()}</span>${I_CARET}
+    </button>
+    <div class="lang-list" id="ghLangList" hidden aria-label="${esc(t.act.lang)}" title="${esc(aktuelle.name)}">${langListe}</div>`;
 
   /* Eine Gruppe hat kein SITEMAP — sie hat Kinder. Deshalb zwei Bauer statt
      einer Verzweigung im Bauer selbst. */
@@ -930,11 +949,59 @@ export const HEADER_CSS = `
   color: var(--header-fg); cursor: pointer; padding: 0;
 }
 .icon-btn:hover { background: var(--hdr-tint-2); }
-.lang-switch { display: flex; gap: 2px; align-items: center; padding: var(--insel-pad); flex: none; }
-.lang-switch a { color: var(--header-fg); padding: 5px 7px; border-radius: var(--radius); opacity: 0.5; line-height: 1; }
-.lang-switch a svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
-.lang-switch a:hover { opacity: 1; background: var(--hdr-tint); text-decoration: none; }
-.lang-switch a[aria-current="true"] { opacity: 1; background: var(--hdr-tint-2); }
+/*
+ * ══ DER SPRACHWAEHLER IST EIN AUSKLAPPFELD, KEINE FLAGGENREIHE ════════════
+ *
+ * Zwei Flaggen nebeneinander gehen; dreizehn sind eine Wand. Der Knopf zeigt
+ * die AKTUELLE Sprache (Flagge + Kuerzel), die Liste dahinter zeigt alle —
+ * live-Sprachen als Links mit Flagge und eigenem Namen, angekuendigte grau
+ * mit "bald". Die Liste folgt dem Seitenschema (--surface) wie jedes Panel,
+ * denn sie liegt AUF der Seite, nicht im Kopfbalken.
+ */
+.lang-switch { display: flex; align-items: center; padding: var(--insel-pad); flex: none; position: relative; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 7px; height: 100%;
+  padding: 0 9px 0 8px; border: 0; background: none; cursor: pointer;
+  color: var(--header-fg); font: inherit; font-size: 13px; font-weight: 600;
+  border-radius: var(--insel-r-innen); opacity: 0.85; line-height: 1;
+  transition: opacity var(--kurz) var(--ease), background var(--kurz) var(--ease);
+}
+.lang-btn:hover, .lang-btn:focus-visible { opacity: 1; background: var(--hdr-tint); }
+.lang-btn[aria-expanded="true"] { opacity: 1; background: var(--hdr-tint-2); }
+.lang-btn svg:first-child { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
+.lang-code { letter-spacing: 0.04em; }
+.lang-list {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+  min-width: 216px; max-height: min(64vh, 500px); overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--insel-r);
+  box-shadow: var(--insel-schatten-hoch);
+  animation: langAuf var(--kurz) var(--ease);
+}
+@keyframes langAuf { from { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .lang-list { animation: none; } }
+.lang-list a, .lang-bald {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: calc(var(--insel-r) - 6px);
+  font-size: 0.9rem; color: var(--fg); line-height: 1.2;
+}
+.lang-list a:hover { background: var(--surface-2); text-decoration: none; }
+.lang-list a[aria-current="true"] {
+  background: var(--marke-flaeche); color: var(--marke-auf-flaeche); font-weight: 600;
+}
+.lang-list svg { display: block; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12); }
+.lang-bald { color: var(--fg-subtle); cursor: default; }
+.lang-bald em {
+  margin-left: auto; font-style: normal; font-size: 0.7rem;
+  letter-spacing: 0.05em; text-transform: lowercase; opacity: 0.8;
+}
+/* Die erste angekuendigte Zeile bekommt die Trennlinie — so braucht die
+   Liste keinen eigenen Zwischentitel. */
+.lang-list a[aria-current] + .lang-bald,
+.lang-list a + .lang-bald { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 10px; border-radius: 0 0 calc(var(--insel-r) - 6px) calc(var(--insel-r) - 6px); }
+.lang-bald + .lang-bald { border-top: 0; margin-top: 0; padding-top: 7px; }
 
 .gh-signin {
   display: inline-flex; align-items: center; gap: 7px;
@@ -1167,7 +1234,11 @@ export const HEADER_CSS = `
   .gh-word { font-size: 17px; letter-spacing: -0.002em; }
   .gh-quick span { display: none; }
   .gh-quick { padding: 0 9px; }
-  .lang-switch { display: none; }          /* lives in the menu panel instead */
+  /* Der Sprachwaehler bleibt — mit dreizehn Sprachen ist er kein Luxus mehr,
+     sondern die eine Tuer, die jemand ohne die Seitensprache findet. Nur das
+     Kuerzel weicht; Flagge und Pfeil reichen als Knopf. */
+  .lang-code { display: none; }
+  .lang-list { position: fixed; top: calc(var(--hdr-h) + 14px); right: 10px; left: auto; }
   .gh-signin { padding: 0 9px; }
   .gh-signin #ghAuthLabel { display: none; }
   .gh-signin.io #ghAuthLabel { display: inline; }
@@ -1851,4 +1922,34 @@ export const HEADER_JS = (cfg) => `
   [].forEach.call(document.querySelectorAll('[data-signout]'), function (b) {
     b.addEventListener('click', signOut);
   });
+
+  // =========================================================================
+  // 5. Der Sprachwaehler. Ein Knopf, eine Liste, drei Wege hinaus:
+  //    nochmal klicken, danebenklicken, Escape. Kein Fokusfaenger — die Liste
+  //    ist ein Menue, kein Dialog.
+  // =========================================================================
+  var langBtn = document.getElementById('ghLangBtn');
+  var langList = document.getElementById('ghLangList');
+  if (langBtn && langList) {
+    function langZu() {
+      langList.hidden = true;
+      langBtn.setAttribute('aria-expanded', 'false');
+    }
+    langBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var auf = langList.hidden;
+      langList.hidden = !auf;
+      langBtn.setAttribute('aria-expanded', String(auf));
+      if (auf) {
+        var aktiv = langList.querySelector('a[aria-current="true"]');
+        if (aktiv) aktiv.focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!langList.hidden && !langList.contains(e.target) && e.target !== langBtn) langZu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !langList.hidden) { langZu(); langBtn.focus(); }
+    });
+  }
 })();`;

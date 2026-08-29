@@ -640,16 +640,36 @@ footer.site a {
   transition: color var(--kurz) var(--ease), background-color var(--kurz) var(--ease);
 }
 footer.site a:hover { color: var(--fg); background: var(--surface-2); text-decoration: none; }
+/*
+ * Der Sockel: drei Zeilen mit drei Stimmen. Vorher teilten sich Lizenz,
+ * Verhaltenssatz und Rockstar-Hinweis einen Streifen mit space-between —
+ * drei Saetze in drei Laengen, nebeneinander gequetscht, lasen sich wie
+ * Kleingedrucktes. Jetzt: Zeichen und Lizenz oben (wer die Seite ist),
+ * darunter der Verhaltenssatz (wie sie sich benimmt), zuunterst der
+ * Pflichthinweis ueber seiner eigenen Haarlinie.
+ */
 footer.site .base {
   margin-top: clamp(8px, 0.9vw, 14px);
-  display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+  display: flex; flex-direction: column; gap: 10px;
   color: var(--fg-subtle); font-size: 0.84rem;
 }
-/* Der Rockstar-Hinweis bekommt eine eigene Zeile, sonst teilt er sich den
-   Streifen mit einem Absatz, der dreimal so lang ist, und wird zur Randnotiz.
+footer.site .base p { margin: 0; max-width: 88ch; }
+footer.site .base-marke {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  color: var(--fg);
+}
+footer.site .base-marke .mark { color: var(--marke); flex: none; }
+footer.site .base-name {
+  font-family: var(--anzeige); font-weight: 700; font-size: 1rem; letter-spacing: -0.004em;
+}
+footer.site .base-rechte { color: var(--fg-subtle); }
+/* Der Rockstar-Hinweis bekommt eine eigene Zeile ueber eigener Haarlinie.
    **Und er wird ausdruecklich nicht kleiner gesetzt als der Rest**: die Cfx.re
    Platform License Agreement verlangt ihn deutlich sichtbar, und ein Hinweis in
    Achtelpunkt erfuellt eine Pflicht nur dem Buchstaben nach. */
-footer.site .base .disclaimer { flex-basis: 100%; letter-spacing: .01em; }
+footer.site .base .disclaimer {
+  letter-spacing: .01em;
+  border-top: 1px solid var(--border); padding-top: 10px; margin-top: 2px;
+}
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;

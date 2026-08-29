@@ -177,6 +177,22 @@ export const CSS_EXTRA = `
 .accent-index { color: var(--accent-idx); }
 .accent-forum { color: var(--accent-forum); }
 
+/* ── Spiel-Bausteine ────────────────────────────────────────────────────── */
+/*
+ * Geteilt zwischen der Spieleseite und den einzelnen Spielseiten — der Chip,
+ * der ehrlich sagt, was ein Eintrag ist (auf dieser Seite spielbar, braucht
+ * ein Konto, in Entwicklung), und die Akzentverdrahtung des Spielnamens.
+ */
+.sp-spiel h3 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sp-spiel h3 .sp-name { color: var(--eck); }
+.sp-chip {
+  font-family: var(--mono); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid currentColor; color: var(--eck);
+}
+.sp-hinweis { font-size: 0.84rem; color: var(--fg-subtle); }
+.sp-spiel noscript { display: block; font-size: 0.84rem; color: var(--danger); }
+
 /* ── crop-mark corners ──────────────────────────────────────────────────── */
 /*
  * Die scharfe Kante im weichen System — und zwar mit Absicht NEBEN der
