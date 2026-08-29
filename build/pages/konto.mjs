@@ -328,7 +328,7 @@ const CSS = `
 }
 /* ::backdrop haengt nicht im Elementbaum und erbt die eigenen Variablen nicht
    — var() faellt dort still auf durchsichtig zurueck. Also ein fester Wert. */
-.ko-dialog::backdrop { background: rgba(1, 4, 9, 0.62); backdrop-filter: blur(2px); }
+.ko-dialog::backdrop { background: rgba(5, 3, 15, 0.62); backdrop-filter: blur(2px); }
 .ko-dialog-in { padding: 20px 22px 18px; }
 .ko-dialog h2 { font-size: 1.05rem; margin: 0 0 6px; }
 .ko-dialog-fuss { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }

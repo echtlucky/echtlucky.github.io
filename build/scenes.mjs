@@ -38,6 +38,40 @@ export const SCENE_CSS = `
   background: radial-gradient(58% 62% at 50% 42%, var(--bg) 30%, transparent 78%);
 }
 
+/* ── Home: the aurora ───────────────────────────────────────────────────── */
+/*
+ * The front page is the one place the brand shows its whole layering: violet
+ * masses with the sky-blue light behind them, drifting in from the upper
+ * corners like an aurora. Not one flat colour — that is the point of the
+ * palette — and never behind the column, which the shared ::after mask
+ * guarantees. Three masses plus a soft wash from the top; the wash is what
+ * keeps the corners from reading as two separate stickers.
+ */
+.scene-heim {
+  background:
+    radial-gradient(70% 38% at 14% 6%, color-mix(in srgb, var(--marke) 18%, transparent), transparent 70%),
+    radial-gradient(56% 32% at 86% 12%, color-mix(in srgb, var(--himmel) 20%, transparent), transparent 72%),
+    radial-gradient(44% 26% at 62% 30%, color-mix(in srgb, var(--marke) 9%, transparent), transparent 74%),
+    linear-gradient(180deg, color-mix(in srgb, var(--himmel) 6%, transparent), transparent 42%);
+}
+:root[data-theme='dark'] .scene-heim,
+:root:not([data-theme]) .scene-heim {
+  background:
+    radial-gradient(70% 38% at 14% 6%, color-mix(in srgb, var(--marke) 14%, transparent), transparent 70%),
+    radial-gradient(56% 32% at 86% 12%, color-mix(in srgb, var(--himmel) 13%, transparent), transparent 72%),
+    radial-gradient(44% 26% at 62% 30%, color-mix(in srgb, var(--marke-stark) 8%, transparent), transparent 74%),
+    linear-gradient(180deg, color-mix(in srgb, #1a1440 55%, transparent), transparent 46%);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .scene-heim {
+    background:
+      radial-gradient(70% 38% at 14% 6%, color-mix(in srgb, var(--marke) 14%, transparent), transparent 70%),
+      radial-gradient(56% 32% at 86% 12%, color-mix(in srgb, var(--himmel) 13%, transparent), transparent 72%),
+      radial-gradient(44% 26% at 62% 30%, color-mix(in srgb, var(--marke-stark) 8%, transparent), transparent 74%),
+      linear-gradient(180deg, color-mix(in srgb, #1a1440 55%, transparent), transparent 46%);
+  }
+}
+
 /* ── AIRLOCK: air ───────────────────────────────────────────────────────── */
 /*
  * Not a picture of clouds — bands of air. Four soft horizontal masses at
@@ -144,6 +178,7 @@ export const SCENE_CSS = `
  *  the legal pages: an atmosphere behind an Impressum is a joke at the reader's
  *  expense. */
 export const SCENE_FOR = {
+  '': 'scene-heim',
   airlock: 'scene-air',
   nexus: 'scene-nexus',
   skills: 'scene-index',

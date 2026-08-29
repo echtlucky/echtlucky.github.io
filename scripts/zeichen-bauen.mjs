@@ -2,13 +2,15 @@
  * Die drei endgueltigen Zeichen.
  *
  *   t = 2.1, auf den dokumentierten Sicherheitsrand von 2.4 skaliert.
- *   Skillry gruen, Roleplay signalblau, Lizenz amber mit Schluessel.
+ *   Skillry violett, Roleplay signalblau, Lizenz amber mit Schluessel.
  *
  * Bewegung als SMIL, nicht als CSS: `d: path()` kennt Firefox nicht, SMIL
  * schon. Auf der Seite selbst treibt spaeter GSAP denselben Parameter --
  * diese Datei muss allein funktionieren, im Favicon wie im README.
  */
-import { verwerfung } from './marken.mjs';
+// Die Geometrie liegt in build/ — so sagt es auch build/logo.mjs. Der alte
+// Pfad './marken.mjs' zeigte ins Leere, und der Generator startete gar nicht.
+import { verwerfung } from '../build/marken.mjs';
 import { writeFileSync } from 'node:fs';
 
 const T = 2.1;
@@ -70,7 +72,10 @@ function marke({ name, farbe, icon = false, titel }) {
 }
 
 const MARKEN = [
-  { name: 'skillry',  farbe: '#4EE296', titel: 'Skillry' },
+  /* VIOLETT[500] aus build/marke.mjs: die eine Stufe, die auf hellem UND
+     dunklem Grund als Kante traegt (4.11 auf Weiss, 4.75 auf der Nacht) —
+     ein Zeichen, das in READMEs und Tabs auf beiden Grunden steht. */
+  { name: 'skillry',  farbe: '#8763f3', titel: 'Skillry' },
   { name: 'roleplay', farbe: '#2F81F7', titel: 'Skillry Roleplay' },
   { name: 'lizenz',   farbe: '#F5B942', titel: 'Skillry Lizenz', icon: true },
 ];

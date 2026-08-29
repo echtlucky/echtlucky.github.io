@@ -5,55 +5,59 @@
  * Warum es diese Datei gibt
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * Skillry ist ab jetzt mehr als eine Website: Portal, Panel, Forum und
- * Rechnungen kommen dazu (`skillry-fivem/docs/unternehmen.md`, Stufe 1). Was
- * sie zu einer Sache macht, ist nicht ein Logo, sondern **dieselbe Kurve,
- * dieselben Abstände, dieselbe Farbe** — und die stehen hier, an einer Stelle,
- * statt in fünf Blättern nebeneinander.
+ * Skillry ist mehr als eine Website: Portal, Panel, Forum und Rechnungen
+ * gehören dazu (`skillry-fivem/docs/unternehmen.md`, Stufe 1). Was sie zu
+ * einer Sache macht, ist nicht ein Logo, sondern **dieselbe Kurve, dieselben
+ * Abstände, dieselbe Farbe** — und die stehen hier, an einer Stelle, statt in
+ * fünf Blättern nebeneinander.
  *
  * `theme.mjs` beschreibt, wie diese Seite aussieht. Diese Datei beschreibt, wie
  * Skillry aussieht.
  *
  * ═══════════════════════════════════════════════════════════════════════════
- * Grün gehört ab jetzt der Marke, nicht einem Produkt
+ * Violett ist die Marke, Grün gehört wieder AIRLOCK
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * Bisher war Grün die Farbe von AIRLOCK und stand deshalb auf genau einer
- * Seite; die Farbe, die überall auftauchte, war das Blau der Links. Wer die
- * Seite ansieht, sieht folglich kein Grün — obwohl das Zeichen grün gemeint ist.
+ * Bis zum 29.08.2026 beanspruchte Skillry das Grün und AIRLOCK trug es als
+ * Flaggschiff. Das hatte einen Preis, der mit jedem neuen Projekt wuchs:
+ * Marke und Flaggschiff waren farblich EIN Ding, und je mehr Projekte unter
+ * dem Zeichen stehen — NEXUS, DECK, die Skripte, das Panel — desto falscher
+ * wurde es, dass die Dachmarke die Farbe eines einzelnen Produkts trägt.
  *
- * Die naheliegende Antwort — ein zweites, anderes Grün für die Marke — wurde
- * durchgerechnet und verworfen. **Airlocks Minz `#4EE296` liegt bei Farbton
- * 149°, und die Tonleiter unten liegt bei 150°; der Abstand zwischen dem Minz
- * und Stufe 400 dieser Leiter beträgt 13 von 441 möglichen.** Es ist nicht ein
- * anderes Grün, es ist dasselbe. Zwei davon nebeneinander hätte niemand
- * auseinandergehalten.
+ * Also die sauberere Ordnung: **die Marke bekommt eine eigene Farbe, die
+ * keinem Produkt gehört.** Violett, Farbton ~262°, weit genug von Airlocks
+ * Minz (149°), Nexus' Cyan (~193°) und dem Amber des Index (~40°), dass
+ * keine zwei je verwechselt werden. Jedes Produkt behält seinen Akzent auf
+ * seiner eigenen Seite; das Violett ist das Dach darüber.
  *
- * Also andersherum: **eine Leiter, und Airlocks Minz ist eine ihrer Stufen.**
- * Skillry beansprucht Grün, Airlock trägt es als Flaggschiff — was es ohnehin
- * ist. Nexus behält Cyan als die wirklich andere Farbe.
+ * Und es ist bewusst KEINE Fläche aus einer Farbe: die Marke schichtet.
+ * Violett trägt Identität und Handlung, das hellere Himmelsblau darunter
+ * (`HIMMEL`) ist die zweite Ebene — es taucht nur in Verläufen, Szenen und
+ * Lichtern auf, nie als Text, und ist das, was die Grundflächen davor
+ * bewahrt, einfarbig zu sein.
  *
  * ═══════════════════════════════════════════════════════════════════════════
- * Wo Grün auftaucht, und wo ausdrücklich nicht
+ * Wo Violett auftaucht, und wo ausdrücklich nicht
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * **Nicht bei den Links.** Das war der erste Entwurf und er war falsch: Blau
- * für einen Link ist keine Geschmacksfrage, sondern eine dreißig Jahre alte
- * Verabredung, und eine Dokumentationsseite lebt vom Überfliegen. Eine Marke
- * braucht die Linkfarbe nicht — GitHub ist schwarzweiß mit grünen Knöpfen und
- * blauen Links, und niemand hält GitHub für farblos.
+ * **Nicht bei den Links.** Blau für einen Link ist keine Geschmacksfrage,
+ * sondern eine dreißig Jahre alte Verabredung, und eine Dokumentationsseite
+ * lebt vom Überfliegen. Eine Marke braucht die Linkfarbe nicht — GitHub ist
+ * schwarzweiß mit grünen Knöpfen und blauen Links, und niemand hält GitHub
+ * für farblos. Ein violetter Link läse sich obendrein als "schon besucht".
  *
- * Grün ist die Farbe der **Identität und der Handlung**:
+ * Violett ist die Farbe der **Identität und der Handlung**:
  *
  *   * das Zeichen im Kopf
  *   * der Fokusring — das Erste, was jemand mit der Tastatur sieht
  *   * der Hauptknopf einer Seite
  *   * der aktive Punkt in der Navigation
  *   * der Zähler am Warenkorb
- *   * gelungene Zustände
+ *   * die Schnittmarken an den Ecken einer Karte, solange die Karte keinem
+ *     Projekt gehört — gehört sie einem, trägt sie dessen Akzent
  *
- * Das sind die „kleinen grünen Akzente": selten, immer an einer Stelle, an der
- * etwas passiert.
+ * Das sind die "kleinen violetten Akzente": selten, immer an einer Stelle, an
+ * der etwas passiert.
  */
 
 // ---------------------------------------------------------------------------
@@ -61,17 +65,57 @@
 // ---------------------------------------------------------------------------
 
 /**
- * Zehn Stufen, Farbton 150°, **gemessen und nicht geraten**.
+ * Zehn Stufen Violett, Farbton ~262°, **gemessen und nicht geraten**.
  *
- * Neben jeder Stufe steht ihr Kontrast gegen Weiß und gegen `#0d1117`, den
- * dunklen Grund. Diese Zahlen entscheiden, wofür eine Stufe taugt:
+ * Neben jeder Stufe steht ihr Kontrast gegen Weiß und gegen `#0d0a1a`, den
+ * dunklen Grund (die Nacht aus theme.mjs). Diese Zahlen entscheiden, wofür
+ * eine Stufe taugt:
  *
  *   ab 4.5:1  Text
  *   ab 3.0:1  Kante eines Bedienelements (WCAG 1.4.11)
  *   darunter  nur Fläche
  *
- * Sie stehen hier ausgeschrieben, damit niemand eine Stufe „nur ein bisschen"
- * verschiebt und dabei eine Zusage bricht, die er nicht kannte.
+ * Sie stehen hier ausgeschrieben, damit niemand eine Stufe "nur ein bisschen"
+ * verschiebt und dabei eine Zusage bricht, die er nicht kannte. Gemessen mit
+ * der WCAG-Formel, nicht mit dem Auge.
+ */
+export const VIOLETT = {
+  50: '#f5f2ff', // weiss  1.10  dunkel 17.69
+  100: '#e9e2fe', // weiss  1.25  dunkel 15.60
+  200: '#d3c5fd', // weiss  1.59  dunkel 12.25
+  300: '#b7a2fb', // weiss  2.19  dunkel  8.90
+  400: '#9e82f8', // weiss  3.00  dunkel  6.51
+  500: '#8763f3', // weiss  4.11  dunkel  4.75
+  600: '#7245df', // weiss  5.78  dunkel  3.38
+  700: '#5c2fbd', // weiss  8.09  dunkel  2.41
+  800: '#4a2497', // weiss 10.55  dunkel  1.85
+  900: '#321768', // weiss 14.40  dunkel  1.36
+};
+
+/**
+ * Die zweite Ebene: Himmel.
+ *
+ * Kein zweites Markenzeichen, sondern das Licht HINTER dem Violett — die
+ * Farbabsetzung, die Verläufe, Szenen und den Aufmacher davor bewahrt,
+ * einfarbig zu sein. Sie setzt nie Text und zieht nie eine Kante; deshalb
+ * braucht sie nur zwei Werte statt einer Leiter. Gemessen trotzdem:
+ * `dunkel` hat 10.04:1 auf `#0d0a1a`, `hell` 5.27:1 auf Weiß — beide dürften
+ * Text tragen, tun es aber absichtlich nicht.
+ */
+export const HIMMEL = {
+  hell: '#2467d6',
+  dunkel: '#79c0ff',
+};
+
+/**
+ * Airlocks Leiter, Farbton 150° — sie bleibt, denn AIRLOCK behält Grün.
+ *
+ * Bis zum 29.08.2026 war das die MARKENLEITER; die Begründung von damals
+ * (Airlocks Minz `#4EE296` liegt bei 149°, Stufe 400 dieser Leiter 13 von 441
+ * Einheiten daneben — dasselbe Grün) gilt weiter, nur andersherum: die Leiter
+ * gehört jetzt dem Produkt, nicht dem Dach. Die Kontraste neben den Stufen
+ * sind gegen Weiß und gegen das alte `#0d1117` gemessen und bleiben als
+ * Auskunft stehen, wo AIRLOCK-Grün Text oder Kante sein darf.
  */
 export const GRUEN = {
   50: '#effaf5', // weiss  1.07  dunkel 17.72
@@ -89,7 +133,7 @@ export const GRUEN = {
 /*
  * ══ Der Kopfbalken ist ein eigener Farbraum ═══════════════════════════════
  *
- * Er ist dunkel, und zwar in BEIDEN Schemata: #24292f im hellen, #10151c im
+ * Er ist dunkel, und zwar in BEIDEN Schemata: #1d1830 im hellen, #120d22 im
  * dunklen. Was dort steht, kann sich deshalb nicht danach richten, ob die
  * Seite hell oder dunkel ist — es richtet sich danach, dass der Balken dunkel
  * ist.
@@ -100,74 +144,76 @@ export const GRUEN = {
  * Browser, nicht vermutet.
  *
  * Also ein eigenes Merkmal, das in beiden Schemata denselben Wert hat.
- * Nachgemessen auf #24292f: Stufe 400 hat 9.07:1, Stufe 500 hat 8.96:1, Stufe
- * 600 hat 6.69:1. Stufe 500 ist die kraeftigste von ihnen, ohne ins Blasse zu
- * gehen, und liegt dabei nah an Airlocks Minz — das Zeichen im Kopf und das
- * Zeichen auf der Airlock-Seite sehen damit gleich aus, was sie auch sollen.
+ * Nachgemessen für Stufe 300: 7.81:1 auf #1d1830, 8.65:1 auf #120d22 und
+ * 6.54:1 auf dem Inselgrund rgb(44,38,66). Stufe 400 wäre kräftiger im Ton,
+ * fällt auf der Insel aber auf 4.79 — für ein Zeichen, das die Marke IST,
+ * ist die hellere Stufe die richtige.
  */
 const AUF_DUNKEL = `
-  --marke-auf-dunkel: ${GRUEN[500]};
+  --marke-auf-dunkel: ${VIOLETT[300]};
 `;
 
 /**
  * Die Rollen im hellen Schema. Grund ist Weiß.
  *
- * `marke` trägt Text und braucht deshalb 4.5:1 — Stufe 800 hat 5.73. Stufe 700
- * wäre kräftiger und hat nur 3.53; sie taugt als Kante und nicht als Schrift,
- * und genau so wird sie hier benutzt.
+ * `marke` trägt Text und braucht deshalb 4.5:1 — Stufe 700 hat 8.09 und ist
+ * dabei das kräftigste Violett, das noch nicht ins Schwarze kippt. Stufe 600
+ * hat 5.78 und zieht die Kanten (Fokusring, aktive Ränder); sie dürfte sogar
+ * Text setzen, tut es aber nicht, damit Kante und Schrift zwei Stimmen bleiben.
  */
 const MARKE_HELL = `
-  --marke: ${GRUEN[800]};
-  --marke-stark: ${GRUEN[900]};
-  --marke-rand: ${GRUEN[700]};
-  --marke-flaeche: ${GRUEN[50]};
-  --marke-auf-flaeche: ${GRUEN[900]};
-  --marke-schimmer: rgba(7, 157, 82, 0.18);
-  --knopf-flaeche: ${GRUEN[900]};
-  --knopf-flaeche-hover: ${GRUEN[800]};
+  --marke: ${VIOLETT[700]};
+  --marke-stark: ${VIOLETT[900]};
+  --marke-rand: ${VIOLETT[600]};
+  --marke-flaeche: ${VIOLETT[50]};
+  --marke-auf-flaeche: ${VIOLETT[900]};
+  --marke-schimmer: rgba(92, 47, 189, 0.18);
+  --knopf-flaeche: ${VIOLETT[800]};
+  --knopf-flaeche-hover: ${VIOLETT[700]};
   --knopf-schrift: #ffffff;
+  --himmel: ${HIMMEL.hell};
 ${AUF_DUNKEL}`;
 
 /**
- * Dieselben Rollen im dunklen Schema. Grund ist `#0d1117`.
+ * Dieselben Rollen im dunklen Schema. Grund ist `#0d0a1a`.
  *
  * Spiegelverkehrt und nicht dieselbe Zahl: auf fast schwarzem Grund trägt eine
- * dunkle Stufe keinen Text. Stufe 600 hat dort 8.64:1 und ist damit kräftig,
- * ohne ins Neon zu kippen — Stufe 500 hätte 11.57 und leuchtete.
+ * dunkle Stufe keinen Text. Stufe 400 hat dort 6.51:1 und ist damit kräftig,
+ * ohne ins Neon zu kippen — Stufe 300 hätte 8.90 und leuchtete; sie bleibt
+ * `--marke-stark`. Der Rand ist Stufe 500 (4.75 auf der Nacht) und nicht wie
+ * im Hellen Stufe 600, denn 600 fällt dort auf 3.38 — noch Kante, aber ohne
+ * Reserve; ein Fokusring darf nicht an der Untergrenze balancieren.
  */
 const MARKE_DUNKEL = `
-  --marke: ${GRUEN[600]};
-  --marke-stark: ${GRUEN[500]};
-  --marke-rand: ${GRUEN[700]};
-  --marke-flaeche: #08231a;
-  --marke-auf-flaeche: ${GRUEN[300]};
-  --marke-schimmer: rgba(13, 201, 107, 0.22);
-  --knopf-flaeche: ${GRUEN[500]};
-  --knopf-flaeche-hover: ${GRUEN[400]};
-  --knopf-schrift: #052e18;
+  --marke: ${VIOLETT[400]};
+  --marke-stark: ${VIOLETT[300]};
+  --marke-rand: ${VIOLETT[500]};
+  --marke-flaeche: #191035;
+  --marke-auf-flaeche: ${VIOLETT[300]};
+  --marke-schimmer: rgba(158, 130, 248, 0.24);
+  --knopf-flaeche: ${VIOLETT[400]};
+  --knopf-flaeche-hover: ${VIOLETT[300]};
+  --knopf-schrift: #120833;
+  --himmel: ${HIMMEL.dunkel};
 ${AUF_DUNKEL}`;
 
 /*
- * ══ Der gruene Knopf braucht ein PAAR, keine einzelne Farbe ═══════════════
+ * ══ Der violette Knopf braucht ein PAAR, keine einzelne Farbe ═════════════
  *
- * Der erste Entwurf nahm --marke-stark als Flaeche und #fff als Schrift. Im
- * hellen Schema ist das Stufe 900, also fast schwarzgruen: weisse Schrift
- * darauf hat 10:1. Im dunklen Schema ist dasselbe Merkmal Stufe 500, also ein
- * LEUCHTENDES Gruen — und weisse Schrift darauf hat **1.64:1**. Unlesbar.
- *
- * Der Fehler ist eine Denkart, kein Tippfehler: eine Flaechenfarbe und ihre
- * Schriftfarbe sind zusammen eine Entscheidung. Wer nur die Flaeche umschaltet,
- * hat die Haelfte umgeschaltet.
+ * Der Fehler, der beim grünen Knopf gemacht wurde, gilt hier wörtlich weiter:
+ * eine Flächenfarbe und ihre Schriftfarbe sind zusammen eine Entscheidung.
+ * Wer nur die Fläche umschaltet, hat die Hälfte umgeschaltet.
  *
  * Deshalb ein Paar, nachgemessen in beiden Schemata:
  *
- *   hell    Flaeche #054d29 (900), Schrift Weiss        10.00:1
- *           gegen die weisse Seite                      10.00:1
- *   dunkel  Flaeche #23e785 (500), Schrift #052e18       9.10:1
- *           gegen die dunkle Seite                      11.57:1
+ *   hell    Fläche #4a2497 (800), Schrift Weiß           10.55:1
+ *           gegen die weiße Seite                        10.55:1
+ *   dunkel  Fläche #9e82f8 (400), Schrift #120833         6.32:1
+ *           gegen die dunkle Seite                        6.51:1
+ *           Hover-Fläche #b7a2fb (300), Schrift #120833   8.64:1
  *
- * Gefunden hat es nicht das Lesen, sondern eine Messung im Browser, die beide
- * Schemata durchgeschaltet hat.
+ * Weiße Schrift auf der dunklen Knopffläche hätte 3.00:1 und wäre unlesbar —
+ * dieselbe Falle wie damals bei Grün (dort 1.64:1), nur weniger grell.
  */
 export const MARKE = { hell: MARKE_HELL, dunkel: MARKE_DUNKEL };
 
@@ -176,16 +222,17 @@ export const MARKE = { hell: MARKE_HELL, dunkel: MARKE_DUNKEL };
 // ---------------------------------------------------------------------------
 
 /**
- * Amber, Farbton ~40°, **dieselbe Bauart wie Grün** — zehn Stufen, jede mit
- * ihrem gemessenen Kontrast, und die Zahlen entscheiden, wofür eine taugt.
+ * Amber, Farbton ~40°, **dieselbe Bauart wie Violett und Grün** — zehn Stufen,
+ * jede mit ihrem gemessenen Kontrast, und die Zahlen entscheiden, wofür eine
+ * taugt.
  *
  * ══ Warum das Portal eine eigene Farbe hat ════════════════════════════════
  *
- * Bis zum 17.08.2026 war die Klammer zwischen den Skillry-Seiten die FARBE:
- * alle drei grün. Seit alle drei dasselbe S tragen — dieselbe Konstruktion,
- * einen Parameter auseinander — ist die Klammer die FORM, und eine geteilte
- * Form hält besser als eine geteilte Farbe. Damit darf die Farbe unterscheiden,
- * wofür sie gut ist: Grün das Werkzeug, Blau das Rollenspiel, Amber die Lizenz.
+ * Die Klammer zwischen den Skillry-Seiten ist die FORM: alle tragen dasselbe
+ * S, dieselbe Konstruktion, einen Parameter auseinander. Eine geteilte Form
+ * hält besser als eine geteilte Farbe, und damit darf die Farbe unterscheiden,
+ * wofür sie gut ist: Violett das Dach, Grün das Werkzeug, Blau das Rollenspiel,
+ * Amber die Lizenz.
  *
  * ══ Die eine Zahl, die diese Leiter überhaupt nötig macht ═════════════════
  *
@@ -196,7 +243,7 @@ export const MARKE = { hell: MARKE_HELL, dunkel: MARKE_DUNKEL };
  *
  * Die Leiter beantwortet das: hell trägt Stufe 800 den Text, das Marken-Amber
  * ist dort FLÄCHE mit fast schwarzer Schrift darauf. Im Dunklen drehen die
- * Rollen, genau wie bei Grün.
+ * Rollen, genau wie bei Violett.
  */
 export const AMBER = {
   50: '#FDF6E7', // weiss  1.08  dunkel 17.58
@@ -212,10 +259,10 @@ export const AMBER = {
 };
 
 /*
- * Auf dem dunklen Kopfbalken (#24292f) gemessen: Stufe 300 hat 9.65:1, Stufe
- * 400 hat 8.30, Stufe 500 hat 6.86. Genommen wird 400 — kräftig genug und
- * zugleich das Marken-Amber selbst, damit das Zeichen im Kopf und das Zeichen
- * auf der Seite dieselbe Farbe haben.
+ * Auf dem dunklen Kopfbalken gemessen: Stufe 300 hat 9.65:1, Stufe 400 hat
+ * 8.30, Stufe 500 hat 6.86. Genommen wird 400 — kräftig genug und zugleich
+ * das Marken-Amber selbst, damit das Zeichen im Kopf und das Zeichen auf der
+ * Seite dieselbe Farbe haben.
  */
 const AMBER_AUF_DUNKEL = `
   --marke-auf-dunkel: ${AMBER[400]};

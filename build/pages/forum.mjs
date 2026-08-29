@@ -544,7 +544,7 @@ const BEITRAG_CSS = `
  * und ein var(--irgendwas) faellt still auf durchsichtig zurueck. Also ein
  * fester Wert, der in beiden Modi funktioniert.
  */
-.fo-dialog::backdrop { background: rgba(1, 4, 9, 0.62); backdrop-filter: blur(2px); }
+.fo-dialog::backdrop { background: rgba(5, 3, 15, 0.62); backdrop-filter: blur(2px); }
 .fo-dialog-in { padding: 22px 24px 20px; }
 .fo-dialog-kopf { font-size: 1.15rem; margin: 0 0 16px; }
 .fo-l { display: block; font-size: 0.76rem; color: var(--fg-muted); margin-bottom: 2px; }

@@ -650,8 +650,9 @@ export function render(page) {
   // The mark drawn with a literal colour: `currentColor` inherits from nothing
   // inside a data: URI. encodeURIComponent turns the single `#` into `%23`
   // exactly once — pre-encoding it here is what used to double-escape it and
-  // leave the stroke invalid.
-  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_FAVICON('#4EE296'))}`;
+  // leave the stroke invalid. VIOLETT[500]: the one step that carries as an
+  // edge on light AND dark tab bars (4.11 on white, 4.75 on the night).
+  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_FAVICON('#8763f3'))}`;
 
   const canonical = `${ORIGIN}${href(page.lang, page.slug)}`;
 
@@ -663,7 +664,7 @@ export function render(page) {
 <title>${page.title}</title>
 <meta name="description" content="${page.description}">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#0D1117" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0D0A1A" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <link rel="canonical" href="${canonical}">
 <meta property="og:title" content="${page.title}">

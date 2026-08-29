@@ -79,8 +79,15 @@ export const CSS_EXTRA = `
   .hero-stage::before, .hero-stage::after { opacity: 0.32; }
 }
 
+/*
+ * Der eine Verlauf der Marke: Violett in Himmel in Cyan — die Schichtung, die
+ * das Farbsystem ueberall sonst nur andeutet, hier einmal ausgeschrieben. Er
+ * liegt auf DREI Stellen und keiner weiteren: dem einen Wort im Aufmacher,
+ * der Haarlinie ueber dem Fuss und dem Lesefortschritt. Ein Verlauf, der
+ * viermal auftritt, ist Dekoration; dreimal ist er eine Handschrift.
+ */
 .hero h1 .lit {
-  background: linear-gradient(96deg, var(--airlock), var(--nexus) 58%, var(--accent-idx));
+  background: linear-gradient(96deg, var(--marke), var(--himmel) 58%, var(--nexus));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
@@ -215,6 +222,35 @@ export const CSS_EXTRA = `
 
 .accent-index { color: var(--accent-idx); }
 
+/* ── crop-mark corners ──────────────────────────────────────────────────── */
+/*
+ * Die scharfe Kante im weichen System — und zwar mit Absicht NEBEN der
+ * Rundung, nicht statt ihrer. Die Karte behaelt ihren Radius; zwei Winkel
+ * aus je zwei geraden Strichen sitzen AUSSERHALB der Ecken, wie Schnittmarken
+ * auf einem Druckbogen. Sie sind das Gegenteil der Rundung und genau deshalb
+ * sichtbar: ein spitzer Winkel neben einer weichen Ecke liest sich als
+ * gesetztes Zeichen, ein spitzer Winkel AUF der weichen Ecke als Fehler.
+ *
+ * Die Farbe kommt aus --eck und faellt auf die Marke zurueck. Eine Karte, die
+ * einem Projekt gehoert, setzt --eck auf dessen Akzent — dieselbe Konstruktion
+ * ueberall, die Farbe je Projekt einzigartig. Beim Ueberfahren ruecken die
+ * Marken zwei Punkte nach aussen: die Karte hebt sich, die Marken spannen auf.
+ */
+.card.eckig { position: relative; --eck: var(--marke); }
+.card.eckig::before, .card.eckig::after {
+  content: ''; position: absolute; width: 18px; height: 18px;
+  border: 2px solid var(--eck); border-radius: 0; pointer-events: none;
+  opacity: 0.85;
+  transition: transform var(--kurz) var(--ease), opacity var(--kurz) var(--ease);
+}
+.card.eckig::before { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
+.card.eckig::after { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
+.card.eckig:hover::before { transform: translate(-2px, -2px); opacity: 1; }
+.card.eckig:hover::after { transform: translate(2px, 2px); opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .card.eckig:hover::before, .card.eckig:hover::after { transform: none; }
+}
+
 /* ── arriving on scroll ─────────────────────────────────────────────────── */
 /*
  * Set by the script below, never in the markup: if JavaScript does not run,
@@ -293,7 +329,7 @@ mark.todo {
 footer.site { position: relative; }
 footer.site::before {
   content: ''; position: absolute; inset: 0 0 auto 0; height: 2px;
-  background: linear-gradient(90deg, var(--airlock), var(--nexus) 45%, var(--accent-idx) 80%, transparent);
+  background: linear-gradient(90deg, var(--marke), var(--himmel) 45%, var(--nexus) 80%, transparent);
   opacity: 0.75;
 }
 
@@ -350,7 +386,7 @@ html[data-leaving] main { transition: opacity 120ms var(--ease), transform 120ms
 /* ── reading progress ───────────────────────────────────────────────────── */
 .progress {
   position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
-  background: linear-gradient(90deg, var(--airlock), var(--nexus) 60%, var(--accent-idx));
+  background: linear-gradient(90deg, var(--marke), var(--himmel) 60%, var(--nexus));
   transform-origin: 0 50%; transform: scaleX(0); pointer-events: none;
 }
 @media (prefers-reduced-motion: reduce) { .progress { display: none; } }

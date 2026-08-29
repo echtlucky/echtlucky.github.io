@@ -20,6 +20,70 @@ const N_SKILLS = JSON.parse(readFileSync(
 
 import { href, SITE } from '../layout.mjs';
 import { HERO_WAVE_HTML, HERO_WAVE_CSS, HERO_WAVE_JS } from '../hero-wave.mjs';
+import { PFAD_OFFEN } from '../logo.mjs';
+
+/**
+ * Die Produktbilder.
+ *
+ * Inline-SVG und keine Dateien, aus zwei Gruenden: es wird nichts geladen —
+ * nicht einmal von uns selbst — und die Farben sind CSS-Merkmale, also gehen
+ * die Bilder mit dem Schema mit, statt in einem der beiden falsch zu liegen.
+ * (In einer .svg-DATEI ginge das nicht: eine Datei erbt keine Variablen.)
+ *
+ * Beide Bilder sind aus denselben Motiven gebaut, die die Seite schon hat —
+ * die Textzeilen des Aufmachers, das Zeichen, das Panelraster der NEXUS-Szene
+ * — nur eben als Bild in der Karte statt als Atmosphaere dahinter. Dekorativ,
+ * deshalb aria-hidden; wer sie nicht sieht, verpasst keine Auskunft.
+ *
+ * Das Zeichen im AIRLOCK-Bild folgt den drei Regeln aus build/logo.mjs:
+ * nicht gedreht, Gehrung statt runder Ecken, Linie statt Silhouette.
+ */
+const BILD_AIRLOCK = `<svg class="produktbild" viewBox="0 0 560 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="pbA" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" style="stop-color:var(--airlock);stop-opacity:.16"/>
+    <stop offset="1" style="stop-color:var(--himmel);stop-opacity:.08"/>
+  </linearGradient></defs>
+  <rect width="560" height="160" style="fill:url(#pbA)"/>
+  <g style="stroke:var(--fg);opacity:.18" stroke-width="3" stroke-linecap="round">
+    <line x1="26" y1="36" x2="332" y2="36"/>
+    <line x1="26" y1="58" x2="288" y2="58"/>
+    <line x1="26" y1="80" x2="316" y2="80"/>
+    <line x1="40" y1="102" x2="270" y2="102"/>
+    <line x1="40" y1="124" x2="302" y2="124"/>
+  </g>
+  <g style="stroke:var(--airlock);opacity:.55" stroke-width="3" stroke-linecap="round">
+    <line x1="212" y1="58" x2="288" y2="58"/>
+    <line x1="228" y1="102" x2="270" y2="102"/>
+  </g>
+  <g transform="translate(398,14) scale(5.5)">
+    <path d="${PFAD_OFFEN}" style="stroke:var(--airlock)" stroke-width="1.7" fill="none" stroke-linejoin="miter" stroke-miterlimit="4"/>
+  </g>
+</svg>`;
+
+const BILD_NEXUS = `<svg class="produktbild" viewBox="0 0 560 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs><linearGradient id="pbN" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" style="stop-color:var(--nexus);stop-opacity:.14"/>
+    <stop offset="1" style="stop-color:var(--marke);stop-opacity:.10"/>
+  </linearGradient></defs>
+  <rect width="560" height="160" style="fill:url(#pbN)"/>
+  <g style="stroke:var(--nexus)" fill="none">
+    <rect x="26" y="24" width="216" height="112" rx="8" style="opacity:.5" stroke-width="2"/>
+    <rect x="262" y="24" width="130" height="64" rx="8" style="opacity:.4" stroke-width="2"/>
+    <rect x="262" y="104" width="130" height="32" rx="6" style="opacity:.3" stroke-width="2"/>
+    <rect x="412" y="24" width="122" height="112" rx="8" style="opacity:.35" stroke-width="2"/>
+  </g>
+  <g style="stroke:var(--nexus);opacity:.55" stroke-width="3" stroke-linecap="round">
+    <line x1="44" y1="52" x2="176" y2="52"/>
+    <line x1="44" y1="74" x2="140" y2="74"/>
+  </g>
+  <g style="stroke:var(--fg);opacity:.2" stroke-width="3" stroke-linecap="round">
+    <line x1="44" y1="96" x2="200" y2="96"/>
+    <line x1="280" y1="52" x2="366" y2="52"/>
+    <line x1="430" y1="52" x2="510" y2="52"/>
+    <line x1="430" y1="74" x2="488" y2="74"/>
+  </g>
+  <circle cx="373" cy="120" r="7" style="fill:var(--marke);opacity:.75"/>
+</svg>`;
 
 export const slug = '';
 
@@ -245,9 +309,23 @@ const T = {
 const BEREICH_CSS = `
 .bereich { display: flex; flex-direction: column; gap: 6px; }
 .bereich:hover { text-decoration: none; }
+/*
+ * Jede Tuer gehoert einem Projekt, und jedes Projekt hat genau eine Farbe:
+ * Minz AIRLOCK, Amber der Index, Rosa das Forum, Orange die Skripte und der
+ * Server, Himmelblau der Vertrag. Die KONSTRUKTION ist bei allen dieselbe —
+ * gleiche Karte, gleiche Zahl, gleiche Schnittmarken — nur die Farbe wechselt.
+ * Das ist die Ordnung des ganzen Hauses in klein: gleicher Bau, eigener Ton.
+ * --eck faerbt Zahl UND Schnittmarken; wer keinen Akzent setzt, faellt auf
+ * die Marke zurueck.
+ */
+.bereich.ak-airlock { --eck: var(--airlock); }
+.bereich.ak-idx { --eck: var(--accent-idx); }
+.bereich.ak-forum { --eck: var(--accent-forum); }
+.bereich.ak-scr { --eck: var(--accent-scr); }
+.bereich.ak-himmel { --eck: var(--himmel); }
 .bereich-zahl {
   font-family: var(--anzeige); font-weight: 700; font-size: 2.4rem; line-height: 1;
-  color: var(--marke); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  color: var(--eck, var(--marke)); font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
 }
 /*
  * Zwei Karten tragen ein WORT statt einer Zahl, und das ist kein Stilmittel.
@@ -311,6 +389,18 @@ const BEREICH_CSS = `
    einer Gruppe. Ohne diesen Unterschied waeren es wieder sechs gleiche
    Kacheln, nur mit zwei Zeilen Text dazwischen. */
 .tuergruppe + .tuergruppe { margin-top: 34px; }
+/*
+ * Das Bild oben in der Produktkarte. Es haelt den kleineren Innenradius der
+ * Karte (aussen 14, Innenabstand 24 — bei so viel Abstand reicht die halbe
+ * Rundung) und eine Flaechenkante, damit es als Fenster liest und nicht als
+ * Aufkleber. Hoehe ueber das Seitenverhaeltnis, nie fest: die Karte ist
+ * fluessig.
+ */
+.produktbild {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--surface-2);
+}
 .bereich h3 { margin: 0; }
 .bereich-mehr {
   margin-top: auto; padding-top: 10px; color: var(--link); font-size: 0.9rem; font-weight: 600;
@@ -318,6 +408,17 @@ const BEREICH_CSS = `
 .bereich-mehr span { display: inline-block; transition: transform var(--kurz) var(--ease); }
 .bereich:hover .bereich-mehr span { transform: translateX(3px); }
 `;
+
+/**
+ * Welche Tuer welchen Akzent traegt.
+ *
+ * Aus dem Ziel abgeleitet statt in beiden Sprachdaten doppelt gepflegt — eine
+ * Farbe, die in der deutschen Fassung anders waere als in der englischen,
+ * waere kein Vibe, sondern ein Fehler. Der externe Server teilt sich das
+ * Orange mit den Skripten: gleiche Haelfte des Hauses, gleiche Welt.
+ */
+const AKZENT = { airlock: ' ak-airlock', skills: ' ak-idx', forum: ' ak-forum', scripts: ' ak-scr', api: ' ak-himmel' };
+const akzentFuer = (b) => (b.extern ? ' ak-scr' : AKZENT[b.slug] ?? '');
 
 /**
  * Stufe 3 — volle Choreografie, und die einzige Seite, die sie bekommt.
@@ -389,7 +490,7 @@ export function body(lang) {
       .map(([titel, teile]) => `<div class="tuergruppe">
       <h3 class="gruppentitel">${titel}</h3>
       <div class="grid grid-3">
-        ${teile.map((b) => `<a class="card lift bereich" href="${b.extern ?? href(lang, b.slug)}"${
+        ${teile.map((b) => `<a class="card lift eckig bereich${akzentFuer(b)}" href="${b.extern ?? href(lang, b.slug)}"${
           b.extern ? ' rel="noopener"' : ''}>
           <span class="bereich-zahl${b.wort ? ' wort' : ''}">${b.zahl ?? b.wort}</span>
           <h3>${b.h}</h3>
@@ -453,6 +554,7 @@ $ airlock scan pdf-helper
     </div>
     <div class="grid grid-2">
       <article class="card product airlock">
+        ${BILD_AIRLOCK}
         <h3><span class="accent-airlock">${t.airlockH}</span> <span class="tag accent-airlock">${t.airlockTag}</span></h3>
         <p><strong>${t.airlockLede}</strong></p>
         <ul>${t.airlockPoints.map((p) => `<li>${p}</li>`).join('')}</ul>
@@ -461,6 +563,7 @@ $ airlock scan pdf-helper
         </div>
       </article>
       <article class="card product nexus">
+        ${BILD_NEXUS}
         <h3><span class="accent-nexus">${t.nexusH}</span> <span class="tag accent-nexus">${t.nexusTag}</span></h3>
         <p><strong>${t.nexusLede}</strong></p>
         <ul>${t.nexusPoints.map((p) => `<li>${p}</li>`).join('')}</ul>

@@ -575,22 +575,19 @@ export const HEADER_CSS = `
    * Der Grund der Insel ist HELLER als die dunkle Seite, nicht dunkler.
    *
    * Zuerst stand hier rgba(15,20,27,.86) -- gemessen 1.02:1 gegen den
-   * Seitengrund #0d1117. Das ist dieselbe Farbe. Eine Insel, die genau so
-   * dunkel ist wie das Wasser, ist keine Insel; sichtbar war nur der Schatten,
-   * und der allein liest sich als Fleck statt als Koerper.
+   * Seitengrund. Das ist dieselbe Farbe. Eine Insel, die genau so dunkel ist
+   * wie das Wasser, ist keine Insel; sichtbar war nur der Schatten, und der
+   * allein liest sich als Fleck statt als Koerper.
    *
-   * Gemessen und danach gewaehlt:
-   *
-   *     rgb(26,32,40)   1.15:1   zu wenig, ahnt man nur
-   *     rgb(33,40,50)   1.27:1   knapp
-   *     rgb(38,46,57)   1.38:1   <- deutlich, ohne sich vorzudraengen
-   *     rgb(44,53,65)   1.53:1   trennt zu hart, der Kopf zerfaellt
-   *
-   * Gegen die weisse Seite sind es 13.7:1 -- im hellen Schema ist die Insel
-   * ein dunkler Koerper auf Papier, und das ist genau richtig: der Kopf ist
-   * sein eigener Farbraum und schaltet nicht mit.
+   * Mit dem Wechsel auf die violette Nacht neu gemessen: rgb(44,38,66) steht
+   * 1.36:1 ueber dem Seitengrund #0d0a1a -- dieselbe Deutlichkeit, die vorher
+   * mit rgb(38,46,57) auf #0d1117 gewaehlt wurde (1.38:1), nur aus derselben
+   * Familie wie die Seite statt aus GitHubs Blaugrau. Gegen die weisse Seite
+   * sind es 14.35:1 -- im hellen Schema ist die Insel ein dunkler Koerper auf
+   * Papier, und das ist genau richtig: der Kopf ist sein eigener Farbraum und
+   * schaltet nicht mit.
    */
-  --insel-grund: rgba(38, 46, 57, 0.88);
+  --insel-grund: rgba(44, 38, 66, 0.88);
   --insel-kante: rgba(255, 255, 255, 0.13);
   --insel-kante-hell: rgba(255, 255, 255, 0.19);
   /* Innenlicht an der Oberkante: das ist der Unterschied zwischen einer
@@ -599,10 +596,10 @@ export const HEADER_CSS = `
 
   /* Zwei Schatten, nie einer -- dieselbe Regel wie im Rest der Seite: ein
      enger als Auflagekante, ein weiter als Entfernung. Und beide aus dem
-     dunkelsten Blau der Palette statt aus neutralem Schwarz, sonst legt sich
-     ein grauer Hof um jede Insel. */
-  --insel-schatten: 0 1px 2px rgba(1, 4, 9, 0.55), 0 10px 26px -12px rgba(1, 4, 9, 0.8);
-  --insel-schatten-hoch: 0 2px 5px rgba(1, 4, 9, 0.6), 0 24px 52px -18px rgba(1, 4, 9, 0.95);
+     dunkelsten Violett der Palette statt aus neutralem Schwarz, sonst legt
+     sich ein grauer Hof um jede Insel. */
+  --insel-schatten: 0 1px 2px rgba(5, 3, 15, 0.55), 0 10px 26px -12px rgba(5, 3, 15, 0.8);
+  --insel-schatten-hoch: 0 2px 5px rgba(5, 3, 15, 0.6), 0 24px 52px -18px rgba(5, 3, 15, 0.95);
 
   /* Eigene Kurve fuer den Kopf: traeger am Anfang, langes Ausschwingen. Sie
      laesst eine Insel wirken, als haette sie Masse. */
@@ -674,10 +671,10 @@ export const HEADER_CSS = `
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
 
 /*
- * Das Zeichen ist gruen, die Wortmarke nicht.
+ * Das Zeichen ist violett, die Wortmarke nicht.
  *
- * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides gruen
- * waere ein gruener Klumpen; das Zeichen allein ist ein Akzent, und der Name
+ * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides violett
+ * waere ein violetter Klumpen; das Zeichen allein ist ein Akzent, und der Name
  * daneben bleibt lesbar wie jede andere Schrift im Kopf.
  *
  * Es ist --marke-auf-dunkel und keines der beiden Schema-Merkmale. Der
@@ -787,7 +784,7 @@ export const HEADER_CSS = `
 .gh-navlink::after {
   content: ''; position: absolute; left: 10px; right: 10px; height: 2px;
   bottom: 5px;
-  /* Der aktive Punkt ist gruen — der dritte kleine Akzent. --marke-auf-dunkel,
+  /* Der aktive Punkt ist violett — der dritte kleine Akzent. --marke-auf-dunkel,
      weil der Balken in beiden Schemata dunkel ist; dieselbe Begruendung wie
      beim Zeichen, ausfuehrlich in build/marke.mjs. */
   border-radius: 2px; background: var(--marke-auf-dunkel);
@@ -887,12 +884,12 @@ export const HEADER_CSS = `
   display: inline-flex; align-items: center; gap: 6px;
   height: 32px; padding: 0 12px; border-radius: var(--radius);
   font-size: 13px; font-weight: 600; white-space: nowrap;
-  background: color-mix(in srgb, var(--airlock) 22%, transparent);
-  border: 1px solid color-mix(in srgb, var(--airlock) 55%, transparent);
+  background: color-mix(in srgb, var(--marke-auf-dunkel) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--marke-auf-dunkel) 55%, transparent);
   color: var(--header-fg);
   animation: quickIn var(--mittel) var(--ease) both;
 }
-.gh-quick:hover { text-decoration: none; background: color-mix(in srgb, var(--airlock) 34%, transparent); }
+.gh-quick:hover { text-decoration: none; background: color-mix(in srgb, var(--marke-auf-dunkel) 34%, transparent); }
 .gh-quick[hidden] { display: none; }
 .gh-quick.warn { background: color-mix(in srgb, var(--accent-idx) 20%, transparent); border-color: color-mix(in srgb, var(--accent-idx) 55%, transparent); }
 @keyframes quickIn { from { opacity: 0; transform: translateY(-4px) scale(0.96); } to { opacity: 1; transform: none; } }
@@ -920,11 +917,18 @@ export const HEADER_CSS = `
 }
 .gh-signin:hover { background: var(--hdr-tint); }
 .gh-signin[aria-expanded="true"] { background: var(--hdr-tint-2); }
+/*
+ * Der Avatar traegt die Markenschichtung als Verlauf: Violett in Himmel.
+ * Beide Farben stehen als Literale, nicht als Schema-Merkmale — der Avatar
+ * sitzt im Kopf (eigener Farbraum) UND im Panel (folgt dem Schema), und ein
+ * Merkmal, das im hellen Schema dunkel wird, machte die Initialen unlesbar.
+ * Die Tinte #120833 hat auf #b7a2fb 8.64:1 und auf #79c0ff mehr.
+ */
 .gh-avatar {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
   display: grid; place-items: center; font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.02em; color: #04120b;
-  background: linear-gradient(140deg, var(--airlock), var(--nexus));
+  letter-spacing: 0.02em; color: #120833;
+  background: linear-gradient(140deg, #b7a2fb, #79c0ff);
 }
 .gh-avatar[hidden] { display: none; }
 .gh-signin.unverified .gh-avatar { background: linear-gradient(140deg, var(--accent-idx), var(--danger)); }
@@ -971,7 +975,7 @@ export const HEADER_CSS = `
  * across five nav items would strobe it.
  */
 .gh-scrim {
-  position: fixed; inset: 0; z-index: 40; background: rgba(1,4,9,0.32);
+  position: fixed; inset: 0; z-index: 40; background: rgba(5,3,15,0.34);
   opacity: 0; pointer-events: none; transition: opacity var(--kurz) var(--ease);
 }
 .gh-header[data-scrim] ~ .gh-scrim { opacity: 1; pointer-events: auto; }
@@ -1042,7 +1046,7 @@ export const HEADER_CSS = `
 
 /* .search-hit and its children are reused verbatim from the old dialog. */
 .search-hit[aria-selected="true"] { background: var(--surface-2); border-color: var(--border); }
-.search-hit .hk.k-action { color: var(--airlock); border-color: color-mix(in srgb, var(--airlock) 45%, transparent); }
+.search-hit .hk.k-action { color: var(--marke); border-color: color-mix(in srgb, var(--marke) 45%, transparent); }
 .search-hit .hk.k-skill { color: var(--accent-idx); border-color: color-mix(in srgb, var(--accent-idx) 45%, transparent); }
 .search-hit .hk.k-here { color: var(--nexus); border-color: color-mix(in srgb, var(--nexus) 45%, transparent); }
 .sug-group {
@@ -1078,7 +1082,7 @@ export const HEADER_CSS = `
 .authp-who { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 0.9rem; }
 .authp-mail { color: var(--fg-subtle); font-size: 0.82rem; }
 .authp-avatar { width: 38px; height: 38px; border-radius: 50%; flex: none; display: grid; place-items: center;
-  font-weight: 700; font-size: 15px; color: #04120b; background: linear-gradient(140deg, var(--airlock), var(--nexus)); }
+  font-weight: 700; font-size: 15px; color: #120833; background: linear-gradient(140deg, #b7a2fb, #79c0ff); }
 .authp-links { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .authp-links a { display: block; padding: 7px 10px; margin-left: -10px; border-radius: 6px; color: var(--fg); font-size: 0.9rem; }
 .authp-links a:hover { background: var(--surface-2); text-decoration: none; color: var(--link); }
