@@ -430,7 +430,7 @@ function footer(lang, t) {
          * GeoBingo steht im Fuss und sonst nirgends: nicht in der Navigation,
          * nicht im Menue, nicht in der Suche, nicht in der sitemap.xml. Der
          * Fuss ist der Ort fuer etwas, das es gibt, das aber niemand suchen
-         * soll — und hinter dem Link steht ohnehin noch der Zugangscode.
+         * soll — und hinter dem Link steht ohnehin noch die Anmeldung.
          */
         [t.nav.geobingo, href(lang, 'geobingo')],
         [f.discussions, SITE.discussions],

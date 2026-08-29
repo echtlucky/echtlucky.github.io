@@ -13,11 +13,11 @@
  *
  * WAS DIESE SEITE ANDERS MACHT ALS DER REST DER WEBSITE
  *
- *   * **Sie steht nirgends.** Nicht in der Navigation, nicht im Fuss, nicht in
- *     der Suche, nicht in der sitemap.xml, und `noindex` steht im Kopf. Davor
- *     liegt ein Zugangscode. Der haelt sie unauffaellig, nicht verschlossen:
- *     die Seite ist eine statische Datei, der Code steht darin, und wer ihn
- *     dort sucht, findet ihn. Der Hinweistext auf dem Tor sagt genau das.
+ *   * **Sie steht nirgends** ausser im Fuss: nicht in der Navigation, nicht im
+ *     Menue, nicht in der Suche, nicht in der sitemap.xml, und `noindex` steht
+ *     im Kopf. Davor liegt seit dem 29.08.2026 eine Anmeldung mit Google und
+ *     eine Zugangsliste, die Firestore prueft. Vorher war es ein Code in
+ *     dieser Datei — der hielt Zufallsbesucher fern und sonst niemanden.
  *   * **Sie laedt von Google.** Firebase, sobald eine Lobby aufgemacht wird;
  *     Google Maps, sobald eine Runde beginnt. Die Datenschutzerklaerung fuehrt
  *     das in Abschnitt 6 aus, und der Satz „alle uebrigen Seiten laden nichts
@@ -213,7 +213,7 @@ export const TEXTE = {
     nochmal: 'Another round',
     bilderAnsehen: 'Back to the pictures',
 
-    errAnonymAus: 'Guest sign-in is switched off in the Firebase console (Authentication → Sign-in method → Anonymous).',
+    errAnonymAus: 'Google sign-in is switched off in the Firebase console (Authentication → Sign-in method → Google).',
     errRegeln: 'The database refused that. The GeoBingo rules are probably not deployed yet — see docs/SETUP-MAPS.md, step 2.',
     errNetz: 'No connection to the database.',
     errAllgemein: 'That did not work.',
@@ -356,7 +356,7 @@ export const TEXTE = {
     nochmal: 'Noch eine Runde',
     bilderAnsehen: 'Zurück zu den Bildern',
 
-    errAnonymAus: 'Der Gastzugang ist in der Firebase-Konsole aus (Authentication → Sign-in method → Anonymous).',
+    errAnonymAus: 'Die Google-Anmeldung ist in der Firebase-Konsole aus (Authentication → Sign-in method → Google).',
     errRegeln: 'Die Datenbank hat das abgelehnt. Vermutlich sind die GeoBingo-Regeln noch nicht ausgerollt — siehe docs/SETUP-MAPS.md, Schritt 2.',
     errNetz: 'Keine Verbindung zur Datenbank.',
     errAllgemein: 'Das hat nicht geklappt.',

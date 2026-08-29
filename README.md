@@ -133,9 +133,29 @@ hidden by a `<noscript>` stylesheet rather than shown and dead.
 ## GeoBingo
 
 A live bingo round in Street View, and the one page here that is not part of
-the site. It has no header, no footer, no navigation, is linked from nowhere,
-is excluded from the sitemap and the search, carries `noindex`, and sits behind
-an access code. It exists to be played full-screen next to a stream.
+the site. It has no header, no footer, no navigation, is linked only from the
+footer, is excluded from the sitemap and the search, carries `noindex`, and
+sits behind a Google sign-in. It exists to be played full-screen next to a
+stream.
+
+**Who may open a round is decided per account, and decided by Firestore.** The
+admin is pinned in `firestore.rules` to an email address, matched against the
+sign-in token — not to a database row somebody could delete, and not to
+`content/geobingo.json`, which ships to the browser. The value there only
+decides who SEES the buttons, and `npm run validate` fails when the two
+disagree: a page offering buttons the database refuses is worse than one that
+hides them.
+
+Signing in is not the same as being unlocked. Anybody signed in can join
+somebody else's round through an invite link; opening one of your own needs an
+entry in `skillry_zugang`. Without that split, every friend of every streamer
+would have to be unlocked by hand. If a link leaks, the host switches the lobby
+to unlocked accounts only and the link stops being enough.
+
+Until 29.08.2026 this was an access code in the built HTML. It was described
+here as a door and not a lock, and for a round among friends it was enough. For
+an event where access is handed out deliberately it was worth nothing, and it
+was replaced rather than reinforced.
 
 The start screen is one column: play, browse lobbies, join with code, Discord.
 A lobby is private by default and reachable only through its code; a host can
@@ -241,11 +261,10 @@ Authentication and Firestore, which means an IP address reaches Google there
 even without signing in. Reading needs no account; posting needs a confirmed
 email address. Firebase hashes the password — this codebase never sees it.
 
-GeoBingo additionally loads Google Maps. It is staged: Firebase loads when you
-open or join a lobby, the Maps library only once a round actually starts.
-Somebody who types the access code and then leaves has not spoken to Google at
-all. It has no accounts — every player is an anonymous Firebase id and a name
-that lives in the lobby and nowhere else.
+GeoBingo additionally loads Google Maps. It is staged: Firebase loads when the
+sign-in screen needs it, the Maps library only once a round actually starts.
+Somebody who opens the page and leaves without signing in has not spoken to
+Google at all.
 
 That used to be one exception rather than two, and the privacy policy said in
 so many words that *every* page but the forum fetches nothing from anyone else.

@@ -2,8 +2,8 @@
 
 `/geobingo/` is a self-contained game page: no site header, no footer, no
 navigation, `noindex`, and not in the sitemap or the site search. It is reached
-by URL plus an access code, and it is built for one job — a round played live
-next to a stream.
+by URL plus a Google sign-in, and it is built for one job — a round played
+live next to a stream.
 
 It needs three things this repository cannot create for you. All three are in a
 browser; total time about 30 minutes.
@@ -71,16 +71,16 @@ referrer restriction above and the cap in section 4, not concealment.
 The lobby runs on the same Firebase project as the forum (`skillry-203fb`), so
 there is no second project to create.
 
-1. **Guest sign-in — required, not optional.** GeoBingo has no accounts and no
-   sign-in screen at all. Everybody who plays gets an anonymous Firebase user
-   id, and the name they type lives in the lobby and nowhere else.
+1. **Google sign-in — required, not optional.** Everybody who plays signs in
+   with a Google account. There is no password to invent and no second account
+   system beside the forum's.
 
-   Firebase console → **Authentication → Sign-in method → Anonymous → Enable**.
+   Firebase console → **Authentication → Sign-in method → Google → Enable**.
 
-   Without it, opening a lobby fails and the page says
-   *"Der Gastzugang ist in der Firebase-Konsole aus (Authentication →
-   Sign-in method → Anonymous)."* — that message exists because this is the
-   step everybody forgets.
+   Without it, signing in fails and the page says
+   *"Die Google-Anmeldung ist in der Firebase-Konsole aus (Authentication →
+   Sign-in method → Google)."* — that message exists because this is the step
+   everybody forgets.
 
 2. **Deploy the security rules.** They are in `firestore.rules`, and the
    `geobingo` block is new. Without this every write is refused and the page
@@ -110,27 +110,40 @@ there is no second project to create.
 
 ---
 
-## 3. The access code
+## 3. Who may do what
 
-`content/geobingo.json` → `zugangscode`. Case and dashes are ignored, so
-`ZEBRA HYDRANT 7` and `zebra-hydrant-7` are the same code. It can also be put
-in the link: `…/geobingo/?k=zebra-hydrant-7` opens straight through, which is
-the form to paste into a Discord DM.
+There used to be an access code in `content/geobingo.json` here. It was plain
+text inside the file every visitor downloads — it kept passers-by out and
+nothing more, and the page said so on the code screen. For an event where
+access is granted deliberately it was worthless, so it is gone. The field
+remains in the JSON as a note, and `npm run validate` complains if anybody
+makes it look like protection again.
 
-**It is a door, not a lock, and the page says so on the code screen.** This is
-a static file on GitHub Pages; the code is inside it, and anybody determined
-enough will find it. What it does buy:
+What replaced it runs on Google's servers:
 
-- The page is not linked from anywhere on the site, is excluded from
-  `sitemap.xml` and the site search, and carries `noindex, nofollow`.
-- Somebody who guesses the URL sees a code field, not a lobby.
+| Who | May | Enforced by |
+| :-- | :-- | :-- |
+| **Admin** (`lucassteckel04@gmail.com`) | everything, plus unlock and revoke | `adminMail()` in `firestore.rules`, matched against the email in the sign-in token |
+| **Unlocked** (entry in `skillry_zugang`) | open a round, play | `freigeschaltet()` in the rules |
+| **Signed in, not unlocked** | join somebody else's round via invite link, request access | — |
+| **Not signed in** | nothing | — |
 
-That is the right amount of protection for a game page and the wrong amount for
-anything else. If it ever needs to be genuinely closed, it needs a server in
-front of it — GitHub Pages cannot do that.
+The admin is fixed in the rules and not in a database entry that could be
+deleted, and not in `content/geobingo.json`, which ships to the browser. The
+value there decides only who SEES the buttons; `npm run validate` fails if the
+two disagree, because a page that shows buttons the database refuses is worse
+than one that hides them.
 
-Change the code by editing the field and rebuilding. Anybody who has already
-been let in stays in until they clear their browser storage (`gb:zutritt`).
+`skillry_zugang` is deliberately not called `geobingo_zugang`: further games are
+planned, and a second list is one that eventually disagrees with the first.
+
+**Unlocking somebody** works only after their first sign-in — an unlock hangs on
+a user id, and that does not exist before. They sign in, press *Zugang
+anfragen*, and appear under **Verwaltung** on the start page.
+
+**If an invite link leaks:** switch **Nur freigeschaltete Konten** on in the
+lobby, and the link alone stops being enough. Players already inside can be
+removed with the × beside their name.
 
 ---
 
@@ -193,9 +206,11 @@ npm run serve       # http://localhost:8123/geobingo/
 
 Then, in the browser:
 
-1. Open the page, type the access code, pick a name, open a lobby.
-   - *"Der Gastzugang ist … aus"* → step 2.1.
+1. Open the page, sign in with Google, open a lobby.
+   - *"Die Google-Anmeldung ist … aus"* → step 2.1.
    - *"Die Datenbank hat das abgelehnt"* → step 2.2.
+   - *"Noch nicht freigeschaltet"* with your own admin account → the address in
+     `content/geobingo.json` and the one in `firestore.rules` disagree.
 2. Add a word, press start.
    - *"Street View hat nicht geladen"* → in order of likelihood: the referrer
      restriction does not list the address you are on, one of the two APIs is

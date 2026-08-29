@@ -3,7 +3,7 @@
  *
  * Genug, damit build/geobingo-spiel.js vollstaendig laeuft, ohne dass ein
  * Byte zu Google geht: Dokumente in einer Map, Horcher, die bei jeder
- * Aenderung feuern, und eine anonyme Anmeldung, die sofort gelingt.
+ * Aenderung feuern, und eine Google-Anmeldung, deren Adresse in ?als= steht.
  *
  * Absichtlich NICHT nachgebaut: die Sicherheitsregeln. Was der Client hier
  * schreiben darf, sagt nichts darueber, was die echte Datenbank erlaubt.
