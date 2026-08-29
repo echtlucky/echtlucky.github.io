@@ -90,13 +90,13 @@ export const SEARCH_CSS = `
 .search-dialog {
   position: fixed; inset: 0; z-index: 100; display: none;
   padding: clamp(40px, 10vh, 120px) 16px 16px;
-  background: rgba(1, 4, 9, 0.6); backdrop-filter: blur(3px);
+  background: rgba(5, 3, 15, 0.6); backdrop-filter: blur(3px);
 }
 .search-dialog[open] { display: block; }
 .search-panel {
   max-width: 680px; margin: 0 auto; background: var(--surface);
   border: 1px solid var(--border-strong); border-radius: 12px;
-  box-shadow: 0 16px 48px rgba(1,4,9,0.45); overflow: hidden;
+  box-shadow: 0 16px 48px rgba(5,3,15,0.45); overflow: hidden;
   display: flex; flex-direction: column; max-height: min(72vh, 640px);
 }
 .search-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--border); }

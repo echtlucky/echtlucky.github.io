@@ -294,7 +294,14 @@ service cloud.firestore {
         return e.minuten is int && e.minuten >= 1 && e.minuten <= 90
           && e.bewegung in ['frei', 'pfeile', 'aus']
           && e.modus in ['einzeln', 'teams']
-          && e.regionen is list && e.regionen.size() <= 40;
+          && e.regionen is list && e.regionen.size() <= 40
+          // Zwei neue, optionale Felder. Optional, weil bestehende Lobbys sie
+          // nicht tragen und eine Regel, die alte Dokumente rueckwirkend
+          // ablehnt, mitten in einer Runde zuschlagen wuerde.
+          //   spiel:    'bingo' (Woerter finden) oder 'radar' (Ort erraten).
+          //   springen: wer im Bingo ueber die Minikarte springen darf.
+          && (!('spiel' in e) || e.spiel in ['bingo', 'radar'])
+          && (!('springen' in e) || e.springen in ['aus', 'gast', 'alle']);
       }
 
       allow get: if signedIn();
@@ -361,6 +368,40 @@ service cloud.firestore {
         // ploetzlich Funde fuer etwas anderes gewesen.
         allow update: if false;
         allow delete: if signedIn() && (resource.data.vonUid == request.auth.uid || istGastgeber());
+      }
+
+      // ── GeoRadar: die Tipps ──────────────────────────────────────────────
+      //
+      // Im Radar-Modus raten alle, WO sie stehen. Ein Tipp ist wie ein Fund
+      // fuenf Zahlen, kein Bild: Koordinate, Zeit, Runde — und die Kennung ist
+      // die uid, also gibt es je Spieler genau einen. Ein zweiter Klick nach
+      // dem Festlegen wuerde denselben Pfad ueberschreiben; dass der Client
+      // das nicht tut, ist Oberflaeche — dass es niemand FUER EINEN ANDEREN
+      // tun kann, steht hier.
+      //
+      // WAS DIESE REGELN NICHT KOENNEN, ehrlich gesagt: die Zielkoordinate
+      // steht auf dem Lobby-Dokument, denn ohne Server muss sie jeden Client
+      // erreichen — wer die Konsole aufmacht, kann sie ablesen und "gewinnen".
+      // Dieselbe Grenze wie beim Punktestand: das Dokument der anderen kann
+      // er nicht aendern, und die Kontrolle ist die Runde selbst, in der ein
+      // Null-Meter-Tipp unter Freunden genau die Fragen aufwirft, die er
+      // verdient.
+      match /tipps/{uid} {
+        allow read: if signedIn();
+
+        allow create, update: if dabei() && isSelf(uid)
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.lat is number
+          && request.resource.data.lat >= -90 && request.resource.data.lat <= 90
+          && request.resource.data.lng is number
+          && request.resource.data.lng >= -180 && request.resource.data.lng <= 180
+          && request.resource.data.ms is number
+          && request.resource.data.ms >= 0
+          && freshTimestamp(request.resource.data.angelegt);
+
+        // Wie bei den Stimmen: auch der Gastgeber, weil er beim Verlassen die
+        // ganze Lobby abraeumt und ein Tipp sonst als verwaister Pfad bliebe.
+        allow delete: if isSelf(uid) || istGastgeber();
       }
 
       match /funde/{fundId} {

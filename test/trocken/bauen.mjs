@@ -104,9 +104,59 @@ const importkarte = {
  * Wiederholweg in zufallsort() ist der Teil, der im Echtbetrieb am haeufigsten
  * laeuft — ein Prueflauf, in dem der erste Wurf immer trifft, prueft ihn nie.
  */
+/*
+ * Seit GeoRadar braucht die Attrappe auch eine Weltkarte: google.maps.Map,
+ * Marker und LatLngBounds. Die Karte ist ein Kasten mit Gitternetz, der
+ * Klicks ueber eine Plattkarte (x/Breite -> Laenge, y/Hoehe -> Breite) in
+ * Koordinaten uebersetzt — genau genug, um einen Tipp zu setzen und das
+ * Ergebnis nachzurechnen, und keinen Deut genauer.
+ */
 const MAPS_ATTRAPPE = `<script>
 window.google = { maps: {
   StreetViewSource: { OUTDOOR: 'outdoor' },
+  event: { trigger: function () {} },
+  LatLngBounds: function () { this.extend = function () { return this; }; },
+  Map: function (el, opt) {
+    var self = this;
+    this.__el = el; this.__klick = null;
+    el.style.position = el.style.position || 'relative';
+    el.style.background = '#0d1b2e';
+    el.innerHTML = '<div style="position:absolute;inset:0;background:'
+      + 'repeating-linear-gradient(90deg,rgba(255,255,255,.06) 0 1px,transparent 1px 36px),'
+      + 'repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 28px)"></div>'
+      + '<div style="position:absolute;left:8px;top:6px;color:#7f8b9c;'
+      + 'font:600 10px ui-monospace,monospace;pointer-events:none">ATTRAPPE WELTKARTE</div>';
+    el.addEventListener('click', function (ev) {
+      if (!self.__klick) return;
+      var r = el.getBoundingClientRect();
+      var lng = ((ev.clientX - r.left) / r.width) * 360 - 180;
+      var lat = 90 - ((ev.clientY - r.top) / r.height) * 180;
+      self.__klick({ latLng: { lat: function () { return lat; }, lng: function () { return lng; } } });
+    });
+    this.addListener = function (name, cb) { if (name === 'click') self.__klick = cb; };
+    this.fitBounds = function () {};
+    this.getDiv = function () { return el; };
+  },
+  Marker: function (opt) {
+    var d = document.createElement('div');
+    d.style.cssText = 'position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;'
+      + 'border-radius:50%;background:#a884ff;border:2px solid #fff;z-index:3;'
+      + 'display:grid;place-items:center;color:#1a1a2e;font:700 9px sans-serif;pointer-events:none';
+    d.textContent = opt && opt.label ? String(opt.label).slice(0, 2) : '';
+    if (opt && opt.title) d.title = opt.title;
+    var karte = (opt && opt.map) || null;
+    function setzen(pos) {
+      if (!karte || !karte.__el || !pos) return;
+      var lat = typeof pos.lat === 'function' ? pos.lat() : pos.lat;
+      var lng = typeof pos.lng === 'function' ? pos.lng() : pos.lng;
+      d.style.left = (((lng + 180) / 360) * 100) + '%';
+      d.style.top = (((90 - lat) / 180) * 100) + '%';
+      karte.__el.appendChild(d);
+    }
+    if (opt && opt.position) setzen(opt.position);
+    this.setPosition = function (p) { setzen(p); };
+    this.setMap = function (m) { karte = m; if (!m) d.remove(); };
+  },
   StreetViewService: function () {
     this.getPanorama = function (o) {
       if (Math.random() < 0.5) return Promise.reject(new Error('ZERO_RESULTS'));

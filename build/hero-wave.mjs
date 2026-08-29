@@ -9,10 +9,11 @@
  *
  * The colours are not a new palette. They are the site's own gradient — the one
  * on the word "actually" in the headline and on the hairline above the footer,
- * `--airlock → --nexus → --accent-idx` — unrolled along the scroll. At the top
- * of the page the swell is green, and by the time the hero has scrolled away it
- * has travelled through cyan into amber. Nothing new was invented; an existing
- * gradient was given a second axis.
+ * `--marke → --himmel → --nexus` — unrolled along the scroll. At the top of the
+ * page the swell is violet, and by the time the hero has scrolled away it has
+ * travelled through sky-blue into cyan. Nothing new was invented; an existing
+ * gradient was given a second axis — and it is the layering the brand file
+ * promises: violet in front, sky behind it, never one flat colour.
  *
  * ── The band is reserved, not stolen ───────────────────────────────────────
  *
@@ -111,7 +112,7 @@ export const HERO_WAVE_CSS = `
    * are not doing the same thing. On near-black the crest is *light* being
    * added, so a thin bright edge at 38% is already a glow and the body of the
    * band can stay faint. On white the crest is dark ink being laid down, and a
-   * translucent dark green over white turns grey long before it turns pale —
+   * translucent dark violet over white turns grey long before it turns pale —
    * the first pass used the same restraint here and the wave simply vanished.
    * So light mode gets a stronger crest and, more importantly, a much stronger
    * mid-band: on paper the colour has to live in the body of the wave, not in
@@ -158,7 +159,7 @@ export const HERO_WAVE_CSS = `
 /*
  * Each band is strongest along its own crest and gone before it reaches the
  * floor. Filling a wave solidly to the baseline is what turns three swells into
- * one flat green slab with a hard edge where the section stops — the fade is
+ * one flat violet slab with a hard edge where the section stops — the fade is
  * what keeps them reading as light rather than as terrain. It is also what lets
  * the vertical drift below stay invisible: the bottom of every band is already
  * transparent, so lifting it by 1.8% cannot expose a seam.
@@ -166,8 +167,8 @@ export const HERO_WAVE_CSS = `
 .hw-1 .hw-x {
   width: 300%; animation-duration: 41s;
   background: linear-gradient(180deg,
-    color-mix(in srgb, var(--airlock) var(--hw-ink), transparent) 0%,
-    color-mix(in srgb, var(--airlock) var(--hw-thin), transparent) 44%,
+    color-mix(in srgb, var(--marke) var(--hw-ink), transparent) 0%,
+    color-mix(in srgb, var(--marke) var(--hw-thin), transparent) 44%,
     transparent 92%);
 }
 /* Reversed, so the middle band runs against the other two. Two waves moving the
@@ -175,15 +176,15 @@ export const HERO_WAVE_CSS = `
 .hw-2 .hw-x {
   width: 200%; animation-duration: 28s; animation-direction: reverse;
   background: linear-gradient(180deg,
-    color-mix(in srgb, var(--nexus) var(--hw-ink), transparent) 0%,
-    color-mix(in srgb, var(--nexus) var(--hw-thin), transparent) 44%,
+    color-mix(in srgb, var(--himmel) var(--hw-ink), transparent) 0%,
+    color-mix(in srgb, var(--himmel) var(--hw-thin), transparent) 44%,
     transparent 92%);
 }
 .hw-3 .hw-x {
   width: 400%; animation-duration: 57s;
   background: linear-gradient(180deg,
-    color-mix(in srgb, var(--accent-idx) var(--hw-ink), transparent) 0%,
-    color-mix(in srgb, var(--accent-idx) var(--hw-thin), transparent) 44%,
+    color-mix(in srgb, var(--nexus) var(--hw-ink), transparent) 0%,
+    color-mix(in srgb, var(--nexus) var(--hw-thin), transparent) 44%,
     transparent 92%);
 }
 
@@ -242,10 +243,10 @@ export const HERO_WAVE_CSS = `
  * there is nothing left to tick and no layer left promoted.
  *
  * The opacities have to be restated here, and that is not tidiness. Everywhere
- * else the three bands are a *journey*: they start as green with cyan and amber
+ * else the three bands are a *journey*: they start as violet with sky and cyan
  * held back at 0.20 and 0.04, and the scroll is what brings the other two up. A
  * reader who asked for less motion never gets that scroll, so leaving the
- * start-of-journey values in place would hand them a single green band and two
+ * start-of-journey values in place would hand them a single violet band and two
  * they cannot see — the composition this file keeps claiming to have, minus two
  * thirds of it. These are the mid-travel values instead: all three colours
  * present at once, which is the picture the journey passes through anyway.

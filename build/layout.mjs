@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { CSS } from './theme.mjs';
 import { CSS_EXTRA, MOTION_JS } from './theme-extra.mjs';
 import { anchorHeadings } from './search.mjs';
-import { WORDMARK_CSS, LOGO_FAVICON } from './logo.mjs';
+import { WORDMARK_CSS, LOGO_FAVICON, LOGO } from './logo.mjs';
 import { BEWEGUNG_BOOT, BEWEGUNG_CSS, BEWEGUNG_JS, BEWEGUNG_SCRIPTS } from './bewegung.mjs';
 import { SCENE_CSS, sceneFor } from './scenes.mjs';
 import { GRAIN_CSS } from './grain.mjs';
@@ -132,7 +132,7 @@ const HEADER_STRINGS = {
     quick: { newPost: 'Write a forum post', newPostShort: 'New post' },
     act: {
       theme: 'Switch light and dark',
-      lang: 'Switch to German',
+      lang: 'Choose language',
       newPost: 'Write a forum post',
       newPostShort: 'New post',
       signIn: 'Sign in',
@@ -194,7 +194,7 @@ const HEADER_STRINGS = {
     quick: { newPost: 'Forumsbeitrag schreiben', newPostShort: 'Neuer Beitrag' },
     act: {
       theme: 'Hell und dunkel umschalten',
-      lang: 'Auf Englisch umschalten',
+      lang: 'Sprache wählen',
       newPost: 'Forumsbeitrag schreiben',
       newPostShort: 'Neuer Beitrag',
       signIn: 'Anmelden',
@@ -243,7 +243,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', games: 'Games', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -275,8 +275,11 @@ export const UI = {
       legal: 'Legal',
       impressum: 'Site notice',
       privacy: 'Privacy',
-      note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum is entirely self-contained; the forum talks to Firebase, and the privacy page says exactly what that means.',
-      rights: 'MIT licensed. Made by Skillry.',
+      // The README corrected this claim on 17.08.2026 — two exceptions, not
+      // one — and the footer kept telling the old version. Same sentence,
+      // same truth, everywhere.
+      note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum and GeoBingo is entirely self-contained; those two talk to Google, and the privacy page says exactly what that means.',
+      rights: 'MIT licensed — free to read, fork and reuse.',
       // Required by the Cfx.re Creator Platform License Agreement, §2.3: any
       // site, product listing or storefront touching FiveM must carry an
       // operator contact and a disclaimer of this kind. The contact is the
@@ -293,7 +296,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', games: 'Spiele', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -325,8 +328,9 @@ export const UI = {
       legal: 'Rechtliches',
       impressum: 'Impressum',
       privacy: 'Datenschutz',
-      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum ist vollständig in sich geschlossen; das Forum spricht mit Firebase, und die Datenschutzseite sagt genau, was das heißt.',
-      rights: 'MIT-lizenziert. Gemacht von Skillry.',
+      // Dieselbe Richtigstellung wie in der englischen Fassung darueber.
+      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum und GeoBingo ist vollständig in sich geschlossen; die beiden sprechen mit Google, und die Datenschutzseite sagt genau, was das heißt.',
+      rights: 'MIT-lizenziert — frei zu lesen, zu forken, weiterzuverwenden.',
       // Wörtlich dieselbe englische Formel wie oben — die Begründung steht dort.
       rockstar: 'SKILLRY IS NOT APPROVED, SPONSORED, OR ENDORSED BY ROCKSTAR GAMES. '
         + 'Grand Theft Auto and Rockstar Games are trademarks of Take-Two Interactive Software, Inc.',
@@ -346,25 +350,98 @@ export const UI = {
  */
 
 /**
+ * Die Sprachen des Netzwerks.
+ *
+ * Zwei sind LIVE (jede Seite existiert vollstaendig in ihnen), elf sind
+ * ANGEKUENDIGT. Der Unterschied ist hart: eine live-Sprache haengt in LANGS
+ * und wird komplett gebaut; eine angekuendigte steht im Waehler als graue
+ * Zeile mit "bald" — dieselbe Regel wie bei GTA VI im Skripte-Menue: was es
+ * noch nicht gibt, bekommt keinen Link, steht aber als Ankuendigung da, damit
+ * die Struktur nicht zweimal gebaut wird. Eine Sprache geht live, indem sie
+ * in LANGS aufgenommen wird und jedes Seitenmodul ihre Texte bekommt — eine
+ * Seite, die nur in manchen Sprachen existiert, ist nicht fertig.
+ */
+export const SPRACHEN = [
+  { code: 'de', name: 'Deutsch', live: true },
+  { code: 'en', name: 'English', live: true },
+  { code: 'es', name: 'Español', live: false },
+  { code: 'fr', name: 'Français', live: false },
+  { code: 'it', name: 'Italiano', live: false },
+  { code: 'pt', name: 'Português', live: false },
+  { code: 'nl', name: 'Nederlands', live: false },
+  { code: 'pl', name: 'Polski', live: false },
+  { code: 'tr', name: 'Türkçe', live: false },
+  { code: 'ru', name: 'Русский', live: false },
+  { code: 'ja', name: '日本語', live: false },
+  { code: 'ko', name: '한국어', live: false },
+  { code: 'zh', name: '中文', live: false },
+];
+
+/**
  * Flags as inline SVG, not emoji.
  *
  * Windows ships no flag glyphs, so 🇬🇧 renders there as the bare letters "GB" —
  * on the single platform this project is most used from. Drawing them costs a
- * few paths and works identically everywhere.
+ * few paths and works identically everywhere. The drawings are deliberately
+ * simplified (no coat of arms on the Spanish flag, no trigrams on the Korean
+ * one): at 20×14 pixels a heraldic detail is noise, and a flag that reads
+ * wrong is worse than one that reads simple.
  */
+const flagge = (inhalt) =>
+  `<svg width="20" height="14" viewBox="0 0 60 42" aria-hidden="true">${inhalt}</svg>`;
+
+/** Ein fuenfzackiger Stern, Spitze nach oben — fuer die Tuerkei und China. */
+const stern = (cx, cy, r, fill) => {
+  const p = [];
+  for (let i = 0; i < 10; i++) {
+    const winkel = -Math.PI / 2 + (i * Math.PI) / 5;
+    const radius = i % 2 === 0 ? r : r * 0.382;
+    p.push(`${(cx + radius * Math.cos(winkel)).toFixed(1)},${(cy + radius * Math.sin(winkel)).toFixed(1)}`);
+  }
+  return `<polygon points="${p.join(' ')}" fill="${fill}"/>`;
+};
+
 export const FLAGS = {
-  en: `<svg width="20" height="14" viewBox="0 0 60 42" aria-hidden="true">
-    <rect width="60" height="42" fill="#012169"/>
+  en: flagge(`<rect width="60" height="42" fill="#012169"/>
     <path d="M0 0l60 42M60 0L0 42" stroke="#fff" stroke-width="8"/>
     <path d="M0 0l60 42M60 0L0 42" stroke="#C8102E" stroke-width="4"/>
     <path d="M30 0v42M0 21h60" stroke="#fff" stroke-width="14"/>
-    <path d="M30 0v42M0 21h60" stroke="#C8102E" stroke-width="8"/>
-  </svg>`,
-  de: `<svg width="20" height="14" viewBox="0 0 60 42" aria-hidden="true">
-    <rect width="60" height="14" fill="#000"/>
+    <path d="M30 0v42M0 21h60" stroke="#C8102E" stroke-width="8"/>`),
+  de: flagge(`<rect width="60" height="14" fill="#000"/>
     <rect y="14" width="60" height="14" fill="#DD0000"/>
-    <rect y="28" width="60" height="14" fill="#FFCE00"/>
-  </svg>`,
+    <rect y="28" width="60" height="14" fill="#FFCE00"/>`),
+  es: flagge(`<rect width="60" height="42" fill="#AA151B"/>
+    <rect y="10.5" width="60" height="21" fill="#F1BF00"/>`),
+  fr: flagge(`<rect width="20" height="42" fill="#002395"/>
+    <rect x="20" width="20" height="42" fill="#fff"/>
+    <rect x="40" width="20" height="42" fill="#ED2939"/>`),
+  it: flagge(`<rect width="20" height="42" fill="#009246"/>
+    <rect x="20" width="20" height="42" fill="#fff"/>
+    <rect x="40" width="20" height="42" fill="#CE2B37"/>`),
+  pt: flagge(`<rect width="24" height="42" fill="#046A38"/>
+    <rect x="24" width="36" height="42" fill="#DA291C"/>
+    <circle cx="24" cy="21" r="8" fill="none" stroke="#FFE900" stroke-width="3"/>`),
+  nl: flagge(`<rect width="60" height="14" fill="#AE1C28"/>
+    <rect y="14" width="60" height="14" fill="#fff"/>
+    <rect y="28" width="60" height="14" fill="#21468B"/>`),
+  pl: flagge(`<rect width="60" height="21" fill="#fff"/>
+    <rect y="21" width="60" height="21" fill="#DC143C"/>`),
+  tr: flagge(`<rect width="60" height="42" fill="#E30A17"/>
+    <circle cx="24" cy="21" r="10.5" fill="#fff"/>
+    <circle cx="27" cy="21" r="8.4" fill="#E30A17"/>
+    ${stern(38.5, 21, 5.5, '#fff')}`),
+  ru: flagge(`<rect width="60" height="14" fill="#fff"/>
+    <rect y="14" width="60" height="14" fill="#0039A6"/>
+    <rect y="28" width="60" height="14" fill="#D52B1E"/>`),
+  ja: flagge(`<rect width="60" height="42" fill="#fff"/>
+    <circle cx="30" cy="21" r="9" fill="#BC002D"/>`),
+  ko: flagge(`<rect width="60" height="42" fill="#fff"/>
+    <path d="M21 21a9 9 0 0 1 18 0Z" fill="#CD2E3A"/>
+    <path d="M39 21a9 9 0 0 1-18 0Z" fill="#0047A0"/>`),
+  zh: flagge(`<rect width="60" height="42" fill="#EE1C25"/>
+    ${stern(13, 13, 7, '#FFDE00')}
+    ${stern(26, 5, 2.6, '#FFDE00')}${stern(30, 11, 2.6, '#FFDE00')}
+    ${stern(30, 18, 2.6, '#FFDE00')}${stern(26, 24, 2.6, '#FFDE00')}`),
 };
 
 const ICON_SEARCH = `<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M10.68 11.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04ZM11.5 7a4.5 4.5 0 1 0-9 0 4.5 4.5 0 0 0 9 0Z"/></svg>`;
@@ -426,11 +503,11 @@ function footer(lang, t) {
       ])}
       ${col(f.community, [
         [f.forum, href(lang, 'forum')],
+        [t.nav.games, href(lang, 'games')],
         /*
-         * GeoBingo steht im Fuss und sonst nirgends: nicht in der Navigation,
-         * nicht im Menue, nicht in der Suche, nicht in der sitemap.xml. Der
-         * Fuss ist der Ort fuer etwas, das es gibt, das aber niemand suchen
-         * soll — und hinter dem Link steht ohnehin noch die Anmeldung.
+         * GeoBingo steht im Fuss und auf der Spieleseite und sonst nirgends:
+         * nicht in der Navigation, nicht im Menue, nicht in der Suche, nicht
+         * in der sitemap.xml. Hinter dem Link steht ohnehin die Anmeldung.
          */
         [t.nav.geobingo, href(lang, 'geobingo')],
         [f.discussions, SITE.discussions],
@@ -446,13 +523,19 @@ function footer(lang, t) {
         [f.privacy, href(lang, 'datenschutz')],
       ])}
     </div>
+    <!--
+      Der Sockel: drei Zeilen mit drei Stimmen statt eines Streifens, in dem
+      sich drei Saetze den Platz teilen. Oben das Zeichen mit der Lizenz —
+      wer die Seite ist. Darunter, wie sie sich verhaelt. Zuunterst, ueber
+      der eigenen Haarlinie, der Rockstar-Hinweis.
+    -->
     <div class="base">
-      <span>${f.rights}</span>
-      <span>${f.note}</span>
+      <div class="base-marke">${LOGO}<span class="base-name">${SITE.name}</span><span class="base-rechte">${f.rights}</span></div>
+      <p class="base-note">${f.note}</p>
       <!-- Auf jeder Seite und nicht nur auf /scripts/: die Pflicht haengt an
            der Website, nicht an der einzelnen Unterseite, und eine Zeile, die
            je nach Weg da ist oder nicht, ist eine, die irgendwann fehlt. -->
-      <span class="disclaimer">${f.rockstar}</span>
+      <p class="disclaimer">${f.rockstar}</p>
     </div>
   </div>
 </footer>`;
@@ -650,8 +733,9 @@ export function render(page) {
   // The mark drawn with a literal colour: `currentColor` inherits from nothing
   // inside a data: URI. encodeURIComponent turns the single `#` into `%23`
   // exactly once — pre-encoding it here is what used to double-escape it and
-  // leave the stroke invalid.
-  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_FAVICON('#4EE296'))}`;
+  // leave the stroke invalid. VIOLETT[500]: the one step that carries as an
+  // edge on light AND dark tab bars (4.11 on white, 4.75 on the night).
+  const favicon = `data:image/svg+xml,${encodeURIComponent(LOGO_FAVICON('#8763f3'))}`;
 
   const canonical = `${ORIGIN}${href(page.lang, page.slug)}`;
 
@@ -663,7 +747,7 @@ export function render(page) {
 <title>${page.title}</title>
 <meta name="description" content="${page.description}">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#0D1117" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0D0A1A" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <link rel="canonical" href="${canonical}">
 <meta property="og:title" content="${page.title}">

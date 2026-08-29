@@ -1,13 +1,15 @@
 /**
  * Design tokens and the stylesheet.
  *
- * The header borrows GitHub's proportions on purpose: anyone arriving from a
- * repository should feel like they never left. Everything below the header is
- * ours.
+ * The brand has two voices (build/marke.mjs): deep blue by day, powerful
+ * violet by night, both layered over sky light. The neutrals follow the voice
+ * of their scheme — blue-tinted white, violet-tinted night — rather than being
+ * borrowed from GitHub's grey-blue. The header stays a dark colour space in
+ * both schemes; that rule predates the palette and survives it.
  *
- * Two product accents live alongside one site accent. A product owns its colour
- * on its own page and nowhere else, so a visitor learns that green means AIRLOCK
- * and cyan means NEXUS without being told.
+ * The product accents live alongside the one brand colour. A product owns its
+ * colour on its own page and nowhere else, so a visitor learns that mint means
+ * AIRLOCK, cyan means NEXUS and amber means the index without being told.
  */
 
 import { BEWEGUNG, MARKE, RUHE, SCHRIFT, SCHRIFT_QUELLE } from './marke.mjs';
@@ -17,6 +19,11 @@ export const TOKENS = {
   nexus: '#38D9FF',
   index: '#F5B942',
   danger: '#FF6146',
+  /* Zwei weitere Produktakzente, dieselbe Regel wie bei allen: eine Farbe
+     gehoert einem Bereich und tritt gross nur dort auf. Beide gemessen auf
+     der Nacht #0d0a1a: Orange 8.33:1, Rosa 7.37:1. */
+  scripts: '#FF8A3D',
+  forum: '#F472B6',
 };
 
 /**
@@ -25,38 +32,54 @@ export const TOKENS = {
  * be three copies that had to be edited in lockstep, which is the kind of thing
  * that stays right until exactly one of them is forgotten.
  */
+/*
+ * Die Nacht ist kein neutrales Grau mehr, sondern ein tiefes Violett-Indigo.
+ * Nachgemessen auf #0d0a1a: --fg 17.07:1, --fg-muted 7.44:1, --fg-subtle
+ * 5.00:1, --link 8.31:1, --border-strong 3.65:1 (Kante eines Bedienelements,
+ * WCAG 1.4.11 verlangt 3:1). Die Flaechen steigen in Stufen aus derselben
+ * Familie — #161126 und #211939 — statt einfach heller zu werden: das ist die
+ * Schichtung, aus der die Tiefe kommt.
+ */
 const DARK = `
-  --bg: #0d1117;
-  --bg-subtle: #010409;
-  --surface: #161c24;
-  --surface-2: #212830;
-  --border: #30363d;
-  --border-strong: #656c76;
-  --fg: #f0f6fc;
-  --fg-muted: #9198a1;
-  --fg-subtle: #7d8590;
-  --link: #4493f8;
-  --header-bg: #10151c;
-  --header-fg: #f0f6fc;
-  --header-border: #30363d;
+  --bg: #0d0a1a;
+  --bg-subtle: #070512;
+  --surface: #161126;
+  --surface-2: #211939;
+  --border: #322950;
+  --border-strong: #6f6494;
+  --fg: #f1eefb;
+  --fg-muted: #a49bbd;
+  --fg-subtle: #857ba5;
+  --link: #79a9ff;
+  --header-bg: #120d22;
+  --header-fg: #f1eefb;
+  --header-border: #322950;
   --airlock: ${TOKENS.airlock};
   --nexus: ${TOKENS.nexus};
   --accent-idx: ${TOKENS.index};
+  --accent-scr: ${TOKENS.scripts};
+  --accent-forum: ${TOKENS.forum};
   --danger: ${TOKENS.danger};
   --ok: #3fb950;
   --shadow: 0 1px 0 rgba(255,255,255,0.04);
-  --e1: 0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(1,4,9,0.6);
-  --e2: 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px -8px rgba(1,4,9,0.85);
-  --e3: 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px -16px rgba(1,4,9,0.95);
+  --e1: 0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(5,3,15,0.6);
+  --e2: 0 1px 0 rgba(255,255,255,0.05), 0 10px 24px -8px rgba(5,3,15,0.85);
+  --e3: 0 1px 0 rgba(255,255,255,0.06), 0 24px 48px -16px rgba(5,3,15,0.95);
   --sheen: inset 0 1px 0 rgba(255,255,255,0.045);
 ${MARKE.dunkel}`;
 
+/*
+ * Das helle Schema ist die Tagesstimme: Weiss mit BLAU getoenten Neutralen,
+ * wie die Nacht violett getoent ist. Nachgemessen auf Weiss: --fg 15.71:1,
+ * --fg-muted 6.43:1, --fg-subtle 3.84:1, --border-strong 3.32:1 (Kante eines
+ * Bedienelements, WCAG 1.4.11 verlangt 3:1).
+ */
 const LIGHT = `
   --bg: #ffffff;
-  --bg-subtle: #f6f8fa;
+  --bg-subtle: #f4f7fd;
   --surface: #ffffff;
-  --surface-2: #f6f8fa;
-  --border: #d8dee4;
+  --surface-2: #f4f7fd;
+  --border: #d9dfee;
   /*
    * Die Kante eines BEDIENELEMENTS — Feld, Knopf, Griff. Nach WCAG 1.4.11
    * braucht sie 3:1 gegen ihren Grund, sonst ist nicht zu erkennen, wo das
@@ -65,34 +88,34 @@ const LIGHT = `
    *     hell   #b7c0c9 auf #ffffff   1.84:1
    *     dunkel #545d68 auf #0d1117   2.83:1
    *
-   * Beide zu schwach. Die neuen Werte stehen so schon im Kundenportal, wo
-   * derselbe Fehler frueher aufgefallen ist — hier war er noch drin, obwohl
-   * beide aus derselben Ueberlegung stammen sollen.
+   * Beide zu schwach. Mit den zwei Markenstimmen neu gemessen:
    *
-   *     hell   #8c959f auf #ffffff   3.04:1
-   *     dunkel #656c76 auf #0d1117   3.57:1
+   *     hell   #7f8dae auf #ffffff   3.32:1  (blau getoent)
+   *     dunkel #6f6494 auf #0d0a1a   3.65:1  (violett getoent)
    *
    * Nicht zu verwechseln mit --border: das ist die Kante einer FLAECHE
    * (Karte, Trennlinie). Fuer die gilt die Regel nicht, und eine Karte mit
    * 3:1-Rand sieht aus wie ein Formularfeld.
    */
-  --border-strong: #8c959f;
-  --fg: #1f2328;
-  --fg-muted: #59636e;
-  --fg-subtle: #818b98;
+  --border-strong: #7f8dae;
+  --fg: #1b2334;
+  --fg-muted: #525f78;
+  --fg-subtle: #76829f;
   --link: #0969da;
-  --header-bg: #1c2128;
+  --header-bg: #182342;
   --header-fg: #ffffff;
-  --header-border: #32383f;
+  --header-border: #2d3a5e;
   --airlock: #0f7a4f;
   --nexus: #0a7ea4;
   --accent-idx: #9a6700;
+  --accent-scr: #c2410c;
+  --accent-forum: #be2f6f;
   --danger: #cf222e;
   --ok: #1a7f37;
-  --shadow: 0 1px 3px rgba(31,35,40,0.08);
-  --e1: 0 1px 2px rgba(31,35,40,0.06), 0 1px 3px rgba(31,35,40,0.05);
-  --e2: 0 2px 4px rgba(31,35,40,0.05), 0 8px 20px -6px rgba(31,35,40,0.10);
-  --e3: 0 4px 8px rgba(31,35,40,0.06), 0 20px 40px -12px rgba(31,35,40,0.16);
+  --shadow: 0 1px 3px rgba(27,35,52,0.08);
+  --e1: 0 1px 2px rgba(27,35,52,0.06), 0 1px 3px rgba(27,35,52,0.05);
+  --e2: 0 2px 4px rgba(27,35,52,0.05), 0 8px 20px -6px rgba(27,35,52,0.10);
+  --e3: 0 4px 8px rgba(27,35,52,0.06), 0 20px 40px -12px rgba(27,35,52,0.16);
   --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
 ${MARKE.hell}`;
 
@@ -101,24 +124,26 @@ export const CSS = `${SCHRIFT_QUELLE}
 :root {
 ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
   --bg: #ffffff;
-  --bg-subtle: #f6f8fa;
+  --bg-subtle: #f4f7fd;
   --surface: #ffffff;
-  --surface-2: #f6f8fa;
-  --border: #d1d9e0;
-  --border-strong: #8c959f;
-  --fg: #1f2328;
-  --fg-muted: #59636e;
-  --fg-subtle: #818b98;
+  --surface-2: #f4f7fd;
+  --border: #d9dfee;
+  --border-strong: #7f8dae;
+  --fg: #1b2334;
+  --fg-muted: #525f78;
+  --fg-subtle: #76829f;
   --link: #0969da;
-  --header-bg: #24292f;
+  --header-bg: #182342;
   --header-fg: #ffffff;
-  --header-border: #32383f;
+  --header-border: #2d3a5e;
   --airlock: #0f7a4f;
   --nexus: #0a7ea4;
   --accent-idx: #9a6700;
+  --accent-scr: #c2410c;
+  --accent-forum: #be2f6f;
   --danger: #cf222e;
   --ok: #1a7f37;
-  --shadow: 0 1px 3px rgba(31,35,40,0.08);
+  --shadow: 0 1px 3px rgba(27,35,52,0.08);
 
   /**
    * Three levels of elevation rather than one flat shade.
@@ -128,9 +153,9 @@ ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
    * halo that makes a light-mode page look washed out — the tight layer is what
    * keeps the card's edge crisp while the soft layer does the lifting.
    */
-  --e1: 0 1px 2px rgba(31,35,40,0.06), 0 1px 3px rgba(31,35,40,0.05);
-  --e2: 0 2px 4px rgba(31,35,40,0.05), 0 8px 20px -6px rgba(31,35,40,0.10);
-  --e3: 0 4px 8px rgba(31,35,40,0.06), 0 20px 40px -12px rgba(31,35,40,0.16);
+  --e1: 0 1px 2px rgba(27,35,52,0.06), 0 1px 3px rgba(27,35,52,0.05);
+  --e2: 0 2px 4px rgba(27,35,52,0.05), 0 8px 20px -6px rgba(27,35,52,0.10);
+  --e3: 0 4px 8px rgba(27,35,52,0.06), 0 20px 40px -12px rgba(27,35,52,0.16);
   /* A hairline of light along the top edge. Free depth, costs no layout. */
   --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
 
@@ -241,7 +266,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: color-mix(in srgb, var(--airlock) 28%, transparent); color: var(--fg); }
+::selection { background: color-mix(in srgb, var(--marke) 28%, transparent); color: var(--fg); }
 
 /**
  * Links get an underline that sits below the baseline instead of through the
@@ -299,11 +324,13 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .divider { border: 0; border-top: 1px solid var(--border); margin: 0; }
 
 /* ── header ─────────────────────────────────────────────────────────────── */
-.gh-header {
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--header-border);
-  position: sticky; top: 0; z-index: 50;
-}
+/*
+ * Kein Grund und keine Unterkante mehr: der Kopf besteht aus Inseln
+ * (build/header.mjs), und ein durchgezogener Strich unter der Navigation
+ * war der Rest des alten Balkens — eine Kante, die etwas abschloss, das es
+ * nicht mehr gibt. Die Seite laeuft jetzt frei unter den Inseln durch.
+ */
+.gh-header { position: sticky; top: 0; z-index: 50; }
 .gh-header .wrap { display: flex; align-items: center; gap: 16px; height: 62px; }
 .gh-logo { display: flex; align-items: center; gap: 10px; color: var(--header-fg); font-weight: 600; font-size: 15px; letter-spacing: 0.02em; flex: none; }
 .gh-logo:hover { text-decoration: none; opacity: 0.85; }
@@ -386,18 +413,21 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .btn:hover { text-decoration: none; border-color: var(--fg-muted); background: var(--surface-2); box-shadow: var(--e2), var(--sheen); transform: translateY(-1px); }
 /* Pressing has to move the thing down again, or the button feels stuck up. */
 .btn:active { transform: translateY(0); box-shadow: var(--e1); }
-/* Der Hauptknopf ist gruen — die zweite Stelle, an der die Marke handelt.
+/* Der Hauptknopf traegt die Markenfarbe (blau bei Tag, violett bei Nacht) —
+   die zweite Stelle, an der die Marke handelt.
    Flaeche UND Schrift kommen als Paar aus build/marke.mjs: im dunklen Schema
-   ist die gruene Flaeche hell, und weisse Schrift darauf haette 1.64:1. Die
-   ausfuehrliche Begruendung steht dort. */
+   ist die violette Flaeche hell, und weisse Schrift darauf haette 3.00:1. Die
+   ausfuehrliche Begruendung steht dort. Das Innenlicht an der Oberkante ist
+   dieselbe Koerper-Regel wie bei den Inseln im Kopf: eine Flaeche mit Licht
+   an der Kante liest sich als Ding, nicht als Anstrich. */
 .btn-primary {
   background: var(--knopf-flaeche); color: var(--knopf-schrift); border-color: var(--knopf-flaeche);
-  box-shadow: var(--e1), 0 0 0 0 var(--marke-schimmer);
+  box-shadow: var(--e1), inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 0 var(--marke-schimmer);
 }
 .btn-primary:hover {
   background: var(--knopf-flaeche-hover); border-color: var(--knopf-flaeche-hover);
   color: var(--knopf-schrift);
-  box-shadow: var(--e2), 0 0 0 4px var(--marke-schimmer);
+  box-shadow: var(--e2), inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 4px var(--marke-schimmer);
 }
 
 /* ── cards ──────────────────────────────────────────────────────────────── */
@@ -435,8 +465,8 @@ pre .c { color: var(--fg-subtle); }
 pre .g { color: var(--ok); }
 pre .r { color: var(--danger); }
 pre .b { color: var(--link); }
-.terminal { background: #0d1117; border-color: #30363d; color: #e6edf3; }
-.terminal .c { color: #7d8590; }
+.terminal { background: #0d0a1a; border-color: #322950; color: #ece8f8; }
+.terminal .c { color: #857ba5; }
 
 /* ── tables ─────────────────────────────────────────────────────────────── */
 .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
@@ -553,8 +583,8 @@ tr:last-child td { border-bottom: 0; }
  * Der Kopf ist sein eigener Farbraum -- dunkel in BEIDEN Schemata, weil sich
  * das, was darin steht, danach richtet und nicht danach, ob die Seite hell
  * ist. Der Fuss steht dagegen AUF der Seite. Seine Inseln gehen deshalb mit
- * dem Schema mit und nehmen --surface: das ist im Dunklen #161c24 ueber
- * #0d1117 und im Hellen #ffffff ueber #f6f8fa. In beiden Faellen liegt die
+ * dem Schema mit und nehmen --surface: das ist im Dunklen #161126 ueber
+ * #0d0a1a und im Hellen #ffffff ueber #f7f5fb. In beiden Faellen liegt die
  * Insel HELLER als ihr Grund und liest sich damit als angehoben.
  *
  * Haette ich hier die dunklen Kopf-Token genommen, saesse im hellen Schema
@@ -583,7 +613,7 @@ footer.site .cols {
  * zuerst, aus Schatten zuletzt.
  *
  * Eine eigene, hellere Fuellung nur fuer den Fuss waere die falsche Antwort
- * gewesen: --surface-2 ist im hellen Schema #f6f8fa und laege damit fast
+ * gewesen: --surface-2 ist im hellen Schema #f7f5fb und laege damit fast
  * unsichtbar auf dem weissen Grund. Die Kartenrezeptur ist fuer beide
  * Schemata schon geloest.
  */
@@ -610,16 +640,36 @@ footer.site a {
   transition: color var(--kurz) var(--ease), background-color var(--kurz) var(--ease);
 }
 footer.site a:hover { color: var(--fg); background: var(--surface-2); text-decoration: none; }
+/*
+ * Der Sockel: drei Zeilen mit drei Stimmen. Vorher teilten sich Lizenz,
+ * Verhaltenssatz und Rockstar-Hinweis einen Streifen mit space-between —
+ * drei Saetze in drei Laengen, nebeneinander gequetscht, lasen sich wie
+ * Kleingedrucktes. Jetzt: Zeichen und Lizenz oben (wer die Seite ist),
+ * darunter der Verhaltenssatz (wie sie sich benimmt), zuunterst der
+ * Pflichthinweis ueber seiner eigenen Haarlinie.
+ */
 footer.site .base {
   margin-top: clamp(8px, 0.9vw, 14px);
-  display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between;
+  display: flex; flex-direction: column; gap: 10px;
   color: var(--fg-subtle); font-size: 0.84rem;
 }
-/* Der Rockstar-Hinweis bekommt eine eigene Zeile, sonst teilt er sich den
-   Streifen mit einem Absatz, der dreimal so lang ist, und wird zur Randnotiz.
+footer.site .base p { margin: 0; max-width: 88ch; }
+footer.site .base-marke {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  color: var(--fg);
+}
+footer.site .base-marke .mark { color: var(--marke); flex: none; }
+footer.site .base-name {
+  font-family: var(--anzeige); font-weight: 700; font-size: 1rem; letter-spacing: -0.004em;
+}
+footer.site .base-rechte { color: var(--fg-subtle); }
+/* Der Rockstar-Hinweis bekommt eine eigene Zeile ueber eigener Haarlinie.
    **Und er wird ausdruecklich nicht kleiner gesetzt als der Rest**: die Cfx.re
    Platform License Agreement verlangt ihn deutlich sichtbar, und ein Hinweis in
    Achtelpunkt erfuellt eine Pflicht nur dem Buchstaben nach. */
-footer.site .base .disclaimer { flex-basis: 100%; letter-spacing: .01em; }
+footer.site .base .disclaimer {
+  letter-spacing: .01em;
+  border-top: 1px solid var(--border); padding-top: 10px; margin-top: 2px;
+}
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 `;

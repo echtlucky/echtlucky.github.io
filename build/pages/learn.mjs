@@ -366,3 +366,10 @@ export const script = () => `
     if (saved === 'deep' || saved === 'basic') set(saved);
   } catch (e) {}
 })();`;
+
+/**
+ * Wie viele Themen der Lernbereich hat — fuer die Tuer auf der Startseite.
+ * Aus den Daten, nicht aus einem gepflegten Satz; beide Sprachen haben per
+ * Bauart dieselbe Anzahl, gezaehlt wird die englische.
+ */
+export const N_THEMEN = T.en.topics.length;

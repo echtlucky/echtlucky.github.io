@@ -24,6 +24,10 @@ import * as learn from './pages/learn.mjs';
 import * as scripts from './pages/scripts.mjs';
 import * as api from './pages/api.mjs';
 import * as forum from './pages/forum.mjs';
+import * as games from './pages/games.mjs';
+import * as spielReflex from './pages/spiel-reflex.mjs';
+import * as spielPaare from './pages/spiel-paare.mjs';
+import * as spielSequenz from './pages/spiel-sequenz.mjs';
 import * as geobingo from './pages/geobingo.mjs';
 import * as anmelden from './pages/anmelden.mjs';
 import * as konto from './pages/konto.mjs';
@@ -37,7 +41,7 @@ const STATISCH = join(ROOT, 'static');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
-const PAGES = [home, airlock, nexus, deck, skills, learn, scripts, api, forum, geobingo, anmelden, konto, uebergabe, impressum, privacy];
+const PAGES = [home, airlock, nexus, deck, skills, learn, scripts, api, forum, games, spielReflex, spielPaare, spielSequenz, geobingo, anmelden, konto, uebergabe, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 

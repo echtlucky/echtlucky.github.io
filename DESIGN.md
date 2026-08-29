@@ -1,24 +1,27 @@
 ---
-version: alpha
+version: beta
 name: Verwerfung
-description: Design system for skillry.de — open tools for people who want to know what their AI is actually running. Documentation-density, read by developers who arrived from a GitHub repository.
-
+description: Design system for skillry.de — the roof over every Skillry project. One construction shared by all of them, a brand with two voices (deep blue by day, powerful violet by night) layered over sky light, and each product keeping its own accent on its own page.
 colors:
-  primary: "#05763d"
-  secondary: "#054d29"
+  primary: "#1f4fbe"
+  secondary: "#1c4096"
   tertiary: "#0969da"
+  himmel: "#2e82ec"
   surface: "#ffffff"
-  surface-sunken: "#f6f8fa"
-  on-surface: "#1f2328"
-  on-surface-muted: "#59636e"
-  border: "#d1d9e0"
-  border-control: "#8c959f"
-  header: "#24292f"
+  surface-sunken: "#f7f5fb"
+  on-surface: "#211c33"
+  on-surface-muted: "#5d5575"
+  border: "#ddd7ea"
+  border-control: "#8d84a8"
+  header: "#1d1830"
   on-header: "#ffffff"
   error: "#cf222e"
   success: "#1a7f37"
-  accent-index: "#9a6700"
+  accent-airlock: "#0f7a4f"
   accent-nexus: "#0a7ea4"
+  accent-index: "#9a6700"
+  accent-scripts: "#c2410c"
+  accent-forum: "#be2f6f"
 
 typography:
   wordmark:
@@ -77,6 +80,7 @@ rounded:
   sm: 4px
   md: 6px
   lg: 12px
+  island: 15px
   full: 9999px
 
 spacing:
@@ -183,20 +187,25 @@ the outline is one unbroken line that no longer agrees with itself. A lock would
 have said *keep out*, an eye *we are watching*, a shield *trust us*. This says
 the only true thing: something here is offset from itself, and you can see it.
 
-The register is **developer documentation, not marketing**. Most visitors arrive
-from a GitHub repository, so the header deliberately borrows GitHub's
-proportions and its near-black bar — the intent is that nobody feels they left.
-Everything below the header is ours.
+Skillry is no longer one tool with a page. It is a roof over projects — AIRLOCK,
+NEXUS, DECK, the skill index, the forum, the FiveM scripts, the roleplay server —
+and the design system is what makes them one house: **the same construction
+everywhere, a different colour per project.** A card on the front page, a panel
+in NEXUS and a column in the shop are built from the same shell, the same radii,
+the same two-shadow elevation; what changes between them is which accent they
+carry. That is the whole idea, and everything below serves it.
 
 What this direction gives up, on purpose:
 
-- **Warmth.** The neutrals are cool and the page is mostly white or near-black.
+- **Warmth.** The neutrals are cool — violet-tinted white and a violet night.
   There is no clay, no cream, no soft brand illustration.
-- **Persuasion.** No testimonial wall, no logo carousel, no gradient hero. The
-  page makes its case with prose, code, and a searchable index.
-- **A loud identity.** Green appears on perhaps 3% of any screen. The site is
-  legible as Skillry from the mark and the typography, not from being drenched
-  in colour.
+- **Noise.** The atmosphere lives *behind* the column — aurora scenes, the
+  swell, the grain — and is masked away from every line of running text. A
+  background that competes with a paragraph is a background that made the
+  paragraph worse.
+- **A borrowed look.** The header used to borrow GitHub's near-black bar. It is
+  now five floating dark islands in the site's own family — still a dark colour
+  space in both schemes, no longer someone else's.
 
 The site is **bilingual (de/en)** and every page exists in both. It ships **light
 and dark**, and neither is the afterthought: light is the `:root` default, dark
@@ -205,49 +214,51 @@ arrives through `prefers-color-scheme` and through an explicit toggle that stamp
 
 ## Colors
 
-The green is not a swatch someone liked. It is a ten-step ramp at **hue 150°**,
-and every step carries its measured contrast against white and against the dark
-ground `#0d1117` in the source. Those numbers decide what a step is allowed to
+The brand has **two voices and one grammar: deep blue by day, powerful violet
+by night, both layered over sky light — never one flat colour.** Each voice is
+a ten-step ramp (blue at hue ~222°, violet at ~262°), and every step carries
+its measured contrast against white and against the dark ground `#0d0a1a` in
+the source (`build/marke.mjs`). Those numbers decide what a step is allowed to
 do: 4.5:1 and up may carry text, 3:1 and up may draw the edge of a control,
-below that it is a surface and nothing else.
+below that it is a surface and nothing else. The *roles* are identical across
+the schemes — what violet 400 does at night, blue 700 does by day — only the
+hue turns, like the same sky.
 
-The ramp exists because of a measurement, not a preference. AIRLOCK's mint sits
-at hue 149°; the ramp sits at 150°. The distance between the mint and step 400 is
-13 of 441 possible — **it is not another green, it is the same green.** So rather
-than invent a second one, the brand claims the ramp and AIRLOCK's mint is one of
-its steps.
+The second layer, `HIMMEL`, is the light behind the brand. It appears in
+gradients, scenes and glows — never as a control edge, never in body text; its
+one text appearance is the display gradient in the hero, where the 3:1
+large-text line applies. The one written-out gradient of the brand is
+brand → sky → cyan, and it appears in exactly three places: the one lit word
+in the hero, the hairline above the footer, and the reading-progress bar.
 
-**Green is the colour of identity and action, never of navigation.** Blue for a
-link is not a matter of taste, it is a thirty-year-old agreement, and a
-documentation site lives on skimming. GitHub is black-and-white with green
-buttons and blue links and nobody thinks GitHub is colourless.
+**The brand colour is the colour of identity and action, never of navigation.**
+Links stay `#0969da`, underlined, in running text; the brand never stands
+there. A violet link would read as *visited*, which is worse than off-brand:
+it is wrong.
 
-- **Primary (#05763d):** deep fir — Skillry itself. Carries brand text on white
-  at 5.73:1. Step 700 is stronger and reaches only 3.53:1, which is why it draws
-  edges and never sets type.
-- **Secondary (#054d29):** the darkest green — the surface of a primary button,
-  paired with white at 10:1.
-- **Tertiary (#0969da):** link blue — the sole driver of navigation. It is the
-  one colour a reader is allowed to interpret as "this goes somewhere".
-- **On-surface-muted (#59636e):** the second voice — captions, metadata, the
-  sentence under a heading.
-- **Border (#d1d9e0)** is the edge of a *surface* — a card, a rule.
-  **Border-control (#8c959f)** is the edge of a *control* — a field, a button, a
-  handle. WCAG 1.4.11 demands 3:1 for the second and says nothing about the
-  first, and the two must not be swapped: a card with a 3:1 edge looks like a
-  form field. The old value `#b7c0c9` reached 1.84:1 and was wrong.
-- **Accent-index (#9a6700)** and **accent-nexus (#0a7ea4)** belong to one page
-  each. A product owns its colour on its own page and nowhere else, so a reader
-  learns that amber means the skill index and cyan means NEXUS without being
-  told.
-- **Error (#cf222e)** and **success (#1a7f37)** sit in the same cool family as
-  the rest; neither is stock red or stock green.
-
-**In dark mode the roles invert rather than repeat.** On a near-black ground a
-dark step carries no text: primary becomes step 600 (8.64:1), the button becomes
-step 500 with near-black text (9.10:1). A button's surface and its text are one
-decision, not two — an earlier version switched only the surface and produced
-white-on-bright-green at **1.64:1**.
+- **Primary (#1f4fbe, blue 700):** the brand's voice in light mode. Carries
+  text on white at 7.19:1. In dark mode the roles mirror into violet: step 400
+  (`#9e82f8`) carries text on the night at 6.51:1.
+- **Secondary (#1c4096, blue 800):** the surface of the primary button in light
+  mode, paired with white at 9.45:1. In dark mode the button is violet 400 with
+  near-black violet ink (`#120833`) at 6.32:1 — surface and text are one
+  decision, not two.
+- **Tertiary (#0969da):** link blue — the sole driver of navigation.
+- **Border (#ddd7ea)** is the edge of a *surface*; **border-control (#8d84a8)**
+  is the edge of a *control* and measures 3.50:1 on white (dark: `#6f6494`,
+  3.65:1 on the night). WCAG 1.4.11 demands 3:1 for the second and says nothing
+  about the first, and the two must not be swapped.
+- **The night (#0d0a1a)** and its layers `#161126` / `#211939` are steps of one
+  violet-indigo family, not a grey that got tinted. Depth in dark mode is the
+  surface getting lighter as it rises, plus a hairline of light on the top edge.
+- **Product accents:** mint for AIRLOCK, cyan for NEXUS, amber for the index and
+  the licence, orange for the scripts and the roleplay server, pink for the
+  forum, sky-blue for the API contract. A product owns its colour on its own
+  page — and on the front-page doors, where every project shows the same card
+  with its own accent. An accent on every page is not an accent.
+- **Error (#cf222e)** and **success (#1a7f37)** stay in the cool family; neither
+  is stock red or stock green. Success stays green on purpose — green left the
+  brand, not the vocabulary of states.
 
 ## Typography
 
@@ -278,15 +289,18 @@ The measure for body text is **60–75 characters**; prose columns cap around
 **4px base**, and the jump from `lg` (24px) to `xl` (48px) is where a section
 ends and the next begins — the page is paced by that gap rather than by rules.
 
-The layout is **symmetric and left-aligned**, not asymmetric. This is a
-documentation site; a reader scanning for a code block should never have to
-search for where the next line starts. Headings, body, and code all share one
-left edge.
+The layout is **symmetric and left-aligned**, not asymmetric. A reader scanning
+for a code block should never have to search for where the next line starts.
+Headings, body, and code all share one left edge.
 
-The header is full-bleed and dark in **both** schemes. That makes it its own
-colour space: what sits in it takes its contrast from the bar being dark, not
-from the page being light or dark. This was got wrong once — the mark was given
-the light scheme's darkest green and reached 1.47:1 on the dark bar.
+The header is five floating islands — mark, navigation, search, language,
+actions — and it is dark in **both** schemes, with no bar behind them and no
+rule underneath them: the page runs freely under the islands. The header is its
+own colour space: what sits in it takes its contrast from the islands being
+dark, not from the page being light or dark. The mark in the header is
+`--marke-auf-dunkel` — always a *light* step of the scheme's voice (blue 300 by
+day at 8.78:1 on the header ground, violet 300 by night at 8.65:1); this was
+got wrong once with a dark scheme-dependent token that reached 1.47:1.
 
 ## Elevation & Depth
 
@@ -295,18 +309,29 @@ Depth comes from **tonal layers and borders first**, shadow last. `surface` and
 hairline, not a lift.
 
 Where shadow is used it is always **two shadows, never one**: a tight one that
-reads as a contact edge, and a wide soft one that reads as distance. A single
-blurred shadow gives the grey halo that makes a light page look washed out — the
-tight layer keeps the card's edge crisp while the soft layer does the lifting.
-Three levels exist (`--e1`, `--e2`, `--e3`) and nothing needs a fourth. In dark
-mode the top highlight (`--sheen`, white at 4.5%) does the lifting instead,
-because a shadow on near-black is invisible.
+reads as a contact edge, and a wide soft one that reads as distance — and both
+are drawn from the darkest violet of the palette, never neutral black, or a grey
+halo settles around every surface. Three levels exist (`--e1`, `--e2`, `--e3`)
+and nothing needs a fourth. In dark mode the top highlight (`--sheen`, white at
+4.5%) does the lifting instead, because a shadow on near-black is invisible.
+
+Behind the column, the main pages carry **scenes** — pure-CSS atmospheres, one
+per page, masked away from the text: the aurora on the front page (violet and
+sky, the brand's layering at page scale), air behind AIRLOCK, the panel lattice
+behind NEXUS, the question field behind the index, the road behind the scripts.
 
 ## Shapes
 
 Radius is **hierarchical, not uniform**: 4px on small controls, 6px on buttons
-and fields, 12px on cards, fully round only on chips and avatars. One radius
-everywhere is the tell that nobody chose it.
+and fields, 12px on cards, 15px on the header islands, fully round only on chips
+and avatars. One radius everywhere is the tell that nobody chose it.
+
+**The sharp edge lives beside the soft one, not instead of it.** Cards that
+belong to a project carry crop-mark corners: two right-angled brackets sitting
+*outside* the rounded corners, square, two pixels thick, in the project's
+accent (`--eck`). A sharp angle next to a soft corner reads as a set mark; a
+sharp angle on top of a soft corner reads as a mistake. Not every card gets
+them — a highlight that is everywhere is a texture.
 
 The mark has three rules that are not stylistic preferences:
 
@@ -324,25 +349,30 @@ the radii resolve to a true circle (8.95 × 8.95); the anchors sit exactly on it
 
 ## Components
 
-- **`button-primary`** is the one green surface on a page. A page with two of
+- **`button-primary`** is the one brand surface on a page. A page with two of
   them has no primary action. Its surface and text colour are a pair and are
-  switched together, per scheme, never individually.
-- **The focus ring is green and is not optional.** It is the first thing a
-  keyboard user sees and it is one of the six places green is allowed at all:
-  the mark, the focus ring, the primary button, the active nav item, the cart
-  counter, and successful states.
-- **`link`** is blue and underlined in body text. Do not restyle links green to
-  get more brand on the page.
+  switched together, per scheme, never individually — white on the dark-mode
+  button surface would be 3.00:1, which is how this rule earns its keep.
+- **The focus ring is the brand colour and is not optional.** `--marke-rand`
+  measures 5.33:1 on white (blue 600) and 4.75:1 on the night (violet 500) — a
+  control edge with reserve, not one balancing on the 3:1 line.
+- **`link`** is `#0969da` and underlined in body text. Do not restyle links in
+  the brand colour to get more brand on the page.
 - **`chip-index` / `chip-nexus`** appear only on their own product's page.
 - **`code-block`** uses the sunken surface, never a tinted one; a coloured code
   background competes with syntax highlighting.
+- **Images are inline SVG drawn from theme tokens**, so they follow the scheme
+  instead of being right in one of the two. Nothing is fetched for decoration —
+  not from a third party, and not from us.
 
 Motion is **one curve and three durations**: `cubic-bezier(0.22, 0.61, 0.36, 1)`,
 fast at the start and easing out — the movement of something that was pushed,
 not something starting up. `--kurz` 140ms for a state on the same element,
 `--mittel` 240ms for something arriving or leaving, `--lang` 380ms for something
 travelling a distance. Anything slower than `--lang` is waiting, and waiting is
-not design. Two curves on one page read as two programs.
+not design. Two curves on one page read as two programs. Sections and cards
+arrive on scroll everywhere; the front page adds the GSAP choreography, and
+navigation cross-fades through view transitions with the header held still.
 
 Under `prefers-reduced-motion: reduce` the durations go to **1ms, not 0**: at
 `0s` some browsers never fire `transitionend`, and code waiting on it waits
@@ -352,10 +382,12 @@ the flicker the setting was meant to remove.
 
 ## Do's and Don'ts
 
-- **Do** keep green under about 5% of any screen, and only in the six places
-  listed above.
-- **Don't** make links green. Blue links are a thirty-year agreement and this
-  site is read by skimming.
+- **Do** keep the brand colour under about 5% of any screen, and only in the
+  named places: the mark, the focus ring, the primary button, the active nav
+  item, the cart counter, and the crop-mark corners of cards that belong to no
+  project.
+- **Don't** make links violet or brand-blue. They would read as visited links
+  or as buttons, and this site is read by skimming.
 - **Do** treat a button's surface colour and its text colour as one decision,
   and re-measure both when either changes scheme.
 - **Don't** use `border` where `border-control` belongs, or the reverse. A card
@@ -363,13 +395,18 @@ the flicker the setting was meant to remove.
   1.4.11.
 - **Do** state a contrast ratio next to any new colour value, measured, in the
   source. Every existing value carries one.
-- **Don't** add a second green. The ramp at hue 150° is the green; AIRLOCK's mint
-  is one of its steps, 13 units away out of 441.
+- **Don't** add a third brand hue, and don't promote `HIMMEL` to body text or
+  edges — it is the layer behind the brand, not a second brand. The two voices
+  are scheme-bound: blue never acts at night, violet never by day.
+- **Don't** put a repeated glyph, stripe or pattern behind a page. Backgrounds
+  here are light and air — the aurora, the scenes, the grain on objects — and
+  the moment one reads as wallpaper it has failed. The hero's displaced text
+  lines and the index's question-mark field were both removed under this rule.
 - **Don't** load a font, script, or image from a third-party host at runtime. The
   site promises it fetches nothing from anyone, and the font is self-hosted for a
   documented legal reason.
-- **Do** give a product accent exactly one page. An accent on every page is not
-  an accent.
+- **Do** give a product accent exactly one page — plus its door on the front
+  page, where every project stands in the same construction with its own colour.
 - **Don't** rotate, fill, or round the corners of the mark.
 - **Do** ship every page in both German and English. A page that exists in one
   language is not finished.

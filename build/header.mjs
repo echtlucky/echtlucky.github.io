@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { href, LANGS, FLAGS, SITE } from './layout.mjs';
+import { href, FLAGS, SITE, SPRACHEN } from './layout.mjs';
 import { LOGO } from './logo.mjs';
 import { PORTAL } from './portal.mjs';
 
@@ -152,6 +152,24 @@ export const SITEMAP = {
       ],
     },
   },
+  games: {
+    accent: 'forum',
+    lede: {
+      en: 'Games from the network — playable right in the browser, and nothing loads from anyone else.',
+      de: 'Spiele aus dem Netzwerk — direkt im Browser spielbar, und nichts lädt von Dritten.',
+    },
+    cta: { en: 'Open the games', de: 'Zu den Spielen' },
+    extra: {
+      en: 'Play',
+      de: 'Spielen',
+      items: [
+        { l: { en: 'Reflex', de: 'Reflex' }, h: (lang) => href(lang, 'games/reflex') },
+        { l: { en: 'Pairs', de: 'Paare' }, h: (lang) => href(lang, 'games/pairs') },
+        { l: { en: 'Sequence', de: 'Sequenz' }, h: (lang) => href(lang, 'games/sequence') },
+        { l: { en: 'Suggest a game', de: 'Ein Spiel vorschlagen' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+      ],
+    },
+  },
   forum: {
     accent: 'index',
     lede: {
@@ -225,6 +243,7 @@ export const NAV = [
       { slug: 'skills', key: 'skills' },
     ],
   },
+  { slug: 'games', key: 'games' },
   { slug: 'forum', key: 'forum' },
   { slug: 'learn', key: 'learn', dazu: [{ slug: 'api', key: 'api' }] },
 ];
@@ -378,10 +397,28 @@ export function header(lang, current, t, opts = {}) {
       aria-expanded="false" aria-controls="mega-${n.key}" aria-haspopup="true"${seiten(n).some((k) => k.slug === current) || (n.dazu ?? []).some((k) => k.slug === current) ? ' aria-current="page"' : ''}>${t.nav[n.key]}${I_CARET}</a>`,
   ).join('');
 
-  const langs = LANGS.map((l) => {
-    const name = l === 'en' ? 'English' : 'Deutsch';
-    return `<a href="${href(l, current)}" hreflang="${l}" aria-current="${l === lang}" title="${name}" data-lang="${l}">${FLAGS[l]}<span class="sr">${name}</span></a>`;
+  /*
+   * Der Sprachwaehler: ein Knopf mit der aktuellen Flagge, dahinter eine
+   * Liste. Live-Sprachen sind Links auf DIESELBE Seite in der anderen
+   * Sprache; angekuendigte stehen grau mit "bald" dabei — dieselbe Ordnung
+   * wie GTA VI im Skripte-Menue: Ankuendigung, kein Angebot. Die Liste ist
+   * fuer dreizehn und mehr Eintraege gebaut (eigene Rolle, eigener Ueberlauf),
+   * damit eine neue Sprache ein Eintrag ist und kein Umbau.
+   */
+  const aktuelle = SPRACHEN.find((s) => s.code === lang) ?? SPRACHEN[0];
+  const langListe = SPRACHEN.map((s) => {
+    if (s.live) {
+      return `<a href="${href(s.code, current)}" hreflang="${s.code}" lang="${s.code}"
+        aria-current="${s.code === lang}" data-lang="${s.code}">${FLAGS[s.code]}<span>${s.name}</span></a>`;
+    }
+    return `<span class="lang-bald" lang="${s.code}">${FLAGS[s.code]}<span>${s.name}</span><em>${esc(t.menu.bald)}</em></span>`;
   }).join('');
+  const langs = `
+    <button type="button" class="lang-btn" id="ghLangBtn" aria-expanded="false"
+      aria-controls="ghLangList" aria-haspopup="true" aria-label="${esc(t.act.lang)}">
+      ${FLAGS[lang]}<span class="lang-code">${lang.toUpperCase()}</span>${I_CARET}
+    </button>
+    <div class="lang-list" id="ghLangList" hidden aria-label="${esc(t.act.lang)}" title="${esc(aktuelle.name)}">${langListe}</div>`;
 
   /* Eine Gruppe hat kein SITEMAP — sie hat Kinder. Deshalb zwei Bauer statt
      einer Verzweigung im Bauer selbst. */
@@ -575,22 +612,22 @@ export const HEADER_CSS = `
    * Der Grund der Insel ist HELLER als die dunkle Seite, nicht dunkler.
    *
    * Zuerst stand hier rgba(15,20,27,.86) -- gemessen 1.02:1 gegen den
-   * Seitengrund #0d1117. Das ist dieselbe Farbe. Eine Insel, die genau so
-   * dunkel ist wie das Wasser, ist keine Insel; sichtbar war nur der Schatten,
-   * und der allein liest sich als Fleck statt als Koerper.
+   * Seitengrund. Das ist dieselbe Farbe. Eine Insel, die genau so dunkel ist
+   * wie das Wasser, ist keine Insel; sichtbar war nur der Schatten, und der
+   * allein liest sich als Fleck statt als Koerper.
    *
-   * Gemessen und danach gewaehlt:
+   * Der Inselgrund folgt der STIMME des Schemas, nicht seiner Helligkeit:
+   * er ist in beiden Schemata dunkel (der Kopf ist sein eigener Farbraum),
+   * aber bei Tag ein dunkles Blau und bei Nacht ein dunkles Violett.
    *
-   *     rgb(26,32,40)   1.15:1   zu wenig, ahnt man nur
-   *     rgb(33,40,50)   1.27:1   knapp
-   *     rgb(38,46,57)   1.38:1   <- deutlich, ohne sich vorzudraengen
-   *     rgb(44,53,65)   1.53:1   trennt zu hart, der Kopf zerfaellt
-   *
-   * Gegen die weisse Seite sind es 13.7:1 -- im hellen Schema ist die Insel
-   * ein dunkler Koerper auf Papier, und das ist genau richtig: der Kopf ist
-   * sein eigener Farbraum und schaltet nicht mit.
+   * Nachgemessen: rgb(44,38,66) steht 1.36:1 ueber der Nacht #0d0a1a --
+   * dieselbe Deutlichkeit, die vorher mit rgb(38,46,57) auf #0d1117 gewaehlt
+   * wurde (1.38:1). Das Tag-Blau rgb(38,48,77) steht 13.02:1 ueber der
+   * weissen Seite und traegt Blau 300 mit 6.67:1. Vier Bloecke wie bei jedem
+   * Schema-Merkmal: Grundwert, Systemvorliebe, und die zwei ausdruecklichen
+   * Schalterzustaende.
    */
-  --insel-grund: rgba(38, 46, 57, 0.88);
+  --insel-grund: rgba(38, 48, 77, 0.88);
   --insel-kante: rgba(255, 255, 255, 0.13);
   --insel-kante-hell: rgba(255, 255, 255, 0.19);
   /* Innenlicht an der Oberkante: das ist der Unterschied zwischen einer
@@ -599,15 +636,22 @@ export const HEADER_CSS = `
 
   /* Zwei Schatten, nie einer -- dieselbe Regel wie im Rest der Seite: ein
      enger als Auflagekante, ein weiter als Entfernung. Und beide aus dem
-     dunkelsten Blau der Palette statt aus neutralem Schwarz, sonst legt sich
-     ein grauer Hof um jede Insel. */
-  --insel-schatten: 0 1px 2px rgba(1, 4, 9, 0.55), 0 10px 26px -12px rgba(1, 4, 9, 0.8);
-  --insel-schatten-hoch: 0 2px 5px rgba(1, 4, 9, 0.6), 0 24px 52px -18px rgba(1, 4, 9, 0.95);
+     dunkelsten Violett der Palette statt aus neutralem Schwarz, sonst legt
+     sich ein grauer Hof um jede Insel. */
+  --insel-schatten: 0 1px 2px rgba(5, 3, 15, 0.55), 0 10px 26px -12px rgba(5, 3, 15, 0.8);
+  --insel-schatten-hoch: 0 2px 5px rgba(5, 3, 15, 0.6), 0 24px 52px -18px rgba(5, 3, 15, 0.95);
 
   /* Eigene Kurve fuer den Kopf: traeger am Anfang, langes Ausschwingen. Sie
      laesst eine Insel wirken, als haette sie Masse. */
   --insel-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+/* Die Nachtstimme des Inselgrunds — Begruendung und Messwerte oben. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) { --insel-grund: rgba(44, 38, 66, 0.88); }
+}
+:root[data-theme='dark'] { --insel-grund: rgba(44, 38, 66, 0.88); }
+:root[data-theme='light'] { --insel-grund: rgba(38, 48, 77, 0.88); }
 
 .gh-header {
   position: sticky; top: 0; z-index: 50;
@@ -674,10 +718,10 @@ export const HEADER_CSS = `
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
 
 /*
- * Das Zeichen ist gruen, die Wortmarke nicht.
+ * Das Zeichen traegt die Markenfarbe, die Wortmarke nicht.
  *
- * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides gruen
- * waere ein gruener Klumpen; das Zeichen allein ist ein Akzent, und der Name
+ * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides in
+ * Farbe waere ein Klumpen; das Zeichen allein ist ein Akzent, und der Name
  * daneben bleibt lesbar wie jede andere Schrift im Kopf.
  *
  * Es ist --marke-auf-dunkel und keines der beiden Schema-Merkmale. Der
@@ -787,9 +831,9 @@ export const HEADER_CSS = `
 .gh-navlink::after {
   content: ''; position: absolute; left: 10px; right: 10px; height: 2px;
   bottom: 5px;
-  /* Der aktive Punkt ist gruen — der dritte kleine Akzent. --marke-auf-dunkel,
-     weil der Balken in beiden Schemata dunkel ist; dieselbe Begruendung wie
-     beim Zeichen, ausfuehrlich in build/marke.mjs. */
+  /* Der aktive Punkt traegt die Markenfarbe — der dritte kleine Akzent.
+     --marke-auf-dunkel, weil der Balken in beiden Schemata dunkel ist;
+     dieselbe Begruendung wie beim Zeichen, ausfuehrlich in build/marke.mjs. */
   border-radius: 2px; background: var(--marke-auf-dunkel);
   transform: scaleX(0); transform-origin: 50% 100%; opacity: 0;
   transition: transform var(--kurz) var(--ease), opacity var(--kurz) var(--ease);
@@ -887,12 +931,12 @@ export const HEADER_CSS = `
   display: inline-flex; align-items: center; gap: 6px;
   height: 32px; padding: 0 12px; border-radius: var(--radius);
   font-size: 13px; font-weight: 600; white-space: nowrap;
-  background: color-mix(in srgb, var(--airlock) 22%, transparent);
-  border: 1px solid color-mix(in srgb, var(--airlock) 55%, transparent);
+  background: color-mix(in srgb, var(--marke-auf-dunkel) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--marke-auf-dunkel) 55%, transparent);
   color: var(--header-fg);
   animation: quickIn var(--mittel) var(--ease) both;
 }
-.gh-quick:hover { text-decoration: none; background: color-mix(in srgb, var(--airlock) 34%, transparent); }
+.gh-quick:hover { text-decoration: none; background: color-mix(in srgb, var(--marke-auf-dunkel) 34%, transparent); }
 .gh-quick[hidden] { display: none; }
 .gh-quick.warn { background: color-mix(in srgb, var(--accent-idx) 20%, transparent); border-color: color-mix(in srgb, var(--accent-idx) 55%, transparent); }
 @keyframes quickIn { from { opacity: 0; transform: translateY(-4px) scale(0.96); } to { opacity: 1; transform: none; } }
@@ -905,11 +949,59 @@ export const HEADER_CSS = `
   color: var(--header-fg); cursor: pointer; padding: 0;
 }
 .icon-btn:hover { background: var(--hdr-tint-2); }
-.lang-switch { display: flex; gap: 2px; align-items: center; padding: var(--insel-pad); flex: none; }
-.lang-switch a { color: var(--header-fg); padding: 5px 7px; border-radius: var(--radius); opacity: 0.5; line-height: 1; }
-.lang-switch a svg { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
-.lang-switch a:hover { opacity: 1; background: var(--hdr-tint); text-decoration: none; }
-.lang-switch a[aria-current="true"] { opacity: 1; background: var(--hdr-tint-2); }
+/*
+ * ══ DER SPRACHWAEHLER IST EIN AUSKLAPPFELD, KEINE FLAGGENREIHE ════════════
+ *
+ * Zwei Flaggen nebeneinander gehen; dreizehn sind eine Wand. Der Knopf zeigt
+ * die AKTUELLE Sprache (Flagge + Kuerzel), die Liste dahinter zeigt alle —
+ * live-Sprachen als Links mit Flagge und eigenem Namen, angekuendigte grau
+ * mit "bald". Die Liste folgt dem Seitenschema (--surface) wie jedes Panel,
+ * denn sie liegt AUF der Seite, nicht im Kopfbalken.
+ */
+.lang-switch { display: flex; align-items: center; padding: var(--insel-pad); flex: none; position: relative; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 7px; height: 100%;
+  padding: 0 9px 0 8px; border: 0; background: none; cursor: pointer;
+  color: var(--header-fg); font: inherit; font-size: 13px; font-weight: 600;
+  border-radius: var(--insel-r-innen); opacity: 0.85; line-height: 1;
+  transition: opacity var(--kurz) var(--ease), background var(--kurz) var(--ease);
+}
+.lang-btn:hover, .lang-btn:focus-visible { opacity: 1; background: var(--hdr-tint); }
+.lang-btn[aria-expanded="true"] { opacity: 1; background: var(--hdr-tint-2); }
+.lang-btn svg:first-child { display: block; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.25); }
+.lang-code { letter-spacing: 0.04em; }
+.lang-list {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+  min-width: 216px; max-height: min(64vh, 500px); overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--insel-r);
+  box-shadow: var(--insel-schatten-hoch);
+  animation: langAuf var(--kurz) var(--ease);
+}
+@keyframes langAuf { from { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .lang-list { animation: none; } }
+.lang-list a, .lang-bald {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: calc(var(--insel-r) - 6px);
+  font-size: 0.9rem; color: var(--fg); line-height: 1.2;
+}
+.lang-list a:hover { background: var(--surface-2); text-decoration: none; }
+.lang-list a[aria-current="true"] {
+  background: var(--marke-flaeche); color: var(--marke-auf-flaeche); font-weight: 600;
+}
+.lang-list svg { display: block; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12); }
+.lang-bald { color: var(--fg-subtle); cursor: default; }
+.lang-bald em {
+  margin-left: auto; font-style: normal; font-size: 0.7rem;
+  letter-spacing: 0.05em; text-transform: lowercase; opacity: 0.8;
+}
+/* Die erste angekuendigte Zeile bekommt die Trennlinie — so braucht die
+   Liste keinen eigenen Zwischentitel. */
+.lang-list a[aria-current] + .lang-bald,
+.lang-list a + .lang-bald { border-top: 1px solid var(--border); margin-top: 6px; padding-top: 10px; border-radius: 0 0 calc(var(--insel-r) - 6px) calc(var(--insel-r) - 6px); }
+.lang-bald + .lang-bald { border-top: 0; margin-top: 0; padding-top: 7px; }
 
 .gh-signin {
   display: inline-flex; align-items: center; gap: 7px;
@@ -920,11 +1012,18 @@ export const HEADER_CSS = `
 }
 .gh-signin:hover { background: var(--hdr-tint); }
 .gh-signin[aria-expanded="true"] { background: var(--hdr-tint-2); }
+/*
+ * Der Avatar traegt die Markenschichtung als Verlauf: Violett in Himmel.
+ * Beide Farben stehen als Literale, nicht als Schema-Merkmale — der Avatar
+ * sitzt im Kopf (eigener Farbraum) UND im Panel (folgt dem Schema), und ein
+ * Merkmal, das im hellen Schema dunkel wird, machte die Initialen unlesbar.
+ * Die Tinte #120833 hat auf #b7a2fb 8.64:1 und auf #79c0ff mehr.
+ */
 .gh-avatar {
   width: 22px; height: 22px; border-radius: 50%; flex: none;
   display: grid; place-items: center; font-size: 10.5px; font-weight: 700;
-  letter-spacing: 0.02em; color: #04120b;
-  background: linear-gradient(140deg, var(--airlock), var(--nexus));
+  letter-spacing: 0.02em; color: #120833;
+  background: linear-gradient(140deg, #b7a2fb, #79c0ff);
 }
 .gh-avatar[hidden] { display: none; }
 .gh-signin.unverified .gh-avatar { background: linear-gradient(140deg, var(--accent-idx), var(--danger)); }
@@ -971,7 +1070,7 @@ export const HEADER_CSS = `
  * across five nav items would strobe it.
  */
 .gh-scrim {
-  position: fixed; inset: 0; z-index: 40; background: rgba(1,4,9,0.32);
+  position: fixed; inset: 0; z-index: 40; background: rgba(5,3,15,0.34);
   opacity: 0; pointer-events: none; transition: opacity var(--kurz) var(--ease);
 }
 .gh-header[data-scrim] ~ .gh-scrim { opacity: 1; pointer-events: auto; }
@@ -1042,7 +1141,7 @@ export const HEADER_CSS = `
 
 /* .search-hit and its children are reused verbatim from the old dialog. */
 .search-hit[aria-selected="true"] { background: var(--surface-2); border-color: var(--border); }
-.search-hit .hk.k-action { color: var(--airlock); border-color: color-mix(in srgb, var(--airlock) 45%, transparent); }
+.search-hit .hk.k-action { color: var(--marke); border-color: color-mix(in srgb, var(--marke) 45%, transparent); }
 .search-hit .hk.k-skill { color: var(--accent-idx); border-color: color-mix(in srgb, var(--accent-idx) 45%, transparent); }
 .search-hit .hk.k-here { color: var(--nexus); border-color: color-mix(in srgb, var(--nexus) 45%, transparent); }
 .sug-group {
@@ -1078,7 +1177,7 @@ export const HEADER_CSS = `
 .authp-who { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 0.9rem; }
 .authp-mail { color: var(--fg-subtle); font-size: 0.82rem; }
 .authp-avatar { width: 38px; height: 38px; border-radius: 50%; flex: none; display: grid; place-items: center;
-  font-weight: 700; font-size: 15px; color: #04120b; background: linear-gradient(140deg, var(--airlock), var(--nexus)); }
+  font-weight: 700; font-size: 15px; color: #120833; background: linear-gradient(140deg, #b7a2fb, #79c0ff); }
 .authp-links { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .authp-links a { display: block; padding: 7px 10px; margin-left: -10px; border-radius: 6px; color: var(--fg); font-size: 0.9rem; }
 .authp-links a:hover { background: var(--surface-2); text-decoration: none; color: var(--link); }
@@ -1135,7 +1234,11 @@ export const HEADER_CSS = `
   .gh-word { font-size: 17px; letter-spacing: -0.002em; }
   .gh-quick span { display: none; }
   .gh-quick { padding: 0 9px; }
-  .lang-switch { display: none; }          /* lives in the menu panel instead */
+  /* Der Sprachwaehler bleibt — mit dreizehn Sprachen ist er kein Luxus mehr,
+     sondern die eine Tuer, die jemand ohne die Seitensprache findet. Nur das
+     Kuerzel weicht; Flagge und Pfeil reichen als Knopf. */
+  .lang-code { display: none; }
+  .lang-list { position: fixed; top: calc(var(--hdr-h) + 14px); right: 10px; left: auto; }
   .gh-signin { padding: 0 9px; }
   .gh-signin #ghAuthLabel { display: none; }
   .gh-signin.io #ghAuthLabel { display: inline; }
@@ -1819,4 +1922,34 @@ export const HEADER_JS = (cfg) => `
   [].forEach.call(document.querySelectorAll('[data-signout]'), function (b) {
     b.addEventListener('click', signOut);
   });
+
+  // =========================================================================
+  // 5. Der Sprachwaehler. Ein Knopf, eine Liste, drei Wege hinaus:
+  //    nochmal klicken, danebenklicken, Escape. Kein Fokusfaenger — die Liste
+  //    ist ein Menue, kein Dialog.
+  // =========================================================================
+  var langBtn = document.getElementById('ghLangBtn');
+  var langList = document.getElementById('ghLangList');
+  if (langBtn && langList) {
+    function langZu() {
+      langList.hidden = true;
+      langBtn.setAttribute('aria-expanded', 'false');
+    }
+    langBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var auf = langList.hidden;
+      langList.hidden = !auf;
+      langBtn.setAttribute('aria-expanded', String(auf));
+      if (auf) {
+        var aktiv = langList.querySelector('a[aria-current="true"]');
+        if (aktiv) aktiv.focus();
+      }
+    });
+    document.addEventListener('click', function (e) {
+      if (!langList.hidden && !langList.contains(e.target) && e.target !== langBtn) langZu();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !langList.hidden) { langZu(); langBtn.focus(); }
+    });
+  }
 })();`;
