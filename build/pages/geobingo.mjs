@@ -120,8 +120,13 @@ export const TEXTE = {
     aufdecken: 'Reveal',
     aufdeckenHinweis: 'Covered so it cannot end up on stream. Click reveals it; it covers itself again after 15 seconds. Copying works without revealing.',
 
+    lobbyH: 'Lobby',
+    rundeBeenden: 'End round',
+    wirklichBeenden: 'Really end it?',
     woerterH: 'Words',
-    woerterP: 'Your own words are the point. The packs below are only a quick way to fill the list.',
+    woerterP: 'Your own words are the point. The packs below only fill the list quickly.',
+    einstellungenP: 'Everything here is the host’s call, and everybody sees the change at once.',
+    spielerP: 'Anybody with the invite link lands here.',
     wortPlatz: 'A dog, a red bus, somebody on a ladder…',
     punkte: 'Points',
     hinzu: 'Add',
@@ -236,8 +241,13 @@ export const TEXTE = {
     aufdecken: 'Aufdecken',
     aufdeckenHinweis: 'Verdeckt, damit er nicht im Stream landet. Klick deckt ihn auf, nach 15 Sekunden verdeckt er sich wieder. Kopieren geht auch verdeckt.',
 
+    lobbyH: 'Lobby',
+    rundeBeenden: 'Runde beenden',
+    wirklichBeenden: 'Wirklich beenden?',
     woerterH: 'Wörter',
-    woerterP: 'Eigene Wörter sind der Sinn der Sache. Die Pakete darunter sind nur der schnelle Weg zu einer vollen Liste.',
+    woerterP: 'Eigene Wörter sind der Sinn der Sache. Die Pakete füllen die Liste nur schnell auf.',
+    einstellungenP: 'Alles hier entscheidet der Gastgeber, und alle sehen die Änderung sofort.',
+    spielerP: 'Wer den Einladelink hat, landet hier.',
     wortPlatz: 'Ein Hund, ein roter Bus, jemand auf einer Leiter…',
     punkte: 'Punkte',
     hinzu: 'Dazu',
@@ -466,6 +476,9 @@ input::placeholder { color: #6a748c; }
 }
 .gb-knopf:hover:not(:disabled) { background: var(--flaeche-2); border-color: var(--kante-stark); color: var(--schrift); }
 .gb-knopf:active:not(:disabled) { transform: translateY(1px); }
+/* Der scharf gestellte Beenden-Knopf: vier Sekunden lang rot, dann von selbst
+   wieder normal — wer daneben greift, muss nichts wegklicken. */
+.gb-knopf[data-scharf="1"] { background: var(--warn); border-color: var(--warn); color: #2b0b0b; font-weight: 600; }
 .gb-haupt {
   background: var(--violett); border-color: var(--violett-rand); color: #fff;
   font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
@@ -531,9 +544,28 @@ input::placeholder { color: #6a748c; }
 
 /* ── Lobby ───────────────────────────────────────────────────────────────── */
 .gb-lobbyseite, .gb-blattseite { max-width: 1520px; margin: 0 auto; padding: 22px clamp(14px, 3vw, 30px) 44px; }
-.gb-lobbykopf { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+.gb-lobbykopf { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
 .gb-lobbykopf h1 { margin: 0; }
 .gb-lobbykopf > *:last-child { margin-left: auto; }
+.gb-lobbytitel {
+  font: 600 .72rem/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--leise);
+  padding-left: 16px; border-left: 1px solid var(--kante);
+}
+
+/*
+ * Das Einladeband — das Erste, was ein Gastgeber braucht, also auch das Erste,
+ * was er sieht. In der Kopfzeile gequetscht zwischen Marke und
+ * Verlassen-Knopf war es genau das, was man zuerst sucht und am schwersten
+ * fand. Volle Breite, eigener Grund, deutlich abgesetzt.
+ */
+.gb-band {
+  background: linear-gradient(180deg, rgba(127,34,254,.14), rgba(127,34,254,.04));
+  border: 1px solid var(--violett-rand);
+  border-radius: var(--r-gross);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.gb-tafelzeile { color: var(--leise); font-size: .84rem; margin: -.2rem 0 1rem; }
 /*
  * Verdeckte Felder.
  *
@@ -580,7 +612,10 @@ input::placeholder { color: #6a748c; }
 .gb-einladebreit { flex: 1; min-width: 240px; }
 .gb-einladezeile { display: flex; align-items: stretch; gap: 8px; min-width: 0; }
 .gb-einladezeile .gb-geheim { flex: 1; min-width: 0; }
-.gb-lobbygitter { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,.8fr); gap: 18px; align-items: start; }
+.gb-lobbygitter { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1.15fr) minmax(0,.82fr); gap: 18px; align-items: start; }
+/* Die Spielertafel traegt den Startknopf und soll nicht aus dem Bild wandern,
+   wenn die Wortliste waechst. */
+.gb-startTafel { position: sticky; top: 18px; }
 
 .gb-wortform { display: grid; grid-template-columns: 1fr auto auto; gap: 9px; margin: 14px 0 12px; }
 .gb-punktwahl { display: flex; border: 1px solid var(--kante); border-radius: var(--r); overflow: hidden; }

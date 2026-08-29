@@ -996,16 +996,25 @@
     return '<div class="gb-lobbyseite">'
       + '<header class="gb-lobbykopf">'
       + marke()
-      + einladung()
+      + '<span class="gb-lobbytitel">' + esc(L.lobbyH) + '</span>'
       + '<button class="gb-knopf gb-klein" data-tu="verlassen">' + esc(L.verlassen) + '</button>'
       + '</header>'
+      /*
+       * Das Einladeband steht ueber allem anderen und ueber die ganze Breite.
+       *
+       * In der Kopfzeile gequetscht zwischen Marke und Verlassen-Knopf war es
+       * genau das, was man als Erstes braucht und am schwersten fand. Wer eine
+       * Lobby aufmacht, will als naechstes Leute hereinholen — nicht Woerter
+       * tippen.
+       */
+      + '<section class="gb-band">' + einladung() + '</section>'
 
       + '<div class="gb-lobbygitter">'
 
       // ── Wörter ──
       + '<section class="gb-tafel">'
       + '<h2>' + esc(L.woerterH) + '<span class="gb-zahl">' + woerter.length + '</span></h2>'
-      + '<p class="gb-still">' + esc(L.woerterP) + '</p>'
+      + '<p class="gb-tafelzeile">' + esc(L.woerterP) + '</p>'
       + '<form class="gb-wortform" data-tu="wort">'
       + '<input id="gbWort" maxlength="40" autocomplete="off" placeholder="' + esc(L.wortPlatz) + '">'
       + '<div class="gb-punktwahl" role="group" aria-label="' + esc(L.punkte) + '">'
@@ -1032,6 +1041,7 @@
       // ── Einstellungen ──
       + '<section class="gb-tafel">'
       + '<h2>' + esc(L.einstellungenH) + '</h2>'
+      + '<p class="gb-tafelzeile">' + esc(L.einstellungenP) + '</p>'
 
       + '<div class="gb-stellwerk">'
       + '<label class="gb-etikett" for="gbMinuten">' + esc(L.dauer) + '</label>'
@@ -1076,8 +1086,9 @@
       + '</section>'
 
       // ── Spieler ──
-      + '<section class="gb-tafel">'
+      + '<section class="gb-tafel gb-startTafel">'
       + '<h2>' + esc(L.spielerH) + '<span class="gb-zahl">' + spielerZahl() + '</span></h2>'
+      + '<p class="gb-tafelzeile">' + esc(L.spielerP) + '</p>'
       + spielerListe(true)
       + (gast
         ? '<button class="gb-knopf gb-haupt gb-breit gb-luft" data-tu="los"' + (woerter.length < 1 || !(e.regionen || []).length ? ' disabled' : '') + '>' + esc(L.losGehts) + '</button>'
@@ -1142,6 +1153,18 @@
       + '<div class="gb-leistelinks"><span id="gbUhr" class="gb-uhr" data-knapp="0">--:--</span></div>'
       + '<div class="gb-leistemitte">' + marke() + '</div>'
       + '<div class="gb-leisterechts">'
+      /*
+       * „Runde beenden" nur beim Gastgeber, und mit Rueckfrage.
+       *
+       * Er sitzt direkt neben dem Verlassen-Kreuz, waehrend eine Uhr laeuft und
+       * jemand gerade ein Wort anklicken will. Ein Fehlgriff wuerde allen die
+       * laufende Runde wegnehmen — deshalb fragt er nach, und zwar in der
+       * Leiste selbst statt in einem Fenster, das den Blick aufs Panorama
+       * nimmt.
+       */
+      + (ichBinGastgeber()
+        ? '<button class="gb-knopf gb-klein" data-tu="beenden" id="gbBeenden">' + esc(L.rundeBeenden) + '</button>'
+        : '')
       + '<button class="gb-icon" data-tu="hud" title="' + esc(L.hudAus) + '" aria-label="' + esc(L.hudAus) + '">&#9114;</button>'
       + '<button class="gb-icon" data-tu="verlassen" title="' + esc(L.verlassen) + '" aria-label="' + esc(L.verlassen) + '">&times;</button>'
       + '</div></div>'
@@ -1416,6 +1439,7 @@
       else if (tu === 'verlassen') verlassen();
       else if (tu === 'los') losGehts();
       else if (tu === 'hud') hudKippen();
+      else if (tu === 'beenden') rundeBeenden();
       else if (tu === 'auswerten') schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'ergebnis' }));
       else if (tu === 'nochmal') nochmal();
       else if (tu === 'zurueckZurPruefung') schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
@@ -1470,6 +1494,33 @@
   /** Ein Schreibvorgang, dessen einzige Reaktion im Fehlerfall die Meldung ist. */
   function schreibe(versprechen) {
     return versprechen.catch(function (e) { melde(fehlertext(e), 'fehler'); });
+  }
+
+  /*
+   * Vorzeitig beenden — zweistufig.
+   *
+   * Der erste Klick faerbt den Knopf und wartet vier Sekunden; der zweite
+   * schaltet wirklich um. Wer daneben greift, verliert nichts und muss nichts
+   * wegklicken: der Knopf faellt von selbst in seinen Ruhezustand zurueck.
+   */
+  var beendenScharf = null;
+  function rundeBeenden() {
+    if (!ichBinGastgeber()) return;
+    var k = document.getElementById('gbBeenden');
+    if (!k) return;
+    if (!beendenScharf) {
+      k.dataset.scharf = '1';
+      k.textContent = L.wirklichBeenden;
+      beendenScharf = setTimeout(function () {
+        beendenScharf = null;
+        k.dataset.scharf = '0';
+        k.textContent = L.rundeBeenden;
+      }, 4000);
+      return;
+    }
+    clearTimeout(beendenScharf);
+    beendenScharf = null;
+    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
   }
 
   function hudKippen() {
