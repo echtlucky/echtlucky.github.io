@@ -1,9 +1,10 @@
 /*
  * GeoBingo — der Spielclient.
  *
- * Eine eigenstaendige Spielseite: kein Kopf, kein Fuss, keine Anmeldung. Wer
- * den Zugangscode hat, gibt sich einen Namen und spielt. Gedacht ist sie fuer
- * einen Stream, und daran haengen die meisten Entscheidungen hier drin.
+ * Eine eigenstaendige Spielseite: kein Kopf, kein Fuss, kein Rahmen der
+ * Website. Wer sich mit Google anmeldet und freigeschaltet ist, macht eine
+ * Runde auf; wer einen Einladelink hat, spielt mit. Gedacht ist sie fuer einen
+ * Stream, und daran haengen die meisten Entscheidungen hier drin.
  *
  * Alles von aussen steht in window.__GEOBINGO — Firebase-Zugang, Kartenschluessel,
  * Regionen, Wortpakete und die Oberflaechentexte. Diese Datei enthaelt keinen
@@ -40,18 +41,25 @@
  *    da waren. Deshalb `zeichneKarte()`: Knoepfe einmal bauen, danach nur noch
  *    Zustaende umschalten.
  *
- * 4. Der Zugangscode ist eine Tuer, kein Schloss.
+ * 4. Diese Datei entscheidet nichts ueber Berechtigungen.
  *
- *    Die Seite liegt als statische Datei bei GitHub Pages. Der Code steht damit
- *    zwangslaeufig im Quelltext, und wer ihn dort sucht, findet ihn. Er haelt
- *    Zufallsbesucher und Suchmaschinen fern — mehr behauptet die Seite auch
- *    nicht, und der Hinweistext sagt das in diesen Worten.
+ *    Bis zum 29.08.2026 lag ein Zugangscode vor der Seite, und der stand
+ *    zwangslaeufig im Quelltext — eine Tuer, kein Schloss, und so war er auch
+ *    beschrieben. Jetzt prueft Firestore, ob jemand eine Runde aufmachen darf,
+ *    und zwar auf Googles Servern. Was hier steht, steuert nur, WAS ANGEZEIGT
+ *    WIRD: wer diese Datei umschreibt, sieht Knoepfe und bekommt von der
+ *    Datenbank eine Ablehnung.
  *
- * 5. Anonyme Anmeldung, keine Konten.
+ * 5. Anmeldung ja, zweites Passwort nein.
  *
  *    Eine Runde dauert zehn Minuten. Wer dafuer erst ein Konto anlegen und eine
- *    Bestaetigungsmail oeffnen muss, spielt nicht mit. Firebase vergibt eine
- *    anonyme Kennung; der Name steht in der Lobby und sonst nirgends.
+ *    Bestaetigungsmail oeffnen muss, spielt nicht mit — deshalb Google und
+ *    nicht das E-Mail-und-Passwort-Verfahren des Forums. Ein Klick, kein
+ *    Passwort, und Skillry sieht nie eines.
+ *
+ *    Der Name kommt aus dem Google-Konto, laesst sich aber ueberschreiben. Was
+ *    in der Lobby steht, gilt: sonst hiesse jemand nach einem Neuladen
+ *    ploetzlich anders, und die anderen saehen zwei Leute, wo einer ist.
  */
 (function () {
   'use strict';
@@ -1130,10 +1138,11 @@
   /*
    * Der Einladelink — und warum er verdeckt ist.
    *
-   * Er traegt beides: den Zugangscode der Seite UND den Lobby-Code. Wer ihn
-   * bekommt, ist mit einem Klick drin, ohne irgendetwas abzutippen. Genau
-   * deshalb ist er auf einem Stream das Gefaehrlichste auf dem Bildschirm:
-   * einmal kurz sichtbar, und die ganze Twitch-Chat sitzt in der Lobby.
+   * Wer ihn bekommt, ist nach der Anmeldung mit einem Klick in der Lobby, ohne
+   * etwas abzutippen. Genau deshalb ist er auf einem Stream das Gefaehrlichste
+   * auf dem Bildschirm: einmal kurz sichtbar, und der halbe Chat sitzt in der
+   * Runde. Dagegen hilft zweierlei — dass er verdeckt ist, und der Schalter
+   * „nur freigeschaltete Konten", der ihn im Ernstfall wertlos macht.
    *
    * Also steht er unscharf da, bis jemand ihn absichtlich aufdeckt, und
    * verdeckt sich nach 15 Sekunden von selbst wieder — Aufdecken ist ein
