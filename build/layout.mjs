@@ -243,7 +243,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -293,7 +293,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -376,6 +376,11 @@ const ICON_GH = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentCo
 const NAV = [
   { slug: 'airlock', key: 'airlock' },
   { slug: 'nexus', key: 'nexus' },
+  // DECK steht neben NEXUS, weil beides Programme sind — und weil der
+  // DECK-Eintrag in NEXUS hierher zurueckfaellt, wenn das Programm nicht
+  // installiert ist. Eine Seite, auf die von aussen gezeigt wird, gehoert
+  // auch in die eigene Navigation.
+  { slug: 'deck', key: 'deck' },
   { slug: 'skills', key: 'skills' },
   { slug: 'learn', key: 'learn' },
   { slug: 'forum', key: 'forum' },
@@ -411,6 +416,7 @@ function footer(lang, t) {
       ${col(t.nav.werkzeuge, [
         ['AIRLOCK', href(lang, 'airlock')],
         ['NEXUS', href(lang, 'nexus')],
+        ['DECK', href(lang, 'deck')],
         [f.catalogue, href(lang, 'skills')],
       ])}
       ${col(f.resources, [

@@ -18,6 +18,7 @@ import { indexPage } from './search.mjs';
 import * as home from './pages/home.mjs';
 import * as airlock from './pages/airlock.mjs';
 import * as nexus from './pages/nexus.mjs';
+import * as deck from './pages/deck.mjs';
 import * as skills from './pages/skills.mjs';
 import * as learn from './pages/learn.mjs';
 import * as scripts from './pages/scripts.mjs';
@@ -36,7 +37,7 @@ const STATISCH = join(ROOT, 'static');
 
 // The legal pages sit at the end: they are reachable from the footer, not
 // from the main navigation, which is where people actually look for them.
-const PAGES = [home, airlock, nexus, skills, learn, scripts, api, forum, geobingo, anmelden, konto, uebergabe, impressum, privacy];
+const PAGES = [home, airlock, nexus, deck, skills, learn, scripts, api, forum, geobingo, anmelden, konto, uebergabe, impressum, privacy];
 
 // ---------------------------------------------------------------------------
 
