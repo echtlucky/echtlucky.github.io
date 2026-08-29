@@ -152,6 +152,23 @@ export const SITEMAP = {
       ],
     },
   },
+  games: {
+    accent: 'forum',
+    lede: {
+      en: 'Games from the network — playable right in the browser, and nothing loads from anyone else.',
+      de: 'Spiele aus dem Netzwerk — direkt im Browser spielbar, und nichts lädt von Dritten.',
+    },
+    cta: { en: 'Open the games', de: 'Zu den Spielen' },
+    extra: {
+      en: 'Play',
+      de: 'Spielen',
+      items: [
+        { l: { en: 'Reflex', de: 'Reflex' }, h: (lang) => `${href(lang, 'games')}#reflex` },
+        { l: { en: 'Pairs', de: 'Paare' }, h: (lang) => `${href(lang, 'games')}#paare` },
+        { l: { en: 'Suggest a game', de: 'Ein Spiel vorschlagen' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+      ],
+    },
+  },
   forum: {
     accent: 'index',
     lede: {
@@ -225,6 +242,7 @@ export const NAV = [
       { slug: 'skills', key: 'skills' },
     ],
   },
+  { slug: 'games', key: 'games' },
   { slug: 'forum', key: 'forum' },
   { slug: 'learn', key: 'learn', dazu: [{ slug: 'api', key: 'api' }] },
 ];
@@ -579,15 +597,18 @@ export const HEADER_CSS = `
    * wie das Wasser, ist keine Insel; sichtbar war nur der Schatten, und der
    * allein liest sich als Fleck statt als Koerper.
    *
-   * Mit dem Wechsel auf die violette Nacht neu gemessen: rgb(44,38,66) steht
-   * 1.36:1 ueber dem Seitengrund #0d0a1a -- dieselbe Deutlichkeit, die vorher
-   * mit rgb(38,46,57) auf #0d1117 gewaehlt wurde (1.38:1), nur aus derselben
-   * Familie wie die Seite statt aus GitHubs Blaugrau. Gegen die weisse Seite
-   * sind es 14.35:1 -- im hellen Schema ist die Insel ein dunkler Koerper auf
-   * Papier, und das ist genau richtig: der Kopf ist sein eigener Farbraum und
-   * schaltet nicht mit.
+   * Der Inselgrund folgt der STIMME des Schemas, nicht seiner Helligkeit:
+   * er ist in beiden Schemata dunkel (der Kopf ist sein eigener Farbraum),
+   * aber bei Tag ein dunkles Blau und bei Nacht ein dunkles Violett.
+   *
+   * Nachgemessen: rgb(44,38,66) steht 1.36:1 ueber der Nacht #0d0a1a --
+   * dieselbe Deutlichkeit, die vorher mit rgb(38,46,57) auf #0d1117 gewaehlt
+   * wurde (1.38:1). Das Tag-Blau rgb(38,48,77) steht 13.02:1 ueber der
+   * weissen Seite und traegt Blau 300 mit 6.67:1. Vier Bloecke wie bei jedem
+   * Schema-Merkmal: Grundwert, Systemvorliebe, und die zwei ausdruecklichen
+   * Schalterzustaende.
    */
-  --insel-grund: rgba(44, 38, 66, 0.88);
+  --insel-grund: rgba(38, 48, 77, 0.88);
   --insel-kante: rgba(255, 255, 255, 0.13);
   --insel-kante-hell: rgba(255, 255, 255, 0.19);
   /* Innenlicht an der Oberkante: das ist der Unterschied zwischen einer
@@ -605,6 +626,13 @@ export const HEADER_CSS = `
      laesst eine Insel wirken, als haette sie Masse. */
   --insel-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+/* Die Nachtstimme des Inselgrunds — Begruendung und Messwerte oben. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) { --insel-grund: rgba(44, 38, 66, 0.88); }
+}
+:root[data-theme='dark'] { --insel-grund: rgba(44, 38, 66, 0.88); }
+:root[data-theme='light'] { --insel-grund: rgba(38, 48, 77, 0.88); }
 
 .gh-header {
   position: sticky; top: 0; z-index: 50;
@@ -671,10 +699,10 @@ export const HEADER_CSS = `
 .gh-logo:hover { text-decoration: none; opacity: 0.86; }
 
 /*
- * Das Zeichen ist violett, die Wortmarke nicht.
+ * Das Zeichen traegt die Markenfarbe, die Wortmarke nicht.
  *
- * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides violett
- * waere ein violetter Klumpen; das Zeichen allein ist ein Akzent, und der Name
+ * Grund: das Zeichen IST die Marke, die Wortmarke ist ihr Name. Beides in
+ * Farbe waere ein Klumpen; das Zeichen allein ist ein Akzent, und der Name
  * daneben bleibt lesbar wie jede andere Schrift im Kopf.
  *
  * Es ist --marke-auf-dunkel und keines der beiden Schema-Merkmale. Der
@@ -784,9 +812,9 @@ export const HEADER_CSS = `
 .gh-navlink::after {
   content: ''; position: absolute; left: 10px; right: 10px; height: 2px;
   bottom: 5px;
-  /* Der aktive Punkt ist violett — der dritte kleine Akzent. --marke-auf-dunkel,
-     weil der Balken in beiden Schemata dunkel ist; dieselbe Begruendung wie
-     beim Zeichen, ausfuehrlich in build/marke.mjs. */
+  /* Der aktive Punkt traegt die Markenfarbe — der dritte kleine Akzent.
+     --marke-auf-dunkel, weil der Balken in beiden Schemata dunkel ist;
+     dieselbe Begruendung wie beim Zeichen, ausfuehrlich in build/marke.mjs. */
   border-radius: 2px; background: var(--marke-auf-dunkel);
   transform: scaleX(0); transform-origin: 50% 100%; opacity: 0;
   transition: transform var(--kurz) var(--ease), opacity var(--kurz) var(--ease);

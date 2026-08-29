@@ -243,7 +243,7 @@ export const UI = {
   en: {
     ...HEADER_STRINGS.en,
     tagline: 'Tools for people who use AI, and want to know what it is running.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Skill index', learn: 'Learn', api: 'API', forum: 'Forum', games: 'Games', werkzeuge: 'Tools', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Search',
     searchHint: 'Search this site',
     searchEverything: 'Search pages, skills and guides…',
@@ -275,7 +275,10 @@ export const UI = {
       legal: 'Legal',
       impressum: 'Site notice',
       privacy: 'Privacy',
-      note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum is entirely self-contained; the forum talks to Firebase, and the privacy page says exactly what that means.',
+      // The README corrected this claim on 17.08.2026 — two exceptions, not
+      // one — and the footer kept telling the old version. Same sentence,
+      // same truth, everywhere.
+      note: 'Built in the open. No trackers, no analytics, no advertising. Every page but the forum and GeoBingo is entirely self-contained; those two talk to Google, and the privacy page says exactly what that means.',
       rights: 'MIT licensed. Made by Skillry.',
       // Required by the Cfx.re Creator Platform License Agreement, §2.3: any
       // site, product listing or storefront touching FiveM must carry an
@@ -293,7 +296,7 @@ export const UI = {
   de: {
     ...HEADER_STRINGS.de,
     tagline: 'Werkzeuge für Leute, die KI benutzen und wissen wollen, was da läuft.',
-    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Skripte', skills: 'Skill-Index', learn: 'Lernen', api: 'API', forum: 'Forum', games: 'Spiele', werkzeuge: 'Werkzeuge', geobingo: 'GeoBingo' },
     searchPlaceholder: 'Suchen',
     searchHint: 'Diese Seite durchsuchen',
     searchEverything: 'Seiten, Skills und Anleitungen durchsuchen…',
@@ -325,7 +328,8 @@ export const UI = {
       legal: 'Rechtliches',
       impressum: 'Impressum',
       privacy: 'Datenschutz',
-      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum ist vollständig in sich geschlossen; das Forum spricht mit Firebase, und die Datenschutzseite sagt genau, was das heißt.',
+      // Dieselbe Richtigstellung wie in der englischen Fassung darueber.
+      note: 'Offen entwickelt. Keine Tracker, keine Analytics, keine Werbung. Jede Seite außer dem Forum und GeoBingo ist vollständig in sich geschlossen; die beiden sprechen mit Google, und die Datenschutzseite sagt genau, was das heißt.',
       rights: 'MIT-lizenziert. Gemacht von Skillry.',
       // Wörtlich dieselbe englische Formel wie oben — die Begründung steht dort.
       rockstar: 'SKILLRY IS NOT APPROVED, SPONSORED, OR ENDORSED BY ROCKSTAR GAMES. '
@@ -426,11 +430,11 @@ function footer(lang, t) {
       ])}
       ${col(f.community, [
         [f.forum, href(lang, 'forum')],
+        [t.nav.games, href(lang, 'games')],
         /*
-         * GeoBingo steht im Fuss und sonst nirgends: nicht in der Navigation,
-         * nicht im Menue, nicht in der Suche, nicht in der sitemap.xml. Der
-         * Fuss ist der Ort fuer etwas, das es gibt, das aber niemand suchen
-         * soll — und hinter dem Link steht ohnehin noch die Anmeldung.
+         * GeoBingo steht im Fuss und auf der Spieleseite und sonst nirgends:
+         * nicht in der Navigation, nicht im Menue, nicht in der Suche, nicht
+         * in der sitemap.xml. Hinter dem Link steht ohnehin die Anmeldung.
          */
         [t.nav.geobingo, href(lang, 'geobingo')],
         [f.discussions, SITE.discussions],

@@ -1,12 +1,12 @@
 ---
 version: beta
 name: Verwerfung
-description: Design system for skillry.de — the roof over every Skillry project. One construction shared by all of them, one violet brand layered over sky-blue, and each product keeping its own accent on its own page.
+description: Design system for skillry.de — the roof over every Skillry project. One construction shared by all of them, a brand with two voices (deep blue by day, powerful violet by night) layered over sky light, and each product keeping its own accent on its own page.
 colors:
-  primary: "#5c2fbd"
-  secondary: "#4a2497"
+  primary: "#1f4fbe"
+  secondary: "#1c4096"
   tertiary: "#0969da"
-  himmel: "#2467d6"
+  himmel: "#2e82ec"
   surface: "#ffffff"
   surface-sunken: "#f7f5fb"
   on-surface: "#211c33"
@@ -214,29 +214,33 @@ arrives through `prefers-color-scheme` and through an explicit toggle that stamp
 
 ## Colors
 
-The brand is **violet, layered over sky-blue — never one flat colour.** The
-violet is a ten-step ramp at hue ~262°, and every step carries its measured
-contrast against white and against the dark ground `#0d0a1a` in the source
-(`build/marke.mjs`). Those numbers decide what a step is allowed to do: 4.5:1
-and up may carry text, 3:1 and up may draw the edge of a control, below that it
-is a surface and nothing else.
+The brand has **two voices and one grammar: deep blue by day, powerful violet
+by night, both layered over sky light — never one flat colour.** Each voice is
+a ten-step ramp (blue at hue ~222°, violet at ~262°), and every step carries
+its measured contrast against white and against the dark ground `#0d0a1a` in
+the source (`build/marke.mjs`). Those numbers decide what a step is allowed to
+do: 4.5:1 and up may carry text, 3:1 and up may draw the edge of a control,
+below that it is a surface and nothing else. The *roles* are identical across
+the schemes — what violet 400 does at night, blue 700 does by day — only the
+hue turns, like the same sky.
 
-The second layer, `HIMMEL`, is the sky-blue light behind the violet. It appears
-only in gradients, scenes and glows — never as text, never as a control edge —
-and it is what keeps the grounds from being monochrome. The one written-out
-gradient of the brand is violet → sky → cyan, and it appears in exactly three
-places: the one lit word in the hero, the hairline above the footer, and the
-reading-progress bar.
+The second layer, `HIMMEL`, is the light behind the brand. It appears in
+gradients, scenes and glows — never as a control edge, never in body text; its
+one text appearance is the display gradient in the hero, where the 3:1
+large-text line applies. The one written-out gradient of the brand is
+brand → sky → cyan, and it appears in exactly three places: the one lit word
+in the hero, the hairline above the footer, and the reading-progress bar.
 
-**Violet is the colour of identity and action, never of navigation.** Blue for a
-link is not a matter of taste, it is a thirty-year-old agreement — and a violet
-link would read as *visited*, which is worse than off-brand: it is wrong.
+**The brand colour is the colour of identity and action, never of navigation.**
+Links stay `#0969da`, underlined, in running text; the brand never stands
+there. A violet link would read as *visited*, which is worse than off-brand:
+it is wrong.
 
-- **Primary (#5c2fbd, step 700):** the brand's voice in light mode. Carries text
-  on white at 8.09:1. In dark mode the roles mirror: step 400 (`#9e82f8`)
-  carries text on the night at 6.51:1.
-- **Secondary (#4a2497, step 800):** the surface of the primary button in light
-  mode, paired with white at 10.55:1. In dark mode the button is step 400 with
+- **Primary (#1f4fbe, blue 700):** the brand's voice in light mode. Carries
+  text on white at 7.19:1. In dark mode the roles mirror into violet: step 400
+  (`#9e82f8`) carries text on the night at 6.51:1.
+- **Secondary (#1c4096, blue 800):** the surface of the primary button in light
+  mode, paired with white at 9.45:1. In dark mode the button is violet 400 with
   near-black violet ink (`#120833`) at 6.32:1 — surface and text are one
   decision, not two.
 - **Tertiary (#0969da):** link blue — the sole driver of navigation.
@@ -290,11 +294,13 @@ for a code block should never have to search for where the next line starts.
 Headings, body, and code all share one left edge.
 
 The header is five floating islands — mark, navigation, search, language,
-actions — and it is dark in **both** schemes. That makes it its own colour
-space: what sits in it takes its contrast from the islands being dark, not from
-the page being light or dark. The mark in the header is `--marke-auf-dunkel`
-(step 300, `#b7a2fb`), measured at 6.54:1 on the island ground; this was got
-wrong once with a scheme-dependent token that reached 1.47:1.
+actions — and it is dark in **both** schemes, with no bar behind them and no
+rule underneath them: the page runs freely under the islands. The header is its
+own colour space: what sits in it takes its contrast from the islands being
+dark, not from the page being light or dark. The mark in the header is
+`--marke-auf-dunkel` — always a *light* step of the scheme's voice (blue 300 by
+day at 8.78:1 on the header ground, violet 300 by night at 8.65:1); this was
+got wrong once with a dark scheme-dependent token that reached 1.47:1.
 
 ## Elevation & Depth
 
@@ -343,15 +349,15 @@ the radii resolve to a true circle (8.95 × 8.95); the anchors sit exactly on it
 
 ## Components
 
-- **`button-primary`** is the one violet surface on a page. A page with two of
+- **`button-primary`** is the one brand surface on a page. A page with two of
   them has no primary action. Its surface and text colour are a pair and are
   switched together, per scheme, never individually — white on the dark-mode
   button surface would be 3.00:1, which is how this rule earns its keep.
-- **The focus ring is violet and is not optional.** `--marke-rand` measures
-  5.78:1 on white and 4.75:1 on the night — a control edge with reserve, not
-  one balancing on the 3:1 line.
-- **`link`** is blue and underlined in body text. Do not restyle links violet
-  to get more brand on the page.
+- **The focus ring is the brand colour and is not optional.** `--marke-rand`
+  measures 5.33:1 on white (blue 600) and 4.75:1 on the night (violet 500) — a
+  control edge with reserve, not one balancing on the 3:1 line.
+- **`link`** is `#0969da` and underlined in body text. Do not restyle links in
+  the brand colour to get more brand on the page.
 - **`chip-index` / `chip-nexus`** appear only on their own product's page.
 - **`code-block`** uses the sunken surface, never a tinted one; a coloured code
   background competes with syntax highlighting.
@@ -376,11 +382,12 @@ the flicker the setting was meant to remove.
 
 ## Do's and Don'ts
 
-- **Do** keep violet under about 5% of any screen, and only in the named places:
-  the mark, the focus ring, the primary button, the active nav item, the cart
-  counter, and the crop-mark corners of cards that belong to no project.
-- **Don't** make links violet. They would read as visited links, and this site
-  is read by skimming.
+- **Do** keep the brand colour under about 5% of any screen, and only in the
+  named places: the mark, the focus ring, the primary button, the active nav
+  item, the cart counter, and the crop-mark corners of cards that belong to no
+  project.
+- **Don't** make links violet or brand-blue. They would read as visited links
+  or as buttons, and this site is read by skimming.
 - **Do** treat a button's surface colour and its text colour as one decision,
   and re-measure both when either changes scheme.
 - **Don't** use `border` where `border-control` belongs, or the reverse. A card
@@ -388,8 +395,13 @@ the flicker the setting was meant to remove.
   1.4.11.
 - **Do** state a contrast ratio next to any new colour value, measured, in the
   source. Every existing value carries one.
-- **Don't** add a second violet, and don't promote `HIMMEL` to text or edges —
-  it is the layer behind the brand, not a second brand.
+- **Don't** add a third brand hue, and don't promote `HIMMEL` to body text or
+  edges — it is the layer behind the brand, not a second brand. The two voices
+  are scheme-bound: blue never acts at night, violet never by day.
+- **Don't** put a repeated glyph, stripe or pattern behind a page. Backgrounds
+  here are light and air — the aurora, the scenes, the grain on objects — and
+  the moment one reads as wallpaper it has failed. The hero's displaced text
+  lines and the index's question-mark field were both removed under this rule.
 - **Don't** load a font, script, or image from a third-party host at runtime. The
   site promises it fetches nothing from anyone, and the font is self-hosted for a
   documented legal reason.

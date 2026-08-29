@@ -1,9 +1,10 @@
 /**
  * A different atmosphere behind every main page.
  *
- * The mark stays the constant — every hero keeps the displaced text-lines that
- * are the brand. What changes underneath is the room the page is standing in,
- * so somebody who lands on AIRLOCK and then on the index knows they moved
+ * The scenes ARE the background now — the displaced text-lines that used to
+ * sit in every hero are gone (the reasoning stands at .hero-stage in
+ * theme-extra.mjs). What changes per page is the room it is standing in, so
+ * somebody who lands on AIRLOCK and then on the index knows they moved
  * without reading the heading.
  *
  * Three rules the scenes are built under, and none of them are negotiable:
@@ -125,30 +126,32 @@ export const SCENE_CSS = `
   background-position: 0 0, 0 0, 4% 14%, 82% 40%, 0 0;
 }
 
-/* ── Skill index: the questions ─────────────────────────────────────────── */
+/* ── Skill index: the amber light ───────────────────────────────────────── */
 /*
- * A question mark is the honest symbol for this page: every entry exists
- * because somebody could not tell by looking whether a file was safe.
- *
- * The glyphs are drawn as SVG in a data URI — not text nodes, so a screen
- * reader never encounters a wall of punctuation, and not an image file, so
- * nothing is fetched. Three marks per 420px tile at three sizes, placed off
- * the tile's own axes so the repeat does not read as a grid, and faded from
- * 10% down to 6% so the field has depth rather than being a wallpaper.
+ * Hier stand ein Kachelfeld aus Fragezeichen. Es war klug begruendet und
+ * trotzdem falsch: ein wiederholtes Schriftzeichen im Hintergrund liest sich
+ * als Muster-Tapete, wie leise es auch gestellt ist — und es war das eine
+ * Element auf der Seite, das aussah wie Dekoration statt wie Raum. Weg damit,
+ * ersatzlos im Motiv: was bleibt, ist dieselbe Bauart wie bei allen anderen
+ * Szenen — weiche Lichtmassen im Produktakzent, nichts Gegenstaendliches.
  */
 .scene-index {
-  --q: color-mix(in srgb, var(--accent-idx) 30%, transparent);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'%3E%3Ctext x='60' y='150' font-family='Georgia,serif' font-size='190' fill='%23F5B942' fill-opacity='0.10'%3E%3F%3C/text%3E%3Ctext x='300' y='330' font-family='Georgia,serif' font-size='110' fill='%23F5B942' fill-opacity='0.08'%3E%3F%3C/text%3E%3Ctext x='210' y='400' font-family='Georgia,serif' font-size='64' fill='%23F5B942' fill-opacity='0.06'%3E%3F%3C/text%3E%3C/svg%3E"),
-    radial-gradient(80% 45% at 50% 0%, color-mix(in srgb, var(--accent-idx) 12%, transparent), transparent 70%);
-  background-repeat: repeat, no-repeat;
-  background-size: 420px 420px, auto;
+  background:
+    radial-gradient(80% 42% at 24% 4%, color-mix(in srgb, var(--accent-idx) 16%, transparent), transparent 70%),
+    radial-gradient(56% 30% at 84% 18%, color-mix(in srgb, var(--accent-idx) 9%, transparent), transparent 72%);
 }
-/* The glyph field is pushed out of the middle third: dense at the edges,
-   nothing across the column where the entries are read. */
-.scene-index::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 0 24%, var(--bg) 34% 66%, transparent 76% 100%);
+:root[data-theme='dark'] .scene-index,
+:root:not([data-theme]) .scene-index {
+  background:
+    radial-gradient(80% 42% at 24% 4%, color-mix(in srgb, var(--accent-idx) 10%, transparent), transparent 70%),
+    radial-gradient(56% 30% at 84% 18%, color-mix(in srgb, var(--accent-idx) 6%, transparent), transparent 72%);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .scene-index {
+    background:
+      radial-gradient(80% 42% at 24% 4%, color-mix(in srgb, var(--accent-idx) 10%, transparent), transparent 70%),
+      radial-gradient(56% 30% at 84% 18%, color-mix(in srgb, var(--accent-idx) 6%, transparent), transparent 72%);
+  }
 }
 
 /* ── Scripts: the road ──────────────────────────────────────────────────── */
@@ -170,7 +173,6 @@ export const SCENE_CSS = `
    so a background can only be in the way. */
 @media (max-width: 720px) {
   .scene { opacity: 0.45; }
-  .scene-index::before { background: none; }
 }
 `;
 

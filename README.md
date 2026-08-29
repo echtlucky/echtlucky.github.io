@@ -134,9 +134,9 @@ hidden by a `<noscript>` stylesheet rather than shown and dead.
 
 A live bingo round in Street View, and the one page here that is not part of
 the site. It has no header, no footer, no navigation, is linked only from the
-footer, is excluded from the sitemap and the search, carries `noindex`, and
-sits behind a Google sign-in. It exists to be played full-screen next to a
-stream.
+footer and the games page (`/games/`), is excluded from the sitemap and the
+search, carries `noindex`, and sits behind a Google sign-in. It exists to be
+played full-screen next to a stream.
 
 **Who may open a round is decided per account, and decided by Firestore.** The
 admin is pinned in `firestore.rules` to an email address, matched against the

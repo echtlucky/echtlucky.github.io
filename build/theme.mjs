@@ -1,10 +1,11 @@
 /**
  * Design tokens and the stylesheet.
  *
- * The brand is violet with a sky-blue layer underneath it (build/marke.mjs);
- * the neutrals on this page are tinted into the same family rather than
+ * The brand has two voices (build/marke.mjs): deep blue by day, powerful
+ * violet by night, both layered over sky light. The neutrals follow the voice
+ * of their scheme — blue-tinted white, violet-tinted night — rather than being
  * borrowed from GitHub's grey-blue. The header stays a dark colour space in
- * both schemes — that rule predates the palette and survives it.
+ * both schemes; that rule predates the palette and survives it.
  *
  * The product accents live alongside the one brand colour. A product owns its
  * colour on its own page and nowhere else, so a visitor learns that mint means
@@ -67,12 +68,18 @@ const DARK = `
   --sheen: inset 0 1px 0 rgba(255,255,255,0.045);
 ${MARKE.dunkel}`;
 
+/*
+ * Das helle Schema ist die Tagesstimme: Weiss mit BLAU getoenten Neutralen,
+ * wie die Nacht violett getoent ist. Nachgemessen auf Weiss: --fg 15.71:1,
+ * --fg-muted 6.43:1, --fg-subtle 3.84:1, --border-strong 3.32:1 (Kante eines
+ * Bedienelements, WCAG 1.4.11 verlangt 3:1).
+ */
 const LIGHT = `
   --bg: #ffffff;
-  --bg-subtle: #f7f5fb;
+  --bg-subtle: #f4f7fd;
   --surface: #ffffff;
-  --surface-2: #f7f5fb;
-  --border: #ddd7ea;
+  --surface-2: #f4f7fd;
+  --border: #d9dfee;
   /*
    * Die Kante eines BEDIENELEMENTS — Feld, Knopf, Griff. Nach WCAG 1.4.11
    * braucht sie 3:1 gegen ihren Grund, sonst ist nicht zu erkennen, wo das
@@ -81,23 +88,23 @@ const LIGHT = `
    *     hell   #b7c0c9 auf #ffffff   1.84:1
    *     dunkel #545d68 auf #0d1117   2.83:1
    *
-   * Beide zu schwach. Mit dem Wechsel auf die violette Familie neu gemessen:
+   * Beide zu schwach. Mit den zwei Markenstimmen neu gemessen:
    *
-   *     hell   #8d84a8 auf #ffffff   3.50:1
-   *     dunkel #6f6494 auf #0d0a1a   3.65:1
+   *     hell   #7f8dae auf #ffffff   3.32:1  (blau getoent)
+   *     dunkel #6f6494 auf #0d0a1a   3.65:1  (violett getoent)
    *
    * Nicht zu verwechseln mit --border: das ist die Kante einer FLAECHE
    * (Karte, Trennlinie). Fuer die gilt die Regel nicht, und eine Karte mit
    * 3:1-Rand sieht aus wie ein Formularfeld.
    */
-  --border-strong: #8d84a8;
-  --fg: #211c33;
-  --fg-muted: #5d5575;
-  --fg-subtle: #837b9e;
+  --border-strong: #7f8dae;
+  --fg: #1b2334;
+  --fg-muted: #525f78;
+  --fg-subtle: #76829f;
   --link: #0969da;
-  --header-bg: #1d1830;
+  --header-bg: #182342;
   --header-fg: #ffffff;
-  --header-border: #38304f;
+  --header-border: #2d3a5e;
   --airlock: #0f7a4f;
   --nexus: #0a7ea4;
   --accent-idx: #9a6700;
@@ -105,10 +112,10 @@ const LIGHT = `
   --accent-forum: #be2f6f;
   --danger: #cf222e;
   --ok: #1a7f37;
-  --shadow: 0 1px 3px rgba(33,28,51,0.08);
-  --e1: 0 1px 2px rgba(33,28,51,0.06), 0 1px 3px rgba(33,28,51,0.05);
-  --e2: 0 2px 4px rgba(33,28,51,0.05), 0 8px 20px -6px rgba(33,28,51,0.10);
-  --e3: 0 4px 8px rgba(33,28,51,0.06), 0 20px 40px -12px rgba(33,28,51,0.16);
+  --shadow: 0 1px 3px rgba(27,35,52,0.08);
+  --e1: 0 1px 2px rgba(27,35,52,0.06), 0 1px 3px rgba(27,35,52,0.05);
+  --e2: 0 2px 4px rgba(27,35,52,0.05), 0 8px 20px -6px rgba(27,35,52,0.10);
+  --e3: 0 4px 8px rgba(27,35,52,0.06), 0 20px 40px -12px rgba(27,35,52,0.16);
   --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
 ${MARKE.hell}`;
 
@@ -117,18 +124,18 @@ export const CSS = `${SCHRIFT_QUELLE}
 :root {
 ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
   --bg: #ffffff;
-  --bg-subtle: #f7f5fb;
+  --bg-subtle: #f4f7fd;
   --surface: #ffffff;
-  --surface-2: #f7f5fb;
-  --border: #ddd7ea;
-  --border-strong: #8d84a8;
-  --fg: #211c33;
-  --fg-muted: #5d5575;
-  --fg-subtle: #837b9e;
+  --surface-2: #f4f7fd;
+  --border: #d9dfee;
+  --border-strong: #7f8dae;
+  --fg: #1b2334;
+  --fg-muted: #525f78;
+  --fg-subtle: #76829f;
   --link: #0969da;
-  --header-bg: #1d1830;
+  --header-bg: #182342;
   --header-fg: #ffffff;
-  --header-border: #38304f;
+  --header-border: #2d3a5e;
   --airlock: #0f7a4f;
   --nexus: #0a7ea4;
   --accent-idx: #9a6700;
@@ -136,7 +143,7 @@ ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
   --accent-forum: #be2f6f;
   --danger: #cf222e;
   --ok: #1a7f37;
-  --shadow: 0 1px 3px rgba(33,28,51,0.08);
+  --shadow: 0 1px 3px rgba(27,35,52,0.08);
 
   /**
    * Three levels of elevation rather than one flat shade.
@@ -146,9 +153,9 @@ ${SCHRIFT}${BEWEGUNG}${MARKE.hell}
    * halo that makes a light-mode page look washed out — the tight layer is what
    * keeps the card's edge crisp while the soft layer does the lifting.
    */
-  --e1: 0 1px 2px rgba(33,28,51,0.06), 0 1px 3px rgba(33,28,51,0.05);
-  --e2: 0 2px 4px rgba(33,28,51,0.05), 0 8px 20px -6px rgba(33,28,51,0.10);
-  --e3: 0 4px 8px rgba(33,28,51,0.06), 0 20px 40px -12px rgba(33,28,51,0.16);
+  --e1: 0 1px 2px rgba(27,35,52,0.06), 0 1px 3px rgba(27,35,52,0.05);
+  --e2: 0 2px 4px rgba(27,35,52,0.05), 0 8px 20px -6px rgba(27,35,52,0.10);
+  --e3: 0 4px 8px rgba(27,35,52,0.06), 0 20px 40px -12px rgba(27,35,52,0.16);
   /* A hairline of light along the top edge. Free depth, costs no layout. */
   --sheen: inset 0 1px 0 rgba(255,255,255,0.6);
 
@@ -317,11 +324,13 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .divider { border: 0; border-top: 1px solid var(--border); margin: 0; }
 
 /* ── header ─────────────────────────────────────────────────────────────── */
-.gh-header {
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--header-border);
-  position: sticky; top: 0; z-index: 50;
-}
+/*
+ * Kein Grund und keine Unterkante mehr: der Kopf besteht aus Inseln
+ * (build/header.mjs), und ein durchgezogener Strich unter der Navigation
+ * war der Rest des alten Balkens — eine Kante, die etwas abschloss, das es
+ * nicht mehr gibt. Die Seite laeuft jetzt frei unter den Inseln durch.
+ */
+.gh-header { position: sticky; top: 0; z-index: 50; }
 .gh-header .wrap { display: flex; align-items: center; gap: 16px; height: 62px; }
 .gh-logo { display: flex; align-items: center; gap: 10px; color: var(--header-fg); font-weight: 600; font-size: 15px; letter-spacing: 0.02em; flex: none; }
 .gh-logo:hover { text-decoration: none; opacity: 0.85; }
@@ -404,7 +413,8 @@ section { padding: clamp(48px, 7vw, 88px) 0; }
 .btn:hover { text-decoration: none; border-color: var(--fg-muted); background: var(--surface-2); box-shadow: var(--e2), var(--sheen); transform: translateY(-1px); }
 /* Pressing has to move the thing down again, or the button feels stuck up. */
 .btn:active { transform: translateY(0); box-shadow: var(--e1); }
-/* Der Hauptknopf ist violett — die zweite Stelle, an der die Marke handelt.
+/* Der Hauptknopf traegt die Markenfarbe (blau bei Tag, violett bei Nacht) —
+   die zweite Stelle, an der die Marke handelt.
    Flaeche UND Schrift kommen als Paar aus build/marke.mjs: im dunklen Schema
    ist die violette Flaeche hell, und weisse Schrift darauf haette 3.00:1. Die
    ausfuehrliche Begruendung steht dort. Das Innenlicht an der Oberkante ist

@@ -20,64 +20,18 @@ export const CSS_EXTRA = `
 
 /* ── hero ───────────────────────────────────────────────────────────────── */
 /*
- * The hero background is the mark at page scale.
+ * Hier lagen die verschobenen Textzeilen — das Zeichen auf Seitengroesse,
+ * horizontale Striche mit einem 45-Grad-Versatz. Sie sind ersatzlos entfernt:
+ * uebereinander mit den Szenen, dem Korn und der Welle waren sie die vierte
+ * Hintergrundstimme, und vier Stimmen hinter einer Ueberschrift sind Laerm,
+ * wie leise jede einzelne ist. Die Verwerfung wohnt im Zeichen selbst; sie
+ * muss nicht auch noch die Wand tapezieren.
  *
- * What was here before was a canvas of glyphs raining out of noise: forty
- * lines of JavaScript, a requestAnimationFrame loop on every page of the site,
- * and a picture of "hacking" rather than of anything this project does. It
- * also lost the argument it was making — code falling down a screen is what a
- * film uses to mean "computer", which is the exact opposite of a tool whose
- * whole claim is that it shows you what is really there.
- *
- * This is the same idea as the logo, drawn across the whole section: a page of
- * text seen from far enough away that only the lines remain, cut along one
- * diagonal, and the far side slid sideways. Nothing is hidden and nothing is
- * missing — the lines simply stop agreeing with each other halfway across.
- *
- * Two elements, no script, no animation loop, and it costs the same on a
- * phone as on a workstation.
+ * Die Klasse bleibt: sie traegt position/overflow, an denen die Welle der
+ * Startseite haengt, und die Produktklassen (.airlock, .nexus, .index) an ihr
+ * benennen weiter, wem ein Aufmacher gehoert.
  */
 .hero-stage { position: relative; overflow: hidden; isolation: isolate; }
-
-.hero-stage::before,
-.hero-stage::after {
-  content: ''; position: absolute; inset: -10% -5%; z-index: -1; pointer-events: none;
-  /* Lines of "text": 2px of ink every 15px, never quite reaching the edges. */
-  background-image: repeating-linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--fg) 12%, transparent) 0 2px,
-    transparent 2px 15px
-  );
-  /* Fades out towards the bottom right, so the headline always sits on quiet
-     ground and the displacement is discovered rather than announced. */
-  -webkit-mask-image: radial-gradient(115% 85% at 8% 12%, #000 12%, transparent 72%);
-  mask-image: radial-gradient(115% 85% at 8% 12%, #000 12%, transparent 72%);
-  opacity: 0.55;
-}
-
-/* The far side of the fault: the same lines, clipped to the other half of a
-   45° cut, and moved. 13px is not arbitrary — it is just under the 15px line
-   pitch, so the halves land almost but never quite back in register. */
-.hero-stage::after {
-  transform: translate(13px, -13px);
-  -webkit-clip-path: polygon(115% -15%, 115% 115%, -15% 115%);
-  clip-path: polygon(115% -15%, 115% 115%, -15% 115%);
-}
-.hero-stage::before {
-  -webkit-clip-path: polygon(-15% -15%, 115% -15%, -15% 115%);
-  clip-path: polygon(-15% -15%, 115% -15%, -15% 115%);
-}
-
-/* A product page tints its own fault in its own accent. */
-.hero-stage.airlock::after { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--airlock) 26%, transparent) 0 2px, transparent 2px 15px); }
-.hero-stage.nexus::after   { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--nexus) 26%, transparent) 0 2px, transparent 2px 15px); }
-.hero-stage.index::after   { background-image: repeating-linear-gradient(180deg, color-mix(in srgb, var(--accent-idx) 26%, transparent) 0 2px, transparent 2px 15px); }
-
-/* Motion here would be decoration; there is none, so nothing to disable. The
-   contrast still comes down for anyone who asked for less. */
-@media (prefers-reduced-motion: reduce) {
-  .hero-stage::before, .hero-stage::after { opacity: 0.32; }
-}
 
 /*
  * Der eine Verlauf der Marke: Violett in Himmel in Cyan — die Schichtung, die
@@ -221,6 +175,7 @@ export const CSS_EXTRA = `
 .card.product.index::after   { background: linear-gradient(180deg, color-mix(in srgb, var(--accent-idx) 9%, transparent), transparent); }
 
 .accent-index { color: var(--accent-idx); }
+.accent-forum { color: var(--accent-forum); }
 
 /* ── crop-mark corners ──────────────────────────────────────────────────── */
 /*
@@ -335,13 +290,12 @@ footer.site::before {
 
 /* ── header, once the page has moved ────────────────────────────────────── */
 /*
- * At the top the header sits flush with the hero. Once anything scrolls under
- * it, it earns a shadow — so the bar reads as being in front of the page
- * rather than painted onto it, and only when there is something to be in front
- * of.
+ * Der Balkenschatten von frueher ist weg: der Kopf ist durchsichtig, und ein
+ * box-shadow zeichnet um eine durchsichtige Flaeche trotzdem sein Rechteck —
+ * beim Scrollen lag damit ein Phantombalken ueber der Seite. Beim Scrollen
+ * heben sich stattdessen die INSELN (build/header.mjs, .gh-header.stuck),
+ * jede fuer sich.
  */
-.gh-header { transition: box-shadow 200ms var(--ease), background 200ms var(--ease); }
-.gh-header.stuck { box-shadow: 0 6px 24px -10px rgba(0,0,0,0.45); }
 
 /* ── moving between pages ───────────────────────────────────────────────── */
 /*

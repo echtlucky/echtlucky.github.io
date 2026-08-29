@@ -15,7 +15,7 @@
  * Skillry aussieht.
  *
  * ═══════════════════════════════════════════════════════════════════════════
- * Violett ist die Marke, Grün gehört wieder AIRLOCK
+ * Die Marke hat zwei Stimmen: Violett bei Nacht, Blau bei Tag
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * Bis zum 29.08.2026 beanspruchte Skillry das Grün und AIRLOCK trug es als
@@ -24,29 +24,34 @@
  * dem Zeichen stehen — NEXUS, DECK, die Skripte, das Panel — desto falscher
  * wurde es, dass die Dachmarke die Farbe eines einzelnen Produkts trägt.
  *
- * Also die sauberere Ordnung: **die Marke bekommt eine eigene Farbe, die
- * keinem Produkt gehört.** Violett, Farbton ~262°, weit genug von Airlocks
- * Minz (149°), Nexus' Cyan (~193°) und dem Amber des Index (~40°), dass
- * keine zwei je verwechselt werden. Jedes Produkt behält seinen Akzent auf
- * seiner eigenen Seite; das Violett ist das Dach darüber.
+ * Also die sauberere Ordnung: **die Marke bekommt eigene Farben, die keinem
+ * Produkt gehören — und sie wechselt die Stimme mit dem Schema.** Das dunkle
+ * Schema ist das kraftvolle Violett (~262°), das helle Schema ein tiefes
+ * Blau (~222°) mit hellem Himmelslicht darüber. Das ist kein Kompromiss,
+ * sondern die Schichtung selbst: dieselbe Marke bei Nacht und bei Tag, wie
+ * derselbe Himmel. Die ROLLEN sind identisch — was im Dunklen Stufe 400 der
+ * Violett-Leiter tut, tut im Hellen Stufe 700 der Blau-Leiter — nur der
+ * Farbton dreht. Beide liegen weit genug von Airlocks Minz (149°), Nexus'
+ * Cyan (~193°) und dem Amber des Index (~40°), dass keine zwei je
+ * verwechselt werden.
  *
  * Und es ist bewusst KEINE Fläche aus einer Farbe: die Marke schichtet.
- * Violett trägt Identität und Handlung, das hellere Himmelsblau darunter
- * (`HIMMEL`) ist die zweite Ebene — es taucht nur in Verläufen, Szenen und
- * Lichtern auf, nie als Text, und ist das, was die Grundflächen davor
- * bewahrt, einfarbig zu sein.
+ * Violett bzw. Blau trägt Identität und Handlung, das hellere Himmelsblau
+ * darunter (`HIMMEL`) ist die zweite Ebene — es taucht nur in Verläufen,
+ * Szenen und Lichtern auf, und ist das, was die Grundflächen davor bewahrt,
+ * einfarbig zu sein.
  *
  * ═══════════════════════════════════════════════════════════════════════════
- * Wo Violett auftaucht, und wo ausdrücklich nicht
+ * Wo die Markenfarbe auftaucht, und wo ausdrücklich nicht
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * **Nicht bei den Links.** Blau für einen Link ist keine Geschmacksfrage,
  * sondern eine dreißig Jahre alte Verabredung, und eine Dokumentationsseite
- * lebt vom Überfliegen. Eine Marke braucht die Linkfarbe nicht — GitHub ist
- * schwarzweiß mit grünen Knöpfen und blauen Links, und niemand hält GitHub
- * für farblos. Ein violetter Link läse sich obendrein als "schon besucht".
+ * lebt vom Überfliegen. Der Link bleibt #0969da, unterstrichen, im Fließtext;
+ * die Marke steht nie dort. Ein violetter Link läse sich obendrein als
+ * "schon besucht".
  *
- * Violett ist die Farbe der **Identität und der Handlung**:
+ * Die Markenfarbe ist die Farbe der **Identität und der Handlung**:
  *
  *   * das Zeichen im Kopf
  *   * der Fokusring — das Erste, was jemand mit der Tastatur sieht
@@ -56,8 +61,8 @@
  *   * die Schnittmarken an den Ecken einer Karte, solange die Karte keinem
  *     Projekt gehört — gehört sie einem, trägt sie dessen Akzent
  *
- * Das sind die "kleinen violetten Akzente": selten, immer an einer Stelle, an
- * der etwas passiert.
+ * Das sind die "kleinen Markenakzente": selten, immer an einer Stelle, an
+ * der etwas passiert — blau bei Tag, violett bei Nacht.
  */
 
 // ---------------------------------------------------------------------------
@@ -93,17 +98,37 @@ export const VIOLETT = {
 };
 
 /**
+ * Die Tag-Leiter: Blau, Farbton ~222°, dieselbe Bauart wie Violett.
+ *
+ * Sie trägt die Markenrollen im HELLEN Schema. Kontraste gegen Weiß und —
+ * der Vollständigkeit halber — gegen die Nacht `#0d0a1a`; die Regeln sind
+ * dieselben: ab 4.5:1 Text, ab 3.0:1 Kante, darunter Fläche.
+ */
+export const BLAU = {
+  50: '#eef5ff', // weiss  1.10  nacht 17.80
+  100: '#dbe9fe', // weiss  1.23  nacht 15.90
+  200: '#bdd6fd', // weiss  1.48  nacht 13.20
+  300: '#94bbfb', // weiss  1.95  nacht 10.01
+  400: '#699df8', // weiss  2.70  nacht  7.23
+  500: '#3f7df0', // weiss  3.89  nacht  5.02
+  600: '#2a63de', // weiss  5.33  nacht  3.66
+  700: '#1f4fbe', // weiss  7.19  nacht  2.72
+  800: '#1c4096', // weiss  9.45  nacht  2.07
+  900: '#152c64', // weiss 13.32  nacht  1.47
+};
+
+/**
  * Die zweite Ebene: Himmel.
  *
- * Kein zweites Markenzeichen, sondern das Licht HINTER dem Violett — die
+ * Kein zweites Markenzeichen, sondern das Licht HINTER der Marke — die
  * Farbabsetzung, die Verläufe, Szenen und den Aufmacher davor bewahrt,
- * einfarbig zu sein. Sie setzt nie Text und zieht nie eine Kante; deshalb
- * braucht sie nur zwei Werte statt einer Leiter. Gemessen trotzdem:
- * `dunkel` hat 10.04:1 auf `#0d0a1a`, `hell` 5.27:1 auf Weiß — beide dürften
- * Text tragen, tun es aber absichtlich nicht.
+ * einfarbig zu sein. Sie zieht nie eine Kante und setzt Fließtext nie;
+ * ihr einer Textauftritt ist der Display-Verlauf im Aufmacher, wofür die
+ * 3:1-Grenze für große Schrift gilt. Gemessen: `dunkel` 10.04:1 auf
+ * `#0d0a1a`, `hell` 3.80:1 auf Weiß.
  */
 export const HIMMEL = {
-  hell: '#2467d6',
+  hell: '#2e82ec',
   dunkel: '#79c0ff',
 };
 
@@ -143,39 +168,49 @@ export const GRUEN = {
  * dunklen Balken ergab das **1.47:1** — praktisch unsichtbar. Gemessen im
  * Browser, nicht vermutet.
  *
- * Also ein eigenes Merkmal, das in beiden Schemata denselben Wert hat.
- * Nachgemessen für Stufe 300: 7.81:1 auf #1d1830, 8.65:1 auf #120d22 und
- * 6.54:1 auf dem Inselgrund rgb(44,38,66). Stufe 400 wäre kräftiger im Ton,
- * fällt auf der Insel aber auf 4.79 — für ein Zeichen, das die Marke IST,
- * ist die hellere Stufe die richtige.
+ * Also ein eigenes Merkmal, das immer eine HELLE Stufe ist. Es folgt der
+ * Tagesstimme des Schemas — Blau 300 im hellen, Violett 300 im dunklen —
+ * und beide sind auf den dunklen Grund gemessen, auf dem sie stehen:
+ *
+ *   Blau 300    #94bbfb   8.78:1 auf #1d1830   7.35:1 auf der Insel
+ *   Violett 300 #b7a2fb   8.65:1 auf #120d22   6.54:1 auf der Insel
  */
-const AUF_DUNKEL = `
+const AUF_DUNKEL_TAG = `
+  --marke-auf-dunkel: ${BLAU[300]};
+`;
+const AUF_DUNKEL_NACHT = `
   --marke-auf-dunkel: ${VIOLETT[300]};
 `;
 
 /**
- * Die Rollen im hellen Schema. Grund ist Weiß.
+ * Die Rollen im hellen Schema — die Tagesstimme, Blau. Grund ist Weiß.
  *
- * `marke` trägt Text und braucht deshalb 4.5:1 — Stufe 700 hat 8.09 und ist
- * dabei das kräftigste Violett, das noch nicht ins Schwarze kippt. Stufe 600
- * hat 5.78 und zieht die Kanten (Fokusring, aktive Ränder); sie dürfte sogar
+ * `marke` trägt Text und braucht deshalb 4.5:1 — Blau 700 hat 7.19 und ist
+ * dabei das kräftigste Blau, das noch nicht ins Schwarze kippt. Stufe 600
+ * hat 5.33 und zieht die Kanten (Fokusring, aktive Ränder); sie dürfte sogar
  * Text setzen, tut es aber nicht, damit Kante und Schrift zwei Stimmen bleiben.
+ *
+ * Zur Linkfarbe #0969da (~212°): die Marke liegt bei ~222° und zwei Stufen
+ * dunkler. Ein Link steht unterstrichen im Fließtext, die Marke steht auf
+ * Knöpfen, Zahlen und Ringen — die Rollen teilen keinen Ort, deshalb darf
+ * die Familie dieselbe sein.
  */
 const MARKE_HELL = `
-  --marke: ${VIOLETT[700]};
-  --marke-stark: ${VIOLETT[900]};
-  --marke-rand: ${VIOLETT[600]};
-  --marke-flaeche: ${VIOLETT[50]};
-  --marke-auf-flaeche: ${VIOLETT[900]};
-  --marke-schimmer: rgba(92, 47, 189, 0.18);
-  --knopf-flaeche: ${VIOLETT[800]};
-  --knopf-flaeche-hover: ${VIOLETT[700]};
+  --marke: ${BLAU[700]};
+  --marke-stark: ${BLAU[900]};
+  --marke-rand: ${BLAU[600]};
+  --marke-flaeche: ${BLAU[50]};
+  --marke-auf-flaeche: ${BLAU[900]};
+  --marke-schimmer: rgba(42, 99, 222, 0.18);
+  --knopf-flaeche: ${BLAU[800]};
+  --knopf-flaeche-hover: ${BLAU[700]};
   --knopf-schrift: #ffffff;
   --himmel: ${HIMMEL.hell};
-${AUF_DUNKEL}`;
+${AUF_DUNKEL_TAG}`;
 
 /**
- * Dieselben Rollen im dunklen Schema. Grund ist `#0d0a1a`.
+ * Dieselben Rollen im dunklen Schema — die Nachtstimme, Violett. Grund ist
+ * `#0d0a1a`.
  *
  * Spiegelverkehrt und nicht dieselbe Zahl: auf fast schwarzem Grund trägt eine
  * dunkle Stufe keinen Text. Stufe 400 hat dort 6.51:1 und ist damit kräftig,
@@ -195,10 +230,10 @@ const MARKE_DUNKEL = `
   --knopf-flaeche-hover: ${VIOLETT[300]};
   --knopf-schrift: #120833;
   --himmel: ${HIMMEL.dunkel};
-${AUF_DUNKEL}`;
+${AUF_DUNKEL_NACHT}`;
 
 /*
- * ══ Der violette Knopf braucht ein PAAR, keine einzelne Farbe ═════════════
+ * ══ Der Markenknopf braucht ein PAAR, keine einzelne Farbe ════════════════
  *
  * Der Fehler, der beim grünen Knopf gemacht wurde, gilt hier wörtlich weiter:
  * eine Flächenfarbe und ihre Schriftfarbe sind zusammen eine Entscheidung.
@@ -206,9 +241,9 @@ ${AUF_DUNKEL}`;
  *
  * Deshalb ein Paar, nachgemessen in beiden Schemata:
  *
- *   hell    Fläche #4a2497 (800), Schrift Weiß           10.55:1
- *           gegen die weiße Seite                        10.55:1
- *   dunkel  Fläche #9e82f8 (400), Schrift #120833         6.32:1
+ *   hell    Fläche #1c4096 (Blau 800), Schrift Weiß       9.45:1
+ *           gegen die weiße Seite                         9.45:1
+ *   dunkel  Fläche #9e82f8 (Violett 400), Schrift #120833 6.32:1
  *           gegen die dunkle Seite                        6.51:1
  *           Hover-Fläche #b7a2fb (300), Schrift #120833   8.64:1
  *
