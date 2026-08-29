@@ -255,14 +255,24 @@ const gbFehler = [];
       // Atlantik landet und die Runde ohne Panorama endet.
       else if (b[0] >= b[2] || b[1] >= b[3]) gbFehler.push(`geobingo: Region "${r.id}" hat einen verdrehten Kasten [${b}]`);
     }
+    const namen = new Set();
     for (const s of r.staedte ?? []) {
-      if (s.length !== 2 || Math.abs(s[0]) > 90 || Math.abs(s[1]) > 180) {
-        gbFehler.push(`geobingo: Region "${r.id}" hat eine Stadt, die nicht [breite, länge] ist: [${s}]`);
+      // Der Name ist Pflicht, obwohl er nie ausgeliefert wird: er ist das
+      // einzige, woran in einer Liste von 877 Zahlenpaaren auffällt, dass
+      // eines vertauscht ist. Ohne ihn wäre die Datei nicht prüfbar, nur lang.
+      if (s.length !== 3 || typeof s[2] !== 'string' || !s[2]) {
+        gbFehler.push(`geobingo: Region "${r.id}" hat eine Stadt ohne Namen: [${s}]`);
+      } else if (namen.has(s[2])) {
+        gbFehler.push(`geobingo: Region "${r.id}" führt "${s[2]}" zweimal`);
+      } else namen.add(s[2]);
+
+      if (Math.abs(s[0]) > 90 || Math.abs(s[1]) > 180) {
+        gbFehler.push(`geobingo: Region "${r.id}" hat eine unmögliche Koordinate: [${s}]`);
       } else if (r.boxen?.length && !r.boxen.some((b) => s[0] >= b[0] && s[0] <= b[2] && s[1] >= b[1] && s[1] <= b[3])) {
         // Eine Stadt ausserhalb ihrer eigenen Kästen ist fast immer ein
         // vertauschtes Zahlenpaar — und die einzige Art Tippfehler hier, die
         // trotzdem eine gültige Koordinate ergibt.
-        gbFehler.push(`geobingo: Region "${r.id}" hat eine Stadt ausserhalb ihrer eigenen Kästen: [${s}]`);
+        gbFehler.push(`geobingo: Region "${r.id}" hat "${s[2] ?? "?"}" ausserhalb ihrer eigenen Kästen: [${s[0]},${s[1]}]`);
       }
     }
   }

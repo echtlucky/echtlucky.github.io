@@ -207,11 +207,38 @@
    * der Browser mit Google gesprochen und die IP-Adresse ist dort angekommen —
    * wer nur die Lobby aufmacht, hat darum nicht gebeten.
    */
+  /*
+   * `gm_authFailure` ist der einzige Weg, von einem Schluesselproblem zu
+   * erfahren — und ohne ihn sieht man es nicht kommen.
+   *
+   * Ist der Schluessel ungueltig, die Adresse nicht freigegeben oder die Maps
+   * JavaScript API im Projekt nicht aktiviert, dann WIRFT nichts. Der
+   * Konstruktor kehrt normal zurueck, das Versprechen erfuellt sich, der
+   * Ladehinweis verschwindet — und Google malt in die leere Flaeche seinen
+   * eigenen grauen Kasten mit „Hoppla! Ein Fehler ist aufgetreten." Der Spieler
+   * sieht einen Fehler, den diese Seite nie ausgeloest hat, in einer Gestaltung,
+   * die nicht ihre ist, mit einem Hinweis auf die JavaScript-Konsole.
+   *
+   * Genau das ist beim ersten echten Durchlauf passiert (ApiNotActivatedMapError),
+   * und deshalb steht der Haken jetzt hier: Google ruft diese Funktion bei
+   * jedem Authentifizierungsfehler auf, und danach sagt die Seite es mit
+   * eigenen Worten und nennt die drei Stellen, an denen es liegen kann.
+   */
+  var mapsAbgelehnt = false;
+
   function maps() {
     if (mapsLaeuft) return mapsLaeuft;
     mapsLaeuft = new Promise(function (fertig, schiefgegangen) {
       if (window.google && window.google.maps && window.google.maps.StreetViewPanorama) return fertig();
       var zeitAus = setTimeout(function () { schiefgegangen(new Error('timeout')); }, 20000);
+
+      window.gm_authFailure = function () {
+        mapsAbgelehnt = true;
+        clearTimeout(zeitAus);
+        panoFehlerZeigen('schluessel');
+        schiefgegangen(new Error('auth'));
+      };
+
       window.__gbMapsBereit = function () { clearTimeout(zeitAus); fertig(); };
       var s = document.createElement('script');
       s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(C.maps)
@@ -221,6 +248,30 @@
       document.head.appendChild(s);
     });
     return mapsLaeuft;
+  }
+
+  /*
+   * Die Fehlerflaeche ueber dem Panorama. Wird von zwei Seiten gerufen — vom
+   * Fehlschlag beim Starten der Runde und von gm_authFailure, das auch dann
+   * noch zuschlaegt, wenn das Panorama laengst gebaut ist. Deshalb baut sie
+   * die Flaeche notfalls neu, statt eine vorhandene vorauszusetzen.
+   */
+  function panoFehlerZeigen(art) {
+    var huelle = document.querySelector('.gb-buehne');
+    if (!huelle) return;
+    var kasten = document.getElementById('gbPanoLaden');
+    if (!kasten) {
+      kasten = el('div', 'gb-panoladen');
+      kasten.id = 'gbPanoLaden';
+      var pano = document.getElementById('gbPano');
+      if (pano && pano.nextSibling) huelle.insertBefore(kasten, pano.nextSibling);
+      else huelle.appendChild(kasten);
+    }
+    var text = art === 'kein-ort' ? L.keinOrt
+      : art === 'keine-region' ? L.keineRegion
+      : L.kartenFehlerP;
+    kasten.innerHTML = '<div class="gb-panofehler"><strong>' + esc(L.kartenFehlerH) + '</strong><p>'
+      + esc(text) + '</p></div>';
   }
 
   /*
@@ -626,14 +677,14 @@
         motionTracking: false,
         motionTrackingControl: false
       });
+      // Nur wegraeumen, wenn Google nicht schon abgelehnt hat: sonst legt der
+      // graue Kasten von Google die Flaeche frei, die gerade erklaeren sollte,
+      // was fehlt.
+      if (mapsAbgelehnt) return;
       var laden = document.getElementById('gbPanoLaden');
       if (laden) laden.remove();
     }).catch(function (e) {
-      var laden = document.getElementById('gbPanoLaden');
-      if (!laden) return;
-      var was = String(e && e.message);
-      laden.innerHTML = '<div class="gb-panofehler"><strong>' + esc(L.kartenFehlerH) + '</strong><p>'
-        + esc(was === 'kein-ort' ? L.keinOrt : was === 'keine-region' ? L.keineRegion : L.kartenFehlerP) + '</p></div>';
+      panoFehlerZeigen(String(e && e.message));
     });
   }
 

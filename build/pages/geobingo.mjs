@@ -896,7 +896,14 @@ export function script(lang) {
     discord: GB.discord || '',
     standard: GB.standard,
     regionen: GB.regionen.map((r) => ({
-      id: r.id, name: r[lang], boxen: r.boxen || null, staedte: r.staedte || null,
+      id: r.id, name: r[lang], boxen: r.boxen || null,
+      /*
+       * Nur die beiden Zahlen. Der Ortsname steht in content/geobingo.json,
+       * damit die Datei lesbar und prüfbar bleibt — im Browser hat er nichts
+       * verloren: er wird nirgends angezeigt, und 877 Namen sind rund 12 KB,
+       * die jeder Spieler mitlädt, ohne dass sie je jemand sieht.
+       */
+      staedte: (r.staedte || []).map((o) => [o[0], o[1]]),
     })),
     pakete: GB.pakete.map((p) => ({
       id: p.id, ...benannt(p, lang),
