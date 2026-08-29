@@ -11,11 +11,14 @@
   ],
   "_discord": "Der Einladungslink hinter dem Discord-Knopf auf der Startseite. Leer lassen blendet den Knopf aus, statt ins Leere zu fuehren.",
   "discord": "https://discord.gg/y8ArGP9Zem",
+  "_kontingent": "Das Tageslimit, das in der Google-Cloud-Konsole unter Kontingente steht. Die Lobby rechnet damit vor, was eine Runde kostet, und warnt, wenn sie darueber laeuft. Die Zahlen 161 und 322 sind so gewaehlt, dass 31 volle Tage GENAU in Googles kostenlosem Monatskontingent bleiben (5.000 Panoramen, 10.000 Vorschaubilder) — damit ist die Rechnung strukturell null und nicht nur hoffentlich klein. Wer hier etwas aendert, muss es in der Konsole ebenfalls aendern: diese Datei weiss nicht, was dort wirklich eingestellt ist.",
+  "kontingent": { "panoramenProTag": 161, "bilderProTag": 322 },
+
   "_standard": "Vorgaben fuer eine neue Runde. In der Lobby ist jede davon aenderbar.",
   "standard": {
     "oeffentlich": false,
     "minuten": 10,
-    "bewegung": "frei",
+    "bewegung": "aus",
     "modus": "einzeln",
     "nurStaedte": true,
     "punkteZeigen": true,

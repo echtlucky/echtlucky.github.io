@@ -144,6 +144,9 @@ export const TEXTE = {
     bewPfeile: 'Arrows',
     bewAus: 'Frozen',
     bewegungHinweis: 'Frozen is the hardest — and the cheapest. Google bills dynamic Street View per panorama, walking included.',
+    panoramen: 'panoramas for this round',
+    vonTageskontingent: 'of %n a day',
+    ueberKontingent: 'Over the daily cap — the round will stop partway.',
     modus: 'Mode',
     modEinzeln: 'Everyone for themselves',
     modTeams: 'Teams',
@@ -265,6 +268,9 @@ export const TEXTE = {
     bewPfeile: 'Pfeile',
     bewAus: 'Fest',
     bewegungHinweis: 'Fest ist am schwersten — und am billigsten. Google rechnet dynamisches Street View pro Panorama ab, das Laufen eingeschlossen.',
+    panoramen: 'Panoramen für diese Runde',
+    vonTageskontingent: 'von %n am Tag',
+    ueberKontingent: 'Über dem Tageskontingent — die Runde bricht unterwegs ab.',
     modus: 'Modus',
     modEinzeln: 'Jeder für sich',
     modTeams: 'Teams',
@@ -675,6 +681,22 @@ input::placeholder { color: #6a748c; }
 .gb-schalterbank button:hover:not(:disabled) { background: var(--flaeche-2); color: var(--schrift); }
 .gb-schalterbank button[aria-pressed="true"] { background: var(--violett); color: #fff; font-weight: 600; }
 
+/*
+ * Die Kostenzeile. Sie steht direkt unter der Bewegungswahl, weil sie genau
+ * dort etwas aendert — und sie wird rot, bevor Geld fliesst, nicht danach.
+ */
+.gb-kosten {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  margin: 10px 0 0; padding: 9px 12px;
+  border: 1px solid var(--kante); border-radius: var(--r);
+  background: rgba(0,0,0,.22); font-size: .84rem; color: var(--still);
+}
+.gb-kosten strong { font: 700 1.05rem/1 var(--mono); color: var(--violett-hell); }
+.gb-kosten span { color: var(--leise); }
+.gb-kosten em { flex-basis: 100%; font-style: normal; font-size: .8rem; color: var(--warn); }
+.gb-kosten[data-warnung="1"] { border-color: var(--warn); background: rgba(248,113,113,.1); }
+.gb-kosten[data-warnung="1"] strong { color: var(--warn); }
+
 .gb-kippen { display: grid; gap: 12px; margin-bottom: 20px; }
 .gb-kipp { display: flex; gap: 12px; align-items: flex-start; }
 .gb-kippknopf {
@@ -930,6 +952,7 @@ export function script(lang) {
     zugang: GB.zugangscode,
     discord: GB.discord || '',
     standard: GB.standard,
+    kontingent: GB.kontingent || null,
     regionen: GB.regionen.map((r) => ({
       id: r.id, name: r[lang], boxen: r.boxen || null,
       /*

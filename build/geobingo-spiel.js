@@ -1060,6 +1060,7 @@
         return '<button data-bewegung="' + b[0] + '" aria-pressed="' + (e.bewegung === b[0]) + '"' + aus + '>' + esc(b[1]) + '</button>';
       }).join('')
       + '</div>'
+      + kostenzeile()
       + '<p class="gb-fussnote">' + esc(L.bewegungHinweis) + '</p></div>'
 
       + '<div class="gb-stellwerk">'
@@ -1098,6 +1099,39 @@
       + '</section>'
 
       + '</div></div>';
+  }
+
+  /*
+   * Was diese Runde kostet, BEVOR sie startet.
+   *
+   * Google rechnet dynamisches Street View pro Panorama ab, und der
+   * Unterschied zwischen den Bewegungsarten ist keine Nuance, sondern der
+   * Faktor achtzig. Wer das erst auf der Monatsrechnung sieht, hat keine
+   * Wahl mehr gehabt — deshalb steht die Schaetzung dort, wo die Entscheidung
+   * getroffen wird.
+   *
+   * Die Zahlen sind grob und sagen das auch. Sie muessen nicht stimmen, sie
+   * muessen die Groessenordnung treffen: eine Runde auf „Frei" ist kein
+   * bisschen teurer als eine auf „Fest", sie ist zweistellig teurer.
+   */
+  function panoramenSchaetzung(bewegung, minuten, spieler) {
+    var jeSpieler = bewegung === 'aus' ? 1
+      : bewegung === 'pfeile' ? 1 + minuten * 2
+      : 1 + minuten * 8;
+    return Math.round(jeSpieler * Math.max(1, spieler));
+  }
+
+  function kostenzeile() {
+    if (!C.kontingent || !C.kontingent.panoramenProTag) return '';
+    var e = lobby.einst;
+    var n = panoramenSchaetzung(e.bewegung, e.minuten || 10, spielerZahl());
+    var deckel = C.kontingent.panoramenProTag;
+    var zuViel = n > deckel;
+    return '<p class="gb-kosten" data-warnung="' + (zuViel ? '1' : '0') + '">'
+      + '<strong>' + n + '</strong> ' + esc(L.panoramen)
+      + ' <span>' + esc(L.vonTageskontingent.replace('%n', deckel)) + '</span>'
+      + (zuViel ? '<em>' + esc(L.ueberKontingent) + '</em>' : '')
+      + '</p>';
   }
 
   function kippschalter(name, beschriftung, an, aus, hinweis) {
