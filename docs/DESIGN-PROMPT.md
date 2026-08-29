@@ -116,31 +116,27 @@ Forum und GeoBingo); jedes Spiel bekommt seine eigene Akzentfarbe bei
 identischer Kartenkonstruktion; und was es noch nicht gibt, wird angekündigt,
 nie verlinkt.
 
-**GeoBingo — globale Minikarte (geplant):** unten links in der laufenden Runde
-sitzt eine kleine Karte. Aufgeklappt wird sie zur Weltkarte; man zieht sie an
-einen beliebigen Ort (München, Tokio, irgendwo) und startet Street View genau
-dort. Technisch: die Ortssuche über Street-View-*Metadaten* ist kostenlos, erst
-das Laden eines dynamischen Panoramas kostet — die Minikarte darf also frei
-suchen und bestätigt den Sprung, bevor ein Panorama geladen wird. Die Karte
-wird wie alles im Spiel **gepatcht, nie neu gebaut** (ein `innerHTML` auf die
-Runde würde Panorama und Fundbilder neu laden und die Rechnung treiben). Wer
-springen darf (alle, nur der Host, nur außerhalb gewerteter Runden), ist eine
-Lobby-Einstellung, keine Annahme.
+**GeoBingo — die Welt-Minikarte (gebaut):** unten links in der laufenden Runde
+sitzt die Weltkarte. Aufklappen, irgendwohin klicken — die Suche läuft über
+kostenlose Street-View-*Metadaten* mit wachsendem Radius, und erst die
+Bestätigung („Hierhin springen? Lädt ein abgerechnetes Panorama.") lädt das
+Panorama. Wer springen darf, ist eine Lobby-Einstellung (*Aus / Gastgeber /
+Alle*, Vorgabe Gastgeber). Die Karte ist EIN wiederverwendetes Map-Objekt je
+Sitzung — jede Instanz ist eine Rechnungszeile, also wird der Behälter
+umgehängt statt neu gebaut, wie alles in diesem Spiel.
 
-**GeoRadar — der GeoGuessr-Modus (geplant, sehr gut machen):** dasselbe Spiel
-wie GeoBingo aus der anderen Richtung. Alle landen im selben Panorama und raten
-gegen die Uhr, WO sie sind; ein Tipp ist ein Pin auf der Weltkarte. Gewertet
-wird **Nähe zuerst, Zeit als Zweitschlüssel** — wer näher liegt, schlägt jeden,
-der schneller war; erst bei praktisch gleicher Distanz entscheidet die Uhr, und
-die genauen Kurven werden mit echten Runden getestet statt am Schreibtisch
-festgelegt. Ein Tipp ist wie ein Fund **fünf Zahlen, kein Screenshot**
-(Koordinate, Zeitstempel, Runde). GeoBingo und GeoRadar teilen sich Lobby,
-Codes, Teams und Auswertung: ein Spiel, zwei Modi, im Lobby-Bildschirm
-umschaltbar und jeder Modus einzeln spielbar. Firestore wächst dabei um eine
-Modus-Angabe an der Lobby und eine Tipp-Sammlung pro Runde — die Regeln in
-`firestore.rules` sagen wieder laut, was sie NICHT prüfen können (ob eine
-Distanz im Browser ehrlich berechnet wurde), und die Auswertung bleibt deshalb
-der Ort, an dem gestritten wird.
+**GeoRadar — der GeoGuessr-Modus (gebaut):** dasselbe Spiel wie GeoBingo aus
+der anderen Richtung, in derselben Lobby als Modus umschaltbar und einzeln
+spielbar. Alle landen im SELBEN Panorama (der Gastgeber würfelt den Ort vor
+dem Start, Metadaten, kostenlos) und setzen ihren Tipp als Pin auf die
+Weltkarte. Ein Tipp ist **fünf Zahlen, kein Screenshot**, mit fester Kennung
+je Spieler — festgelegt ist festgelegt. Gewertet wird **Nähe zuerst, Zeit als
+Zweitschlüssel**; das Ergebnis ist die Karte mit allen Pins neben dem
+tatsächlichen Ort plus die Rangliste mit Distanz und Zeit. Die Regeln in
+`firestore.rules` sagen laut, was sie nicht können: die Zielkoordinate steht
+zwangsläufig im Lobby-Dokument, und die Kontrolle ist die Runde selbst.
+Getestet wird das Ganze kostenlos über `npm run trocken` — die Attrappe kennt
+seit diesem Ausbau auch die Weltkarte.
 
 **Mehrspieler-Netz (geplant):** die Lobby-Mechanik von GeoBingo
 (Fünf-Zeichen-Codes, privat als Voreinstellung, öffentlich als Datenbankregel)

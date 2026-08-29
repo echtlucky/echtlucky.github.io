@@ -158,6 +158,7 @@ before relying on them.
 | --- | --- | --- | --- |
 | **Dynamic Street View** — a panorama you can look around in | Pro | 5,000 | $14.00 |
 | **Static Street View** — the still image behind a find | Essentials | 10,000 | $7.00 |
+| **Dynamic Maps** — the world minimap / GeoRadar guess map | Essentials | 10,000 | $7.00 |
 | Street View **metadata** — the search for a random location | — | unlimited | free |
 
 Four things follow, and they are why the page is built the way it is:
@@ -183,6 +184,24 @@ as much as the round did.
 rebuilt, so a find's picture is requested once and then stays. This is the
 single biggest reason the page is cheap to run with several players clicking at
 the same time.
+
+**The world map is one line per session, by construction.** Google bills
+Dynamic Maps per map *instantiation*, so the client builds exactly one
+`google.maps.Map` object per session and re-mounts it — minimap in the round,
+result map in GeoRadar — instead of creating a new one per screen. Opening and
+closing the minimap costs nothing after the first open.
+
+**GeoRadar is the cheap mode.** A radar round is one shared panorama per
+player (the same as bingo on *Fest*), one map load per player per session, and
+zero static images — a guess is a pin, not a picture. Four players, five
+rounds: about 20 panoramas and 4 map loads, all inside the free allowances.
+Movement still multiplies exactly like bingo, so *Fest* stays the default.
+
+**A map jump is one panorama, and it says so first.** Clicking the minimap
+searches via metadata (free, escalating radius); only the confirm button loads
+the panorama, and the confirm names that cost. Who may jump at all is a lobby
+setting (*Off / Host / Everyone* — host only by default), so a lobby of eight
+cannot teleport the bill upward without the host deciding that.
 
 **Set the cap, not just the alert.** A budget alert is an email that arrives
 after the money is gone.

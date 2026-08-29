@@ -156,6 +156,16 @@ export const TEXTE = {
     zuVieleWoerter: 'Forty words is the ceiling.',
 
     einstellungenH: 'Settings',
+    spielwahl: 'Game',
+    spielBingo: 'GeoBingo',
+    spielRadar: 'GeoRadar',
+    spielHinweis: 'One lobby, two games. GeoBingo: everyone lands somewhere else and hunts the words. GeoRadar: everyone lands in the SAME place and races to guess where it is — closest wins, the clock breaks ties.',
+    radarKeineWoerter: 'GeoRadar needs no words — the place itself is the puzzle. The list stays here for when you switch back.',
+    springenWahl: 'Map jumps',
+    sprAus: 'Off',
+    sprGast: 'Host',
+    sprAlle: 'Everyone',
+    springenHinweis: 'Who may jump the panorama somewhere else via the minimap. Every confirmed jump loads one billed panorama; searching the map is free.',
     dauer: 'Round length',
     min: 'min',
     bewegung: 'Movement',
@@ -190,6 +200,23 @@ export const TEXTE = {
     deineKarte: 'Your card',
     einklappen: 'Collapse',
     hudAus: 'Hide the overlay (H)',
+    karteAuf: 'Open the map',
+    karteZu: 'Close the map',
+    weltkarte: 'World map',
+    sprungFrage: 'Jump here?',
+    sprungKosten: 'Loads one billed panorama.',
+    sprungJa: 'Jump',
+    sprungNein: 'Cancel',
+    suchtPano: 'Looking for a panorama near that point…',
+    keinPanoDort: 'No Street View near that point. Try closer to a road.',
+    tippHinweis: 'Click the map where you think you are, then lock it in.',
+    tippAbgeben: 'Lock in guess',
+    tippSteht: 'Your guess is locked.',
+    tippErst: 'Place a pin on the map first.',
+    alleGetippt: 'Everyone has guessed — you can end the round.',
+    zielOrt: 'Actual location',
+    radarErgebnisP: 'Closest guess wins; on a tie the faster one does. The map shows every pin next to the actual location.',
+    keinTipp: 'no guess',
     suchtOrt: 'Finding a place with panoramas…',
     zeitUm: 'Time is up.',
     punkteVersteckt: 'Scores are hidden until the end.',
@@ -299,6 +326,16 @@ export const TEXTE = {
     zuVieleWoerter: 'Bei vierzig Wörtern ist Schluss.',
 
     einstellungenH: 'Einstellungen',
+    spielwahl: 'Spiel',
+    spielBingo: 'GeoBingo',
+    spielRadar: 'GeoRadar',
+    spielHinweis: 'Eine Lobby, zwei Spiele. GeoBingo: jeder landet woanders und jagt die Wörter. GeoRadar: alle landen am SELBEN Ort und raten um die Wette, wo das ist — am nächsten dran gewinnt, bei Gleichstand die Uhr.',
+    radarKeineWoerter: 'GeoRadar braucht keine Wörter — der Ort selbst ist das Rätsel. Die Liste bleibt hier stehen, falls ihr zurückwechselt.',
+    springenWahl: 'Kartensprünge',
+    sprAus: 'Aus',
+    sprGast: 'Gastgeber',
+    sprAlle: 'Alle',
+    springenHinweis: 'Wer das Panorama über die Minikarte woandershin springen darf. Jeder bestätigte Sprung lädt ein abgerechnetes Panorama; das Suchen auf der Karte ist kostenlos.',
     dauer: 'Rundenlänge',
     min: 'Min',
     bewegung: 'Bewegung',
@@ -333,6 +370,23 @@ export const TEXTE = {
     deineKarte: 'Deine Karte',
     einklappen: 'Einklappen',
     hudAus: 'Anzeige ausblenden (H)',
+    karteAuf: 'Karte öffnen',
+    karteZu: 'Karte schließen',
+    weltkarte: 'Weltkarte',
+    sprungFrage: 'Hierhin springen?',
+    sprungKosten: 'Lädt ein abgerechnetes Panorama.',
+    sprungJa: 'Springen',
+    sprungNein: 'Abbrechen',
+    suchtPano: 'Sucht ein Panorama in der Nähe…',
+    keinPanoDort: 'Kein Street View in der Nähe dieses Punkts. Näher an eine Straße klicken.',
+    tippHinweis: 'Klick auf die Karte, wo du glaubst zu sein — dann festlegen.',
+    tippAbgeben: 'Tipp festlegen',
+    tippSteht: 'Dein Tipp steht.',
+    tippErst: 'Erst einen Pin auf die Karte setzen.',
+    alleGetippt: 'Alle haben getippt — du kannst die Runde beenden.',
+    zielOrt: 'Tatsächlicher Ort',
+    radarErgebnisP: 'Der nächste Tipp gewinnt; bei Gleichstand der schnellere. Die Karte zeigt jeden Pin neben dem tatsächlichen Ort.',
+    keinTipp: 'kein Tipp',
     suchtOrt: 'Sucht einen Ort mit Panoramen…',
     zeitUm: 'Zeit ist um.',
     punkteVersteckt: 'Punkte bleiben bis zum Schluss verdeckt.',
@@ -946,6 +1000,70 @@ input::placeholder { color: #6a748c; }
 .gb-teamtafel li { display: flex; justify-content: space-between; gap: 12px; font-size: .92rem; color: var(--still); }
 .gb-teamtafel li span { font: 700 .92rem/1.5 var(--mono); color: var(--schrift); }
 
+/* ── Die Minikarte ───────────────────────────────────────────────────────── */
+/*
+ * Unten links, zwei Zustaende: zu (ein runder Knopf) und offen (eine Tafel
+ * mit der Weltkarte). Die Karte selbst ist EIN wiederverwendetes
+ * google.maps.Map-Objekt fuer die ganze Sitzung — jede Karten-Instanz ist
+ * eine Rechnungszeile, also wird der Kartenbehaelter umgehaengt statt neu
+ * gebaut, genau wie das Panorama der Auswertung.
+ *
+ * Im Radar-Modus ist die Karte das Spielfeld (Pin setzen, Tipp festlegen);
+ * im Bingo ist sie der Sprungknopf in die Welt, wenn der Gastgeber das
+ * erlaubt hat.
+ */
+.gb-miniK {
+  position: absolute; left: 14px; bottom: 14px; z-index: 4;
+  display: flex; flex-direction: column;
+  width: min(360px, calc(100vw - 28px));
+  background: rgba(20,20,42,.85);
+  border: 1px solid var(--kante); border-radius: var(--r-gross);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.gb-buehne[data-hud="0"] .gb-miniK { opacity: 0; pointer-events: none; }
+.gb-miniK[data-zu="1"] { width: auto; }
+.gb-miniK[data-zu="1"] .gb-miniLeib, .gb-miniK[data-zu="1"] .gb-miniFuss { display: none; }
+.gb-miniKopf {
+  display: flex; align-items: center; gap: 9px; padding: 9px 12px;
+  font: 600 .74rem/1 var(--sans); letter-spacing: .11em; text-transform: uppercase; color: var(--leise);
+  border: 0; background: none; width: 100%; text-align: left; cursor: pointer;
+}
+.gb-miniKopf:hover { color: var(--schrift); }
+.gb-miniKopf .gb-klappe { margin-left: auto; }
+.gb-miniLeib { position: relative; height: 240px; border-top: 1px solid var(--kante); }
+.gb-miniKarte { position: absolute; inset: 0; }
+.gb-miniFuss {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 9px 11px; border-top: 1px solid var(--kante); font-size: .82rem; color: var(--still);
+}
+.gb-miniFuss .gb-knopf { margin-left: auto; }
+.gb-miniStand { flex: 1; min-width: 0; }
+.gb-miniStand[data-fest="1"] { color: var(--gruen); font-weight: 600; }
+/*
+ * Der Sprung-Bestaetiger. Er nennt die Kosten, BEVOR sie entstehen — dieselbe
+ * Regel wie die Kostenzeile in der Lobby: rot vor dem Geld, nicht danach.
+ */
+.gb-sprung {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 5;
+  display: none; align-items: center; gap: 9px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: var(--r);
+  background: rgba(20,20,42,.96); border: 1px solid var(--violett-rand);
+  font-size: .84rem;
+}
+.gb-sprung[data-da="1"] { display: flex; }
+.gb-sprung em { font-style: normal; color: var(--leise); font-size: .76rem; flex-basis: 100%; }
+
+/* ── Das Radar-Ergebnis ──────────────────────────────────────────────────── */
+.gb-ergebnisKarte {
+  position: relative; height: min(420px, 52dvh);
+  border: 1px solid var(--kante); border-radius: var(--r-gross);
+  overflow: hidden; margin-bottom: 18px; background: var(--tiefer);
+}
+.gb-entfernung { font: 700 1.05rem/1 var(--mono); font-variant-numeric: tabular-nums; }
+.gb-tippzeit { font: 400 .82rem/1 var(--mono); color: var(--leise); }
+
 /* ── Meldeleiste ─────────────────────────────────────────────────────────── */
 .gb-melde {
   position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 12px); z-index: 60;
@@ -972,6 +1090,11 @@ input::placeholder { color: #6a748c; }
   .gb-kasten { top: auto; bottom: 12px; transform: none; left: 10px; right: 10px; width: auto; max-height: 38dvh; }
   .gb-rechts { display: none; }
   .gb-buehne[data-hud="0"] .gb-links { transform: translateY(16px); }
+  /* Die Minikarte weicht der Wortkarte nach oben aus; im Radar gibt es keine
+     Wortkarte, dann darf sie ganz nach unten. */
+  .gb-miniK { bottom: calc(38dvh + 24px); }
+  .gb-buehne[data-art="radar"] .gb-miniK { bottom: 12px; }
+  .gb-miniLeib { height: 200px; }
 }
 </style>`;
 

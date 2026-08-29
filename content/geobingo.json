@@ -20,6 +20,8 @@
   "_standard": "Vorgaben fuer eine neue Runde. In der Lobby ist jede davon aenderbar.",
   "standard": {
     "oeffentlich": false,
+    "spiel": "bingo",
+    "springen": "gast",
     "minuten": 10,
     "bewegung": "aus",
     "modus": "einzeln",

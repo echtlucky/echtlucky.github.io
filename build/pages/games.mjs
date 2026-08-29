@@ -25,19 +25,19 @@ export const slug = 'games';
  * Aus dieser Liste gezaehlt, nicht von Hand gepflegt; die Liste unten im
  * Markup wird aus denselben Schluesseln gebaut.
  */
-const SPIELBAR = ['geobingo', 'reflex', 'paare', 'sequenz'];
+const SPIELBAR = ['geobingo', 'georadar', 'reflex', 'paare', 'sequenz'];
 export const N_SPIELBAR = SPIELBAR.length;
 
 export const meta = {
   en: {
     title: 'Games — playable in the browser · Skillry',
     description:
-      'The play side of the Skillry network: Reflex, Pairs and Sequence run entirely in your browser, GeoBingo runs Street View rounds for streams — and the GeoGuessr-style GeoRadar mode is on its way.',
+      'The play side of the Skillry network: Reflex, Pairs and Sequence run entirely in your browser; GeoBingo hunts words in Street View and GeoRadar races to guess where in the world you are.',
   },
   de: {
     title: 'Spiele — direkt im Browser spielbar · Skillry',
     description:
-      'Die Spielseite des Skillry-Netzwerks: Reflex, Paare und Sequenz laufen komplett im Browser, GeoBingo spielt Street-View-Runden für Streams — und GeoRadar, der GeoGuessr-Modus, ist unterwegs.',
+      'Die Spielseite des Skillry-Netzwerks: Reflex, Paare und Sequenz laufen komplett im Browser; GeoBingo jagt Wörter in Street View, und GeoRadar rät um die Wette, wo auf der Welt du stehst.',
   },
 };
 
@@ -63,15 +63,18 @@ const T = {
       geobingo: {
         h: 'GeoBingo',
         p: 'A live bingo round inside Google Street View, built to run full-screen next to a stream. A lobby, one shared word list, and a review where every find can be argued about as a real 3D panorama.',
-        hinweis: 'Runs behind a Google sign-in and talks to Google once you play — that page says so before it does it. Planned: a global minimap in the corner — open it, drag the map anywhere in the world, and Street View starts right there.',
+        hinweis: 'Runs behind a Google sign-in and talks to Google once you play — that page says so before it does it. New: a world minimap in the corner — open it, click anywhere, and jump the panorama right there (a lobby setting decides who may).',
+      },
+      georadar: {
+        h: 'GeoRadar',
+        p: 'The GeoGuessr side of GeoBingo: everyone lands in the SAME Street View spot and races to guess where it is on the world map — closest pin wins, the clock breaks ties.',
+        hinweis: 'One game with GeoBingo: same lobby, same codes, switchable as a mode in the settings and playable on its own.',
       },
       reflex: { h: 'Reflex', p: 'Five rounds against your own nerves. The stage lights up after a random delay — hit it as fast as you can.' },
       paare: { h: 'Pairs', p: 'Sixteen cards, eight pairs, one of them the Skillry mark itself. Fewest moves wins.' },
       sequenz: { h: 'Sequence', p: 'Four fields, one growing chain: watch it, play it back, one step longer each level.' },
     },
 
-    radarH: 'GeoRadar',
-    radarP: 'The GeoGuessr side of GeoBingo: you are dropped into Street View and race the lobby to work out where you are — closest guess wins, the clock breaks ties. One game with GeoBingo, one shared lobby, switchable as a mode and playable on its own.',
     netzH: 'Multiplayer network',
     netzP: 'Lobbies with five-letter codes, like GeoBingo already has — extended to the small games, so Reflex and Pairs become duels. Same account, same codes, same rules about what gets stored.',
 
@@ -105,15 +108,18 @@ const T = {
       geobingo: {
         h: 'GeoBingo',
         p: 'Eine Live-Bingo-Runde mitten in Google Street View, gebaut für den Vollbildmodus neben einem Stream. Eine Lobby, eine gemeinsame Wortliste, und eine Auswertung, in der über jeden Fund als echtes 3D-Panorama gestritten werden kann.',
-        hinweis: 'Läuft hinter einer Google-Anmeldung und spricht mit Google, sobald du spielst — das sagt die Seite, bevor sie es tut. Geplant: eine globale Minikarte in der Ecke — aufklappen, die Karte irgendwohin ziehen, und Street View startet genau dort.',
+        hinweis: 'Läuft hinter einer Google-Anmeldung und spricht mit Google, sobald du spielst — das sagt die Seite, bevor sie es tut. Neu: eine Welt-Minikarte in der Ecke — aufklappen, irgendwohin klicken, und das Panorama springt genau dorthin (wer darf, ist eine Lobby-Einstellung).',
+      },
+      georadar: {
+        h: 'GeoRadar',
+        p: 'Die GeoGuessr-Seite von GeoBingo: alle landen am SELBEN Street-View-Ort und raten um die Wette, wo das auf der Weltkarte ist — der nächste Pin gewinnt, bei Gleichstand die Uhr.',
+        hinweis: 'Ein Spiel mit GeoBingo: gleiche Lobby, gleiche Codes, in den Einstellungen als Modus umschaltbar und einzeln spielbar.',
       },
       reflex: { h: 'Reflex', p: 'Fünf Runden gegen die eigenen Nerven. Die Fläche leuchtet nach zufälliger Wartezeit auf — triff sie so schnell du kannst.' },
       paare: { h: 'Paare', p: 'Sechzehn Karten, acht Paare, eines davon das Skillry-Zeichen selbst. Wenigste Züge gewinnen.' },
       sequenz: { h: 'Sequenz', p: 'Vier Felder, eine wachsende Folge: ansehen, nachspielen, jede Stufe einen Schritt länger.' },
     },
 
-    radarH: 'GeoRadar',
-    radarP: 'Die GeoGuessr-Seite von GeoBingo: du wirst in Street View abgesetzt und rätst gegen die Lobby, wo du bist — die genaueste Vermutung gewinnt, die Uhr entscheidet bei Gleichstand. Ein Spiel mit GeoBingo, eine gemeinsame Lobby, als Modus umschaltbar und einzeln spielbar.',
     netzH: 'Mehrspieler-Netz',
     netzP: 'Lobbys mit Fünf-Zeichen-Codes, wie GeoBingo sie schon hat — ausgeweitet auf die kleinen Spiele, damit aus Reflex und Paare Duelle werden. Gleiches Konto, gleiche Codes, gleiche Regeln dafür, was gespeichert wird.',
 
@@ -131,6 +137,7 @@ const T = {
 /** Ziel, Akzent und Sortenchip je spielbarem Eintrag. */
 const ZIELE = {
   geobingo: { slug: 'geobingo', ak: 'sp-geo' },
+  georadar: { slug: 'geobingo', ak: 'sp-radar' },
   reflex: { slug: 'games/reflex', ak: 'sp-rx' },
   paare: { slug: 'games/pairs', ak: 'sp-pa' },
   sequenz: { slug: 'games/sequence', ak: 'sp-sq' },
@@ -173,7 +180,7 @@ export function body(lang) {
   const spielKarte = (key) => {
     const z = ZIELE[key];
     const s = t.spiele[key];
-    const chip = key === 'geobingo' ? t.chipKonto : t.chipHier;
+    const chip = key === 'geobingo' || key === 'georadar' ? t.chipKonto : t.chipHier;
     return `<a class="card lift eckig sp-spiel sp-karte ${z.ak}" href="${href(lang, z.slug)}">
       ${kopf(t, s.h, chip)}
       <p class="muted">${s.p}</p>
@@ -207,10 +214,6 @@ export function body(lang) {
       <p class="muted narrow">${t.nachherLede}</p>
     </div>
     <div class="grid grid-2">
-      <article class="card eckig sp-spiel sp-radar">
-        ${kopf(t, t.radarH, t.chipBald)}
-        <p class="muted">${t.radarP}</p>
-      </article>
       <article class="card eckig sp-spiel sp-netz">
         ${kopf(t, t.netzH, t.chipBald)}
         <p class="muted">${t.netzP}</p>

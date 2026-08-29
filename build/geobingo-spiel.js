@@ -137,11 +137,22 @@
 
   var fb = null, app = null, db = null, auth = null, user = null;
   var code = null, lobby = null;
-  var spieler = {}, woerter = [], funde = {}, stimmen = {};
+  var spieler = {}, woerter = [], funde = {}, stimmen = {}, tipps = {};
   var abos = [], stimmAbos = {};
   var bild = 'laden';
   var pano = null, svc = null, mapsLaeuft = null;
   var schauPano = null;                 // das Panorama der Auswertung
+  /*
+   * DIE Weltkarte — Einzahl mit Absicht. Google rechnet jede Karten-Instanz
+   * als eigenen Abruf ab, also wird EIN Map-Objekt fuer die ganze Sitzung
+   * gebaut und sein Behaelter umgehaengt: Minikarte im Spiel, Ergebniskarte
+   * im Radar-Ergebnis. Dieselbe Regel wie beim 3D-Panorama der Auswertung.
+   */
+  var karte = null, karteBox = null;
+  var tippPin = null, tippWahl = null;          // GeoRadar: der eigene Pin
+  var sprungPin = null, sprungWahl = null, sprungLauf = 0;  // Bingo: Kartensprung
+  var ergebnisMarker = [];
+  var alleGetipptGemeldet = false;
   var uhr = null;
   var meinZugang = null;      // 'admin' | 'streamer' | null
   var anfrageGestellt = false;
@@ -172,6 +183,34 @@
   function meinTeam() { return (user && spieler[user.uid] && spieler[user.uid].team) || 'a'; }
   function spielerZahl() { return Object.keys(spieler).length; }
   function teamsAn() { return !!(lobby && lobby.einst && lobby.einst.modus === 'teams'); }
+  /* Welches Spiel diese Lobby spielt. Alte Lobbys tragen kein Feld und sind
+     damit Bingo — dieselbe Rueckfalllogik wie in den Datenbankregeln. */
+  function spielArt() { return (lobby && lobby.einst && lobby.einst.spiel) === 'radar' ? 'radar' : 'bingo'; }
+  function springenErlaubt() {
+    var s = (lobby && lobby.einst && lobby.einst.springen) || 'gast';
+    return s === 'alle' || (s === 'gast' && ichBinGastgeber());
+  }
+
+  /*
+   * Haversine, in Kilometern. Die eine Formel, an der das ganze Radar haengt —
+   * und sie laeuft im Browser, wie der Punktestand: wer die Konsole aufmacht,
+   * kann sich jede Zahl anzeigen, aber kein fremdes Dokument aendern. Die
+   * Kontrolle ist die Runde, in der ein unglaubwuerdiger Tipp Fragen erntet.
+   */
+  function entfernungKm(a, b) {
+    var R = 6371, rad = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+      + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.sqrt(Math.min(1, h)));
+  }
+  /* Unter einem Kilometer in Metern, darueber mit einer Nachkommastelle,
+     ab hundert ohne — die Stellenzahl soll zur Genauigkeit passen. */
+  function distText(km) {
+    if (km < 1) return Math.round(km * 1000) + ' m';
+    if (km < 100) return (Math.round(km * 10) / 10) + ' km';
+    return Math.round(km) + ' km';
+  }
 
   function abmelden() {
     for (var i = 0; i < abos.length; i++) { try { abos[i](); } catch (e) {} }
@@ -566,7 +605,9 @@
       if (warGastgeber) lobbyAufraeumen(warCode);
       else fb.deleteDoc(fb.doc(db, 'geobingo', warCode, 'spieler', user.uid)).catch(function () {});
     }
-    code = null; lobby = null; spieler = {}; woerter = []; funde = {}; stimmen = {};
+    code = null; lobby = null; spieler = {}; woerter = []; funde = {}; stimmen = {}; tipps = {};
+    ergebnisMarkerWeg();
+    tippWahl = null;
     pano = null;
     weg('gb:lobby');
     history.replaceState(null, '', location.pathname);
@@ -594,7 +635,13 @@
       }).catch(function () {});
     }
     return fundeLeeren(c)
-      .then(function () { return Promise.all([leeren(['geobingo', c, 'woerter']), leeren(['geobingo', c, 'spieler'])]); })
+      .then(function () {
+        return Promise.all([
+          leeren(['geobingo', c, 'woerter']),
+          leeren(['geobingo', c, 'spieler']),
+          leeren(['geobingo', c, 'tipps']),
+        ]);
+      })
       .then(function () { return fb.deleteDoc(fb.doc(db, 'geobingo', c)); })
       .catch(function () {});
   }
@@ -672,6 +719,29 @@
       if (bild === 'pruefung' || bild === 'ergebnis') stimmenHorchen();
       auffrischen();
     }));
+
+    /*
+     * Die Tipps des Radars. Der Horcher laeuft auch im Bingo mit — die
+     * Sammlung ist dann leer, und ein Horcher auf Leere kostet nichts,
+     * waehrend ein Horcher, der beim Modus-Wechsel nachgeruestet werden
+     * muesste, genau der ist, den irgendwann jemand vergisst.
+     */
+    abos.push(fb.onSnapshot(fb.collection(db, 'geobingo', code, 'tipps'), function (q) {
+      tipps = {};
+      q.forEach(function (d) { tipps[d.id] = d.data(); });
+      tippStandZeigen();
+      if (bild === 'ergebnis') auffrischen();
+      /* Der Gastgeber erfaehrt EINMAL, dass alle getippt haben — als Meldung,
+         nicht als Automatik: die Runde vorzeitig beenden bleibt sein Klick. */
+      if (bild === 'spiel' && spielArt() === 'radar' && ichBinGastgeber() && !alleGetipptGemeldet) {
+        var n = 0;
+        for (var k in tipps) if (spieler[k]) n++;
+        if (spielerZahl() > 0 && n >= spielerZahl()) {
+          alleGetipptGemeldet = true;
+          melde(L.alleGetippt, 'gut');
+        }
+      }
+    }));
   }
 
   /*
@@ -697,17 +767,37 @@
   function uebergang(jetzt) {
     clearInterval(uhr); uhr = null;
     schliesseSchau();
+    ergebnisMarkerWeg();
     if (jetzt === 'lobby') { bild = 'lobby'; pano = null; kartenNeuBauen = true; zeichne(); return; }
-    if (jetzt === 'laeuft') { bild = 'spiel'; kartenNeuBauen = true; zeichne(); starteRunde(); uhr = setInterval(tick, 250); return; }
+    if (jetzt === 'laeuft') {
+      bild = 'spiel'; kartenNeuBauen = true;
+      tippWahl = null; sprungWahl = null; alleGetipptGemeldet = false;
+      zeichne(); starteRunde(); uhr = setInterval(tick, 250);
+      /* Im Radar steht die Karte von Anfang an offen — sie IST das Spielfeld,
+         also zieht sie sofort ein statt erst beim ersten Klick. */
+      if (spielArt() === 'radar') karteSicherstellen('gbMiniKarte').then(tippStandZeigen).catch(function () {});
+      return;
+    }
+    /* Im Radar gibt es keine Bilderpruefung — ein Tipp ist ein Punkt, kein
+       Foto, ueber das abgestimmt wird. Schreibt ein alter Client trotzdem
+       'pruefung', landet die Lobby im Ergebnis statt auf einem leeren Blatt. */
+    if (jetzt === 'pruefung' && spielArt() === 'radar') { jetzt = 'ergebnis'; }
     if (jetzt === 'pruefung') { bild = 'pruefung'; pano = null; stimmenHorchen(); zeichne(); return; }
-    if (jetzt === 'ergebnis') { bild = 'ergebnis'; pano = null; zeichne(); return; }
+    if (jetzt === 'ergebnis') {
+      bild = 'ergebnis'; pano = null; zeichne();
+      if (spielArt() === 'radar') radarKarteZeigen();
+      return;
+    }
   }
 
   /* Auffrischen heisst NIE neu bauen. Im Spiel wuerde das das Panorama
-     wegwerfen, in der Auswertung das offene 3D-Fenster schliessen. */
+     wegwerfen, in der Auswertung das offene 3D-Fenster schliessen. Das
+     Radar-Ergebnis ist die Ausnahme mit Netz: sein Blatt wird neu gebaut,
+     und die Karte zieht danach wieder ein — dasselbe Objekt, kein neues. */
   function auffrischen() {
-    if (bild === 'spiel') { zeichneKarte(); zeichneSpielerleiste(); return; }
+    if (bild === 'spiel') { zeichneKarte(); zeichneSpielerleiste(); tippStandZeigen(); return; }
     zeichne();
+    if (bild === 'ergebnis' && spielArt() === 'radar') radarKarteZeigen();
   }
 
   // ── Die Runde ─────────────────────────────────────────────────────────────
@@ -739,9 +829,13 @@
     clearInterval(uhr); uhr = null;
     /* Nur der Gastgeber schaltet weiter. Schrieben acht Browser gleichzeitig
        dasselbe Feld, waere das Ergebnis dasselbe und sieben Schreibvorgaenge
-       ueberfluessig — und die Regel muesste sie alle erlauben. */
-    if (ichBinGastgeber()) fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }).catch(function () {});
-    else melde(L.zeitUm, 'info');
+       ueberfluessig — und die Regel muesste sie alle erlauben. Wohin es geht,
+       haengt am Spiel: Bingo hat eine Bilderpruefung, das Radar nicht. */
+    if (ichBinGastgeber()) {
+      fb.updateDoc(fb.doc(db, 'geobingo', code), {
+        zustand: spielArt() === 'radar' ? 'ergebnis' : 'pruefung'
+      }).catch(function () {});
+    } else melde(L.zeitUm, 'info');
   }
 
   function starteRunde() {
@@ -749,6 +843,9 @@
     if (!flaeche) return;
 
     maps().then(function () {
+      /* Radar: der gemeinsame Ort steht schon auf dem Lobby-Dokument. Bingo:
+         jeder Client wuerfelt seinen eigenen. */
+      if (spielArt() === 'radar' && lobby.ort && lobby.ort.pano) return { pano: lobby.ort.pano };
       return zufallsort(lobby.einst);
     }).then(function (ort) {
       var b = lobby.einst.bewegung;
@@ -789,6 +886,7 @@
    * Eine Kennung ist eine Tatsache, ein ausgegrauter Knopf ist ein Vorschlag.
    */
   function fangen(wortId) {
+    if (spielArt() !== 'bingo') return;   // im Radar gibt es keine Funde
     if (!pano || !lobby || lobby.zustand !== 'laeuft') return;
     var ende = endeAm();
     if (ende !== null && Date.now() > ende) { melde(L.zeitUm, 'fehler'); return; }
@@ -836,6 +934,234 @@
     b.dataset.da = '0';
     void b.offsetWidth;
     b.dataset.da = '1';
+  }
+
+  // ── Die Weltkarte ─────────────────────────────────────────────────────────
+
+  /*
+   * EIN Map-Objekt fuer die ganze Sitzung, sein Behaelter wird umgehaengt.
+   *
+   * Google rechnet jede Karten-Instanz als Abruf ab. Die Karte hier wird beim
+   * ersten Oeffnen gebaut und danach nur noch zwischen Minikarte und
+   * Ergebniskarte umgezogen — eine Sitzung ist damit genau eine Zeile auf der
+   * Rechnung, egal wie oft jemand auf- und zuklappt. `resize` nach dem Umzug
+   * gehoert dazu: eine Karte, die in einem unsichtbaren Behaelter gebaut
+   * wurde, malt sonst eine graue Flaeche.
+   */
+  function karteSicherstellen(zielId) {
+    var ziel = document.getElementById(zielId);
+    if (!ziel) return Promise.reject(new Error('kein-ziel'));
+    return maps().then(function () {
+      if (!karteBox) {
+        karteBox = el('div');
+        karteBox.style.position = 'absolute';
+        karteBox.style.inset = '0';
+        karte = new google.maps.Map(karteBox, {
+          center: { lat: 25, lng: 5 }, zoom: 2,
+          streetViewControl: false, mapTypeControl: false, fullscreenControl: false,
+          clickableIcons: false, gestureHandling: 'greedy',
+          backgroundColor: '#14142a'
+        });
+        karte.addListener('click', function (ev) {
+          kartenKlick(ev.latLng.lat(), ev.latLng.lng());
+        });
+      }
+      if (karteBox.parentElement !== ziel) {
+        ziel.appendChild(karteBox);
+        google.maps.event.trigger(karte, 'resize');
+      }
+      return karte;
+    });
+  }
+
+  function kartenKlick(lat, lng) {
+    if (bild !== 'spiel' || !lobby || lobby.zustand !== 'laeuft') return;
+    if (spielArt() === 'radar') {
+      if (user && tipps[user.uid]) return;   // der Tipp steht, die Karte ist nur noch Ansicht
+      if (!tippPin) tippPin = new google.maps.Marker({ map: karte });
+      tippPin.setPosition({ lat: lat, lng: lng });
+      tippWahl = { lat: lat, lng: lng };
+      tippStandZeigen();
+      return;
+    }
+    if (!springenErlaubt()) return;
+    sprungSuchen(lat, lng);
+  }
+
+  /*
+   * Der Kartensprung — Suchen ist frei, Springen kostet, und dazwischen steht
+   * eine Frage.
+   *
+   * Der Klick auf die Karte sucht ueber die Metadaten (nicht abgerechnet) das
+   * naechste Panorama, mit wachsendem Radius: erst die Strasse nebenan, dann
+   * die Gegend, dann die Region. Erst die Bestaetigung laedt das Panorama —
+   * und der Bestaetiger sagt vorher, dass genau das eine Rechnungszeile ist.
+   * Dieselbe Regel wie die Kostenzeile der Lobby: rot vor dem Geld.
+   */
+  function sprungSuchen(lat, lng) {
+    var box = document.getElementById('gbSprung');
+    var text = document.getElementById('gbSprungText');
+    if (!box || !text) return;
+    var lauf = ++sprungLauf;
+    box.dataset.da = '1';
+    text.textContent = L.suchtPano;
+    sprungWahl = null;
+    if (!svc) svc = new google.maps.StreetViewService();
+    if (!sprungPin) sprungPin = new google.maps.Marker({ map: karte });
+    sprungPin.setPosition({ lat: lat, lng: lng });
+
+    function suche(radien) {
+      return svc.getPanorama({
+        location: { lat: lat, lng: lng },
+        radius: radien[0],
+        source: google.maps.StreetViewSource.OUTDOOR
+      }).catch(function () {
+        if (radien.length > 1) return suche(radien.slice(1));
+        throw new Error('kein-ort');
+      });
+    }
+
+    suche([1000, 10000, 50000]).then(function (r) {
+      if (lauf !== sprungLauf) return;   // laengst woanders hingeklickt
+      sprungWahl = r.data.location.pano;
+      text.textContent = L.sprungFrage;
+    }).catch(function () {
+      if (lauf !== sprungLauf) return;
+      sprungZu();
+      melde(L.keinPanoDort, 'fehler');
+    });
+  }
+
+  function sprungJa() {
+    if (sprungWahl && pano) pano.setPano(sprungWahl);
+    sprungZu();
+  }
+
+  function sprungZu() {
+    var b = document.getElementById('gbSprung');
+    if (b) b.dataset.da = '0';
+    sprungWahl = null;
+    if (sprungPin) { sprungPin.setMap(null); sprungPin = null; }
+  }
+
+  /* Auf- und zuklappen wie bei den Seitenkaesten: nichts wird neu gezeichnet,
+     die Karte zieht beim ersten Oeffnen ein und bleibt dann montiert. */
+  function miniKlappen() {
+    var k = document.getElementById('gbMiniK');
+    if (!k) return;
+    var zu = k.dataset.zu !== '1';
+    k.dataset.zu = zu ? '1' : '0';
+    if (!zu) karteSicherstellen('gbMiniKarte').catch(function () {});
+  }
+
+  // ── GeoRadar: der Tipp ────────────────────────────────────────────────────
+
+  function tippAbgeben() {
+    if (spielArt() !== 'radar' || !lobby || lobby.zustand !== 'laeuft' || !user) return;
+    if (tipps[user.uid]) return;
+    if (!tippWahl) { melde(L.tippErst, 'fehler'); return; }
+    var ende = endeAm();
+    if (ende !== null && Date.now() > ende) { melde(L.zeitUm, 'fehler'); return; }
+
+    var start = lobby.startAm && lobby.startAm.toMillis ? lobby.startAm.toMillis() : Date.now();
+    var t = {
+      uid: user.uid, name: meinName(), team: meinTeam(),
+      lat: Math.round(tippWahl.lat * 1e6) / 1e6,
+      lng: Math.round(tippWahl.lng * 1e6) / 1e6,
+      ms: Math.max(0, Date.now() - start),
+      angelegt: fb.serverTimestamp()
+    };
+    // Sofort festhalten, wie beim Fund: die Uhr laeuft, und 200 ms zwischen
+    // Klick und Rueckmeldung sind der Unterschied zwischen "steht" und "hakt".
+    tipps[user.uid] = t;
+    tippStandZeigen();
+    fb.setDoc(fb.doc(db, 'geobingo', code, 'tipps', user.uid), t).catch(function (e) {
+      delete tipps[user.uid];
+      tippStandZeigen();
+      melde(fehlertext(e), 'fehler');
+    });
+  }
+
+  function tippStandZeigen() {
+    var s = document.getElementById('gbTippStand');
+    var k = document.getElementById('gbTippKnopf');
+    if (!s) return;
+    var fest = !!(user && tipps[user.uid]);
+    s.dataset.fest = fest ? '1' : '0';
+    s.textContent = fest ? L.tippSteht : L.tippHinweis;
+    if (k) k.disabled = fest || !tippWahl;
+  }
+
+  // ── GeoRadar: Rangfolge und Ergebniskarte ─────────────────────────────────
+
+  /*
+   * Naehe zuerst, Zeit als Zweitschluessel. Wer naeher liegt, schlaegt jeden,
+   * der schneller war — erst bei gleicher Entfernung entscheidet die Uhr.
+   * Wer keinen Tipp abgegeben hat, steht unten, mit Namen: fehlen ist ein
+   * Ergebnis, kein Verschwinden.
+   */
+  function radarStand() {
+    var ziel = lobby && lobby.ort;
+    var liste = [];
+    for (var uid in spieler) {
+      var t = tipps[uid] || null;
+      liste.push({
+        uid: uid, name: spieler[uid].name, team: spieler[uid].team || 'a',
+        tipp: t,
+        km: (t && ziel) ? entfernungKm(t, ziel) : null,
+        ms: t ? t.ms : null
+      });
+    }
+    liste.sort(function (a, b) {
+      if (a.km === null && b.km === null) return a.name.localeCompare(b.name);
+      if (a.km === null) return 1;
+      if (b.km === null) return -1;
+      return a.km - b.km || a.ms - b.ms || a.name.localeCompare(b.name);
+    });
+    return liste;
+  }
+
+  function radarKarteZeigen() {
+    karteSicherstellen('gbErgebnisKarte').then(function () {
+      ergebnisMarkerWeg();
+      var ziel = lobby && lobby.ort;
+      var punkte = [];
+      if (ziel) {
+        ergebnisMarker.push(new google.maps.Marker({
+          map: karte, position: { lat: ziel.lat, lng: ziel.lng },
+          label: '★', title: L.zielOrt, zIndex: 10
+        }));
+        punkte.push(ziel);
+      }
+      radarStand().forEach(function (s) {
+        if (!s.tipp) return;
+        ergebnisMarker.push(new google.maps.Marker({
+          map: karte, position: { lat: s.tipp.lat, lng: s.tipp.lng },
+          label: String(s.name || '?').charAt(0).toUpperCase(), title: s.name
+        }));
+        punkte.push(s.tipp);
+      });
+      if (punkte.length && google.maps.LatLngBounds) {
+        var grenzen = new google.maps.LatLngBounds();
+        for (var i = 0; i < punkte.length; i++) grenzen.extend({ lat: punkte[i].lat, lng: punkte[i].lng });
+        karte.fitBounds(grenzen, 60);
+      }
+    }).catch(function () {});
+  }
+
+  function ergebnisMarkerWeg() {
+    for (var i = 0; i < ergebnisMarker.length; i++) ergebnisMarker[i].setMap(null);
+    ergebnisMarker = [];
+    if (tippPin) { tippPin.setMap(null); tippPin = null; }
+    if (sprungPin) { sprungPin.setMap(null); sprungPin = null; }
+  }
+
+  function tippsLeeren(c) {
+    return fb.getDocs(fb.collection(db, 'geobingo', c, 'tipps')).then(function (q) {
+      return Promise.all(q.docs.map(function (d) {
+        return fb.deleteDoc(fb.doc(db, 'geobingo', c, 'tipps', d.id)).catch(function () {});
+      }));
+    }).catch(function () {});
   }
 
   // ── Zeichnen ──────────────────────────────────────────────────────────────
@@ -1228,9 +1554,16 @@
       + '<div class="gb-lobbygitter">'
 
       // ── Wörter ──
+      //
+      // Im Radar zeigt die Tafel statt der Liste einen Satz: das Spiel
+      // braucht keine Woerter, und ein Eingabefeld, dessen Eintraege nichts
+      // bewirken, waere ein Formular, das luegt. Die Liste selbst bleibt in
+      // der Datenbank stehen — wer zurueckwechselt, hat sie wieder.
       + '<section class="gb-tafel">'
       + '<h2>' + esc(L.woerterH) + '<span class="gb-zahl">' + woerter.length + '</span></h2>'
-      + '<p class="gb-tafelzeile">' + esc(L.woerterP) + '</p>'
+      + (spielArt() === 'radar'
+        ? '<p class="gb-tafelzeile">' + esc(L.radarKeineWoerter) + '</p>'
+        : '<p class="gb-tafelzeile">' + esc(L.woerterP) + '</p>'
       + '<form class="gb-wortform" data-tu="wort">'
       + '<input id="gbWort" maxlength="40" autocomplete="off" placeholder="' + esc(L.wortPlatz) + '">'
       + '<div class="gb-punktwahl" role="group" aria-label="' + esc(L.punkte) + '">'
@@ -1251,13 +1584,40 @@
             + '<button class="gb-weg" data-weg="' + esc(w.id) + '" aria-label="' + esc(L.entfernen) + '">&times;</button></li>';
         }).join('')
         : '<li class="gb-leerzeile">' + esc(L.keineWoerter) + '</li>')
-      + '</ul>'
+      + '</ul>')
       + '</section>'
 
       // ── Einstellungen ──
       + '<section class="gb-tafel">'
       + '<h2>' + esc(L.einstellungenH) + '</h2>'
       + '<p class="gb-tafelzeile">' + esc(L.einstellungenP) + '</p>'
+
+      /*
+       * Die Spielwahl steht ZUOBERST: sie entscheidet, was alles darunter
+       * bedeutet. GeoBingo jagt Woerter, GeoRadar raet den gemeinsamen Ort —
+       * eine Lobby, zwei Spiele, umschaltbar wie jede andere Einstellung.
+       */
+      + '<div class="gb-stellwerk">'
+      + '<span class="gb-etikett">' + esc(L.spielwahl) + '</span>'
+      + '<div class="gb-schalterbank" role="group">'
+      + [['bingo', L.spielBingo], ['radar', L.spielRadar]].map(function (s) {
+        return '<button data-spiel="' + s[0] + '" aria-pressed="' + (spielArt() === s[0]) + '"' + aus + '>' + esc(s[1]) + '</button>';
+      }).join('')
+      + '</div>'
+      + '<p class="gb-fussnote">' + esc(L.spielHinweis) + '</p></div>'
+
+      /* Kartenspruenge gibt es nur im Bingo — im Radar ist die Karte das
+         Tippfeld, und ein Sprung zum Ziel waere kein Spiel mehr. */
+      + (spielArt() === 'bingo'
+        ? '<div class="gb-stellwerk">'
+          + '<span class="gb-etikett">' + esc(L.springenWahl) + '</span>'
+          + '<div class="gb-schalterbank" role="group">'
+          + [['aus', L.sprAus], ['gast', L.sprGast], ['alle', L.sprAlle]].map(function (s) {
+            return '<button data-springen="' + s[0] + '" aria-pressed="' + ((e.springen || 'gast') === s[0]) + '"' + aus + '>' + esc(s[1]) + '</button>';
+          }).join('')
+          + '</div>'
+          + '<p class="gb-fussnote">' + esc(L.springenHinweis) + '</p></div>'
+        : '')
 
       + '<div class="gb-stellwerk">'
       + '<label class="gb-etikett" for="gbMinuten">' + esc(L.dauer) + '</label>'
@@ -1309,8 +1669,10 @@
       + '<p class="gb-tafelzeile">' + esc(L.spielerP) + '</p>'
       + spielerListe(true)
       + (gast
-        ? '<button class="gb-knopf gb-haupt gb-breit gb-luft" data-tu="los"' + (woerter.length < 1 || !(e.regionen || []).length ? ' disabled' : '') + '>' + esc(L.losGehts) + '</button>'
-          + (woerter.length < 1 ? '<p class="gb-fussnote">' + esc(L.brauchtWort) + '</p>' : '')
+        ? '<button class="gb-knopf gb-haupt gb-breit gb-luft" data-tu="los"'
+          + ((spielArt() === 'bingo' && woerter.length < 1) || !(e.regionen || []).length ? ' disabled' : '')
+          + '>' + esc(L.losGehts) + '</button>'
+          + (spielArt() === 'bingo' && woerter.length < 1 ? '<p class="gb-fussnote">' + esc(L.brauchtWort) + '</p>' : '')
           + (!(e.regionen || []).length ? '<p class="gb-fussnote">' + esc(L.brauchtRegion) + '</p>' : '')
         : '<p class="gb-fussnote gb-luft">' + esc(L.wartetAufGastgeber) + '</p>')
       + '</section>'
@@ -1396,8 +1758,38 @@
    * Gastgeber vorher „Punkte live zeigen" ausgeschaltet haben muss. Wer sie
    * zuklappt, sieht seinen eigenen Stand trotzdem nicht — das ist Absicht.
    */
+  /*
+   * Die Minikarte unten links. Im Radar ist sie das Spielfeld und steht offen;
+   * im Bingo ist sie der Sprung in die Welt und existiert nur, wenn der
+   * Gastgeber das Springen erlaubt hat — eine Karte, mit der man nichts tun
+   * darf, waere ein Knopf ohne Funktion. Gebaut (und abgerechnet) wird die
+   * Karte selbst erst, wenn die Tafel wirklich offen ist.
+   */
+  function miniKarteHtml(radar) {
+    if (!radar && !springenErlaubt()) return '';
+    return '<aside class="gb-miniK" id="gbMiniK" data-zu="' + (radar ? '0' : '1') + '">'
+      + '<button class="gb-miniKopf" data-tu="miniKlapp" title="' + esc(radar ? L.karteZu : L.karteAuf) + '">'
+      + esc(L.weltkarte)
+      + '<span class="gb-klappe" aria-hidden="true">&#9650;</span></button>'
+      + '<div class="gb-miniLeib"><div id="gbMiniKarte" class="gb-miniKarte"></div>'
+      + '<div class="gb-sprung" id="gbSprung" data-da="0">'
+      + '<span id="gbSprungText"></span>'
+      + '<button class="gb-knopf gb-klein gb-haupt" data-tu="sprungJa">' + esc(L.sprungJa) + '</button>'
+      + '<button class="gb-knopf gb-klein" data-tu="sprungNein">' + esc(L.sprungNein) + '</button>'
+      + '<em>' + esc(L.sprungKosten) + '</em>'
+      + '</div></div>'
+      + (radar
+        ? '<div class="gb-miniFuss">'
+          + '<span class="gb-miniStand" id="gbTippStand" data-fest="0">' + esc(L.tippHinweis) + '</span>'
+          + '<button class="gb-knopf gb-klein gb-haupt" id="gbTippKnopf" data-tu="tippAbgeben" disabled>' + esc(L.tippAbgeben) + '</button>'
+          + '</div>'
+        : '')
+      + '</aside>';
+  }
+
   function spielBild() {
-    return '<div class="gb-buehne" data-hud="' + (hudAus ? '0' : '1') + '">'
+    var radar = spielArt() === 'radar';
+    return '<div class="gb-buehne" data-art="' + (radar ? 'radar' : 'bingo') + '" data-hud="' + (hudAus ? '0' : '1') + '">'
       + '<div id="gbPano" class="gb-pano"></div>'
       + '<div id="gbBlitz" class="gb-blitz" data-da="0" aria-hidden="true"></div>'
       + '<div id="gbPanoLaden" class="gb-panoladen"><span class="gb-kreisel"></span>' + esc(L.suchtOrt) + '</div>'
@@ -1422,12 +1814,14 @@
       + '<button class="gb-icon" data-tu="verlassen" title="' + esc(L.verlassen) + '" aria-label="' + esc(L.verlassen) + '">&times;</button>'
       + '</div></div>'
 
-      + '<aside class="gb-kasten gb-links" id="gbKastenLinks" data-zu="0">'
+      + (radar ? '' : '<aside class="gb-kasten gb-links" id="gbKastenLinks" data-zu="0">'
       + '<div class="gb-kastenkopf">' + esc(L.deineKarte)
       + '<span id="gbFortschritt" class="gb-zahl">0 / 0</span>'
       + '<button class="gb-klappe" data-klapp="gbKastenLinks" aria-label="' + esc(L.einklappen) + '" title="' + esc(L.einklappen) + '">&#9650;</button>'
       + '</div>'
-      + '<div class="gb-kastenleib"><div id="gbKarte" class="gb-karte"></div></div></aside>'
+      + '<div class="gb-kastenleib"><div id="gbKarte" class="gb-karte"></div></div></aside>')
+
+      + miniKarteHtml(radar)
 
       + '<aside class="gb-kasten gb-rechts" id="gbKastenRechts" data-zu="' + (spielerAus ? '1' : '0') + '">'
       + '<div class="gb-kastenkopf">' + esc(L.spielerH)
@@ -1550,7 +1944,40 @@
 
   // ── Bildschirm: Ergebnis ──────────────────────────────────────────────────
 
+  /*
+   * Das Radar-Ergebnis: die Karte mit allen Pins neben dem tatsaechlichen
+   * Ort, darunter die Rangfolge. Keine Daumen, keine Bilderpruefung — ein
+   * Punkt auf einer Karte laesst sich nicht anzweifeln wie ein Foto, nur
+   * nachmessen, und genau das steht daneben.
+   */
+  function radarErgebnisBild() {
+    var liste = radarStand();
+    var zeilen = liste.map(function (s, i) {
+      return '<li data-platz="' + (i + 1) + '"><span class="gb-platz">' + (i + 1) + '</span>'
+        + '<span class="gb-wer">'
+        + (teamsAn() ? '<span class="gb-teammarke gb-team' + esc(s.team) + '">' + esc(s.team.toUpperCase()) + '</span>' : '')
+        + esc(s.name) + '</span>'
+        + (s.km === null
+          ? '<span class="gb-still">' + esc(L.keinTipp) + '</span><span></span>'
+          : '<span class="gb-tippzeit">' + zeit(s.ms) + '</span>'
+            + '<span class="gb-entfernung">' + esc(distText(s.km)) + '</span>')
+        + '</li>';
+    }).join('');
+
+    return '<div class="gb-blattseite">'
+      + '<header class="gb-lobbykopf">' + marke()
+      + '<div><h1>' + esc(L.ergebnisH) + '</h1><p class="gb-still">' + esc(L.radarErgebnisP) + '</p></div>'
+      + '<div class="gb-reihe">'
+      + (ichBinGastgeber() ? '<button class="gb-knopf gb-haupt" data-tu="nochmal">' + esc(L.nochmal) + '</button>' : '')
+      + '<button class="gb-knopf" data-tu="verlassen">' + esc(L.verlassen) + '</button>'
+      + '</div></header>'
+      + '<div class="gb-ergebnisKarte" id="gbErgebnisKarte"></div>'
+      + '<div class="gb-tafel"><ol class="gb-rangliste">' + zeilen + '</ol></div>'
+      + '</div>';
+  }
+
   function ergebnisBild() {
+    if (spielArt() === 'radar') return radarErgebnisBild();
     var inhalt;
     if (teamsAn()) {
       var t = teamStand();
@@ -1653,7 +2080,7 @@
     gebunden = true;
 
     document.addEventListener('click', function (ev) {
-      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code],[data-geheim],[data-frei],[data-zugangWeg],[data-anfrageWeg],[data-raus]');
+      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code],[data-geheim],[data-frei],[data-zugangWeg],[data-anfrageWeg],[data-raus],[data-spiel],[data-springen]');
       if (!t) return;
       var d = t.dataset;
 
@@ -1688,6 +2115,8 @@
       }
       if (d.bewegung) { einstellen('bewegung', d.bewegung); return; }
       if (d.modus) { einstellen('modus', d.modus); return; }
+      if (d.spiel) { einstellen('spiel', d.spiel); return; }
+      if (d.springen) { einstellen('springen', d.springen); return; }
       if (d.min) { minutenAendern(parseInt(d.min, 10)); return; }
 
       var tu = d.tu;
@@ -1701,6 +2130,10 @@
       else if (tu === 'nochmal') nochmal();
       else if (tu === 'zurueckZurPruefung') schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
       else if (tu === 'schauZu') schliesseSchau();
+      else if (tu === 'miniKlapp') miniKlappen();
+      else if (tu === 'tippAbgeben') tippAbgeben();
+      else if (tu === 'sprungJa') sprungJa();
+      else if (tu === 'sprungNein') sprungZu();
       else if (tu === 'google') googleAnmelden();
       else if (tu === 'austragen') austragen();
       else if (tu === 'anfrage') anfrageStellen();
@@ -1780,7 +2213,9 @@
     }
     clearTimeout(beendenScharf);
     beendenScharf = null;
-    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
+    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), {
+      zustand: spielArt() === 'radar' ? 'ergebnis' : 'pruefung'
+    }));
   }
 
   function hudKippen() {
@@ -1865,6 +2300,8 @@
 
   function lobbyStarten() {
     var einst = {
+      spiel: C.standard.spiel === 'radar' ? 'radar' : 'bingo',
+      springen: ['aus', 'gast', 'alle'].indexOf(C.standard.springen) >= 0 ? C.standard.springen : 'gast',
       minuten: C.standard.minuten,
       bewegung: C.standard.bewegung,
       modus: C.standard.modus,
@@ -1990,18 +2427,51 @@
   }
 
   function losGehts() {
-    if (!woerter.length || !(lobby.einst.regionen || []).length) return;
-    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), {
-      zustand: 'laeuft', offen: false, startAm: fb.serverTimestamp()
-    }));
+    var radar = spielArt() === 'radar';
+    if (!radar && !woerter.length) return;
+    if (!(lobby.einst.regionen || []).length) return;
+
+    if (!radar) {
+      schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), {
+        zustand: 'laeuft', offen: false, startAm: fb.serverTimestamp()
+      }));
+      return;
+    }
+
+    /*
+     * Radar: EIN Ort fuer alle, und der Gastgeber wuerfelt ihn VOR dem Start.
+     *
+     * Im Bingo wuerfelt jeder Client selbst — jeder steht woanders, das ist
+     * der Reiz. Im Radar ist der gemeinsame Ort das Spiel, also steht er auf
+     * dem Lobby-Dokument, bevor irgendwer laedt. Zwangslaeufig steht damit
+     * auch die Koordinate dort, lesbar fuer jeden mit offener Konsole — die
+     * Regeln sagen das offen (firestore.rules, tipps), und die Kontrolle ist
+     * wie ueberall die Runde selbst. Die Wuerfelei kostet nichts: Metadaten
+     * werden nicht abgerechnet.
+     */
+    maps().then(function () {
+      return zufallsort(lobby.einst);
+    }).then(function (ort) {
+      return fb.updateDoc(fb.doc(db, 'geobingo', code), {
+        zustand: 'laeuft', offen: false, startAm: fb.serverTimestamp(),
+        ort: { pano: ort.pano, lat: ort.lat, lng: ort.lng }
+      });
+    }).catch(function (e) {
+      var m = String(e && e.message);
+      if (m === 'kein-ort') melde(L.keinOrt, 'fehler');
+      else if (m === 'keine-region') melde(L.keineRegion, 'fehler');
+      else melde(fehlertext(e), 'fehler');
+    });
   }
 
   function nochmal() {
     fundeLeeren(code).then(function () {
-      stimmen = {};
+      return tippsLeeren(code);
+    }).then(function () {
+      stimmen = {}; tipps = {}; tippWahl = null;
       for (var k in stimmAbos) { try { stimmAbos[k](); } catch (e) {} }
       stimmAbos = {};
-      return fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'lobby', offen: true, startAm: null });
+      return fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'lobby', offen: true, startAm: null, ort: null });
     }).catch(function (e) { melde(fehlertext(e), 'fehler'); });
   }
 

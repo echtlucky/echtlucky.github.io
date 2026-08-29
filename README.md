@@ -157,6 +157,20 @@ here as a door and not a lock, and for a round among friends it was enough. For
 an event where access is handed out deliberately it was worth nothing, and it
 was replaced rather than reinforced.
 
+**One lobby, two games.** The settings carry a game switch: **GeoBingo** drops
+every player somewhere else and hunts the word list; **GeoRadar** drops
+everyone into the *same* panorama and races the lobby to guess where it is —
+a guess is a pin on the world map, closest wins, the clock breaks ties, and
+the result screen shows every pin next to the actual spot. A guess is five
+numbers with a fixed per-player id (locked is locked), stored under `tipps/`
+with its own rules block — which also says out loud what it cannot enforce:
+the target coordinate necessarily sits on the lobby document, and the round
+itself is the check. Bingo rounds additionally get a **world minimap** in the
+corner: click anywhere, the free metadata search finds the nearest panorama,
+and a confirm that names the cost jumps there — who may jump is a lobby
+setting (off / host / everyone). The map is one reused `Map` object per
+session, because every instantiation is a billed line.
+
 The start screen is one column: play, browse lobbies, join with code, Discord.
 A lobby is private by default and reachable only through its code; a host can
 switch it to public, and then it appears under **Browse lobbies**. That is a
