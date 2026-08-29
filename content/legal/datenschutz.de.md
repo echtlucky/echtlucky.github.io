@@ -32,7 +32,7 @@ Beim Abruf verarbeitet GitHub technisch notwendige Verbindungsdaten, insbesonder
 
 # 4. Was in Ihrem Browser gespeichert wird
 
-Diese Seite setzt keine Cookies. Sie legt bis zu sieben Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
+Diese Seite setzt keine Cookies. Sie legt bis zu sechs Werte im lokalen Speicher (`localStorage`) Ihres Browsers ab:
 
 | Schlüssel | Inhalt | Zweck |
 | --- | --- | --- |
@@ -40,13 +40,12 @@ Diese Seite setzt keine Cookies. Sie legt bis zu sieben Werte im lokalen Speiche
 | `skillry:hinweis` | dass Sie den Hinweis unten links weggeklickt haben | zeigt ihn nicht bei jedem Seitenaufruf erneut |
 | `level` | die gewählte Tiefe im Lernbereich | zeigt beim nächsten Besuch dieselbe Stufe |
 | `skillry:who` | Ihr Anzeigename und ob Ihre E-Mail-Adresse bestätigt ist | zeigt in der Kopfleiste, dass Sie angemeldet sind |
-| `gb:zutritt` | dass Sie den Zugangscode von GeoBingo eingegeben haben | fragt ihn nicht bei jedem Besuch erneut ab |
 | `gb:name` | der Name, den Sie sich bei GeoBingo gegeben haben | steht dann schon im Feld |
 | `gb:lobby` | der Code der zuletzt betretenen Lobby | bringt Sie nach einem Neuladen in dieselbe Runde zurück |
 
 Der Hinweis unten links ist **kein Einwilligungsbanner**, und er gibt auch nicht vor, eines zu sein: es gibt hier nichts einzuwilligen, weil nichts gesetzt wird, was einer Einwilligung bedürfte. Er sagt, was lokal liegt, und verweist hierher. Ein „Alle akzeptieren"-Knopf ohne etwas zu akzeptieren wäre eine Formalie, die Leute darauf trainiert, wegzuklicken, was anderswo wirklich zählt.
 
-Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden. Die letzten drei entstehen nur, wenn Sie GeoBingo öffnen; der Lobby-Code verschwindet, sobald Sie die Runde verlassen. Keiner der Werte enthält ein Token, und keiner wird irgendwohin gesendet.
+Die ersten beiden entstehen nur, wenn Sie den jeweiligen Umschalter tatsächlich benutzen. Der dritte entsteht ausschließlich, wenn Sie sich anmelden, und verschwindet beim Abmelden. Die letzten beiden entstehen nur, wenn Sie GeoBingo spielen; der Lobby-Code verschwindet, sobald Sie die Runde verlassen. Keiner der Werte enthält ein Token, und keiner wird irgendwohin gesendet.
 
 `skillry:who` verdient eine Erklärung, weil er der Grund ist, warum die Kopfleiste Sie begrüßen kann, ohne dass irgendeine Seite mit Google spricht. Der Anmeldezustand liegt eigentlich bei Firebase; ihn dort abzufragen hieße, das Firebase-SDK auf **jeder** Seite zu laden — und damit wäre die Zusage aus Abschnitt 5, dass alle Seiten außer dem Forum und GeoBingo nichts von fremden Servern laden, nicht mehr wahr. Stattdessen schreibt die Anmeldung diesen einen Wert lokal, und alle anderen Seiten lesen nur ihn. Er enthält kein Token und keine E-Mail-Adresse, er berechtigt zu nichts — wer ihn im Browser von Hand fälscht, bekommt einen fremden Namen in die Ecke des Bildschirms und von der Datenbank eine Ablehnung.
 
@@ -116,11 +115,19 @@ Eine Lobby liegt in derselben Cloud Firestore wie das Forum (siehe Abschnitt 5) 
 
 Eine Lobby ist ausschließlich über ihren Code erreichbar. Eine Liste aller Lobbys gibt es nicht: die Datenbankregel erlaubt das Abrufen eines einzelnen Codes und verbietet das Auflisten. Wer die Runde verlässt oder den Tab schließt, wird aus der Spielerliste entfernt. Verlässt der Gastgeber die Lobby, wird sie mitsamt Wörtern und Funden gelöscht; eine liegengebliebene Lobby entfernt eine Aufräumregel von Firestore 24 Stunden nach ihrer Anlage.
 
-## 6.4 Kein Konto, keine Anmeldung
+## 6.4 Anmeldung mit Google
 
-**GeoBingo hat keine Anmeldung.** Sie geben sich einen Namen, und Firebase legt dafür eine anonyme Nutzerkennung an — eine Zeichenfolge ohne Bezug zu Ihrer Person. Es werden weder E-Mail-Adresse noch Passwort verarbeitet, und mit dem Forum-Konto aus Abschnitt 5 hat das nichts zu tun. Der Name steht nur in der Lobby und nur so lange, wie es sie gibt.
+**Seit dem 29.08.2026 verlangt GeoBingo eine Anmeldung mit einem Google-Konto.** Davor lag ein Zugangscode vor der Seite. Der stand als Klartext in der ausgelieferten Datei — er hielt Zufallsbesucher fern, mehr nicht, und die Seite hat das auch so gesagt. Für eine Veranstaltung, bei der gezielt Zugriff vergeben wird, war er wertlos.
 
-Vor der Seite liegt ein Zugangscode. Er hält sie unauffällig, nicht verschlossen: die Seite ist eine statische Datei, der Code steht darin, und wer entschlossen genug sucht, findet ihn. Sie ist nirgends verlinkt, steht nicht in der Sitemap, nicht in der Suche dieser Website und trägt `noindex`. Der Hinweistext auf dem Code-Feld sagt das in denselben Worten — ein Schutz, der mehr verspricht als er hält, ist schlechter als gar keiner.
+Bei der Anmeldung verarbeitet **Firebase Authentication** (Google Ireland Limited): Ihre E-Mail-Adresse, Ihren bei Google hinterlegten Anzeigenamen, eine Nutzerkennung (UID) sowie Zeitpunkte von Erstellung und letzter Anmeldung. Zur Missbrauchsabwehr verarbeitet Google außerdem IP-Adresse und Gerätedaten. Ein Passwort wird hier weder abgefragt noch gespeichert — die Anmeldung findet bei Google statt.
+
+**Rechtsgrundlage:** Art. 6 Abs. 1 lit. b DSGVO. Ohne Anmeldung gibt es die Funktion nicht, und Sie lösen sie selbst aus.
+
+**Wer eine Runde aufmachen darf, wird einzeln freigegeben.** Dazu wird zu Ihrer Nutzerkennung gespeichert: E-Mail-Adresse, Anzeigename, Rolle und der Zeitpunkt der Freigabe. Fragen Sie eine Freigabe an, werden dieselben Angaben vorübergehend als Anfrage gespeichert, bis sie angenommen oder abgelehnt wird. Beides sieht ausschließlich der Betreiber.
+
+Diese Prüfung findet **auf den Servern von Google statt und nicht im Browser**. Das ist der ganze Unterschied zum früheren Code: eine Regel, die im Browser läuft, kann jeder umgehen, der den Browser bedient.
+
+Mitspielen bei der Runde eines anderen geht mit jedem angemeldeten Konto, sobald Sie einen Einladelink haben — dafür ist keine Freigabe nötig. Der Gastgeber kann seine Lobby aber auf freigegebene Konten beschränken und Mitspieler entfernen.
 
 # 7. GitHub Discussions
 

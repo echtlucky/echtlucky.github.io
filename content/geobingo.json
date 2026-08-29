@@ -1,7 +1,10 @@
 {
   "_comment": "GeoBingo: Zugang, Kartenschluessel, Regionen und Wortpakete. Geaendert wird hier, nicht im Spielskript.",
-  "_zugangscode": "Der Code vor der Seite. Er haelt sie unauffaellig, nicht sicher: die Seite liegt als statische Datei bei GitHub Pages, und wer die Adresse und den Code hat, kommt rein — wer nur die Adresse hat, sieht ein Feld. Das reicht fuer den Zweck (eine Spielseite, die nicht in der Navigation steht und nicht in der Suche auftaucht) und ist ausdruecklich KEIN Passwortschutz. Wer sie wirklich verschliessen will, braucht einen Server davor. Gross- und Kleinschreibung sowie Bindestriche sind egal.",
-  "zugangscode": "zebra-hydrant-7",
+  "_adminMail": "Wer das Verwaltungsfenster sieht. WICHTIG: das steuert nur die ANZEIGE. Die eigentliche Berechtigung steht in firestore.rules bei adminMail() und laeuft auf Googles Servern — wer diesen Wert hier faelscht, sieht Knoepfe und bekommt von der Datenbank eine Ablehnung. Beide Stellen muessen dieselbe Adresse tragen.",
+  "adminMail": "lucassteckel04@gmail.com",
+
+  "_zugangscode": "NICHT MEHR IN BENUTZUNG, und deshalb steht hier, was an seine Stelle getreten ist. Bis zum 29.08.2026 lag hier ein Code, den die Seite selbst geprueft hat — im Browser, in einer Datei, die jeder herunterlaedt. Das war als Tuer und nicht als Schloss beschrieben und fuer eine Runde unter Freunden genug; fuer eine Olympiade, bei der gezielt Zugriff vergeben wird, war es nichts wert. Jetzt entscheidet die Anmeldung mit Google plus ein Eintrag in skillry_zugang, geprueft von Firestore. Das Feld bleibt als Notiz stehen, damit niemand den Code wieder einfuehrt und fuer Sicherheit haelt.",
+
   "_mapsApiKey": "Google-Maps-Schluessel. LEER lassen, bis der Schluessel existiert und auf die Adresse eingeschraenkt ist: mit leerem Feld erklaert die Seite, was fehlt, statt eine Karte anzubieten, die nicht laedt. Anleitung: docs/SETUP-MAPS.md. Der Schluessel ist kein Geheimnis — er steht zwangslaeufig im Browser — aber er ist eine Rechnung. Seine Sicherheit haengt an der Referrer-Beschraenkung und am Budget-Deckel, nicht an Geheimhaltung.",
   "mapsApiKey": "AIzaSyDQAxP8VjoeuVk6_kSKnuV-fMLY4O6z9Kg",
   "_apis": "Welche drei Dienste im Google-Cloud-Projekt freigeschaltet sein muessen.",

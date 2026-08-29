@@ -32,7 +32,7 @@ When a page is requested, GitHub processes the technically necessary connection 
 
 # 4. What is stored in your browser
 
-This site sets no cookies. It writes up to seven values into your browser's `localStorage`:
+This site sets no cookies. It writes up to six values into your browser's `localStorage`:
 
 | Key | Content | Purpose |
 | --- | --- | --- |
@@ -40,13 +40,12 @@ This site sets no cookies. It writes up to seven values into your browser's `loc
 | `skillry:hinweis` | that you dismissed the notice in the bottom left | so it is not shown on every page |
 | `level` | the depth you chose in the Learn section | shows the same level on your next visit |
 | `skillry:who` | your display name, and whether your email address is confirmed | lets the header show that you are signed in |
-| `gb:zutritt` | that you entered the GeoBingo access code | so it is not asked on every visit |
 | `gb:name` | the name you gave yourself in GeoBingo | so the field is already filled in |
 | `gb:lobby` | the code of the last lobby you joined | puts you back in the same round after a reload |
 
 The notice in the bottom left is **not a consent banner** and does not pretend to be one: there is nothing here to consent to, because nothing is set that would require it. It says what is stored locally and points here. An "accept all" button with nothing to accept is a formality that trains people to click away the ones that do matter.
 
-The first two are written only if you actually use the toggle. The third appears only when you sign in, and goes away when you sign out. The last three appear only if you open GeoBingo, and the lobby code goes away when you leave the round. None of them holds a token, and none is ever sent anywhere.
+The first two are written only if you actually use the toggle. The third appears only when you sign in, and goes away when you sign out. The last two appear only if you play GeoBingo, and the lobby code goes away when you leave the round. None of them holds a token, and none is ever sent anywhere.
 
 `skillry:who` deserves an explanation, because it is the reason the header can greet you without any page talking to Google. The signed-in state really lives at Firebase; asking Firebase would mean loading its SDK on **every** page — and the promise in section 5, that every page but the forum and GeoBingo fetches nothing from anyone else, would stop being true. So signing in writes this one value locally, and every other page reads only that. It holds no token and no email address, and it authorises nothing: forge it by hand in your browser and you get somebody else's name in the corner of your screen and a refusal from the database.
 
@@ -116,11 +115,19 @@ A lobby lives in the same Cloud Firestore as the forum (see section 5) and holds
 
 A lobby is reachable only through its code. There is no list of lobbies: the database rule permits fetching a single code and forbids listing. Leaving the round or closing the tab removes you from the player list. If the host leaves, the lobby is deleted along with its words and finds; a lobby left behind is removed by a Firestore clean-up rule 24 hours after it was created.
 
-## 6.4 No account, no sign-in
+## 6.4 Signing in with Google
 
-**GeoBingo has no sign-in.** You pick a name, and Firebase creates an anonymous user id for it — a string with no connection to you as a person. No email address and no password are processed, and none of this touches the forum account in section 5. The name exists only inside the lobby, and only for as long as the lobby does.
+**Since 29.08.2026 GeoBingo requires a Google account.** Before that an access code sat in front of the page. It was plain text inside the file that every visitor downloads — it kept passers-by out and nothing more, and the page said so. For an event where access is granted deliberately, it was worthless.
 
-The page sits behind an access code. It keeps the page quiet, not locked: this is a static file, the code is inside it, and anybody determined enough will find it. The page is linked from nowhere, excluded from the sitemap and from this site's search, and carries `noindex`. The note under the code field says exactly that — a protection that promises more than it delivers is worse than none.
+Signing in makes **Firebase Authentication** (Google Ireland Limited) process: your email address, the display name held by Google, a user id (UID), and the times of creation and last sign-in. For abuse prevention Google additionally processes IP address and device data. No password is requested or stored here — the sign-in happens at Google.
+
+**Legal basis:** Art. 6 (1) (b) GDPR. Without it the feature does not exist, and you trigger it yourself.
+
+**Who may open a round is unlocked individually.** Against your user id we store: email address, display name, role, and when it was granted. If you request access, the same details are stored as a pending request until it is accepted or dismissed. Only the operator sees either.
+
+That check runs **on Google's servers, not in the browser**. That is the whole difference from the old code: a rule that runs in the browser can be bypassed by anybody operating the browser.
+
+Playing along in somebody else's round works with any signed-in account once you have an invite link — no unlocking needed. The host can however restrict their lobby to unlocked accounts and remove players.
 
 # 7. GitHub Discussions
 

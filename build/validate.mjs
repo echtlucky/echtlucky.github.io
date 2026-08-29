@@ -281,8 +281,23 @@ const gbFehler = [];
     if (!ids.has(id)) gbFehler.push(`geobingo: standard.regionen nennt "${id}", das es nicht gibt`);
   }
   if (!(gb.standard.regionen ?? []).length) gbFehler.push('geobingo: standard.regionen ist leer — jede neue Lobby könnte so nicht starten');
-  if (!gb.zugangscode || String(gb.zugangscode).replace(/[^a-z0-9]/gi, '').length < 6) {
-    gbFehler.push('geobingo: zugangscode fehlt oder ist kürzer als sechs Zeichen');
+  // Der Zugang haengt seit dem 29.08.2026 an der Anmeldung, nicht an einem Code
+  // in der Datei. Geprueft wird jetzt, dass die Admin-Adresse hier und in
+  // firestore.rules dieselbe ist — zwei Stellen, die auseinanderlaufen koennen,
+  // und eine davon entscheidet wirklich.
+  if (!gb.adminMail || !gb.adminMail.includes('@')) {
+    gbFehler.push('geobingo: adminMail fehlt — ohne sie zeigt die Seite niemandem das Verwaltungsfenster');
+  } else {
+    const regeln = readFileSync(join(ROOT, 'firestore.rules'), 'utf8');
+    if (!regeln.includes("'" + gb.adminMail + "'")) {
+      gbFehler.push(
+        `geobingo: adminMail "${gb.adminMail}" steht nicht in firestore.rules — `
+        + 'die Seite zeigt dann Knöpfe, die die Datenbank ablehnt',
+      );
+    }
+  }
+  if (gb.zugangscode !== undefined && !String(gb._zugangscode || '').includes('NICHT MEHR')) {
+    gbFehler.push('geobingo: zugangscode wird nicht mehr geprüft — er darf nicht wie ein Schutz aussehen');
   }
 
   for (const p of gb.pakete) {

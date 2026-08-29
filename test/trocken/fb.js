@@ -120,7 +120,43 @@ export function onSnapshot(ref, cb) {
 
 let nutzer = null;
 const wachen = [];
+
 export function onAuthStateChanged(_a, cb) { wachen.push(cb); setTimeout(() => cb(nutzer), 0); return () => {}; }
+
+/*
+ * Google-Anmeldung als Attrappe.
+ *
+ * Welche Adresse dabei herauskommt, steht in `?als=` in der Adresszeile —
+ * ohne Angabe die des Admins. Damit laesst sich beides trocken durchspielen:
+ * `?als=admin` sieht das Verwaltungsfenster, `?als=fremd@example.com` bekommt
+ * „noch nicht freigeschaltet" und kann sich melden.
+ *
+ * Was hier NICHT nachgebaut ist: dass die echte Regel die Adresse aus einem
+ * von Google signierten Token liest. Hier steht sie in der URL — im
+ * Trockenlauf ist das der Sinn, in der Wirklichkeit waere es das Gegenteil
+ * von Sicherheit.
+ */
+export function GoogleAuthProvider() { this.setCustomParameters = () => {}; }
+
+export function signInWithPopup() {
+  const p = new URLSearchParams(location.search).get('als') || 'admin';
+  const mail = p === 'admin' ? 'lucassteckel04@gmail.com' : p;
+  nutzer = {
+    uid: 'trocken-' + mail.replace(/[^a-z0-9]/gi, '').slice(0, 12),
+    email: mail,
+    displayName: mail.split('@')[0],
+    isAnonymous: false,
+  };
+  wachen.forEach((w) => w(nutzer));
+  return Promise.resolve({ user: nutzer });
+}
+
+export function signOut() {
+  nutzer = null;
+  wachen.forEach((w) => w(null));
+  return Promise.resolve();
+}
+
 export function signInAnonymously() {
   nutzer = { uid: 'trocken-' + Math.random().toString(36).slice(2, 8), isAnonymous: true };
   wachen.forEach((w) => w(nutzer));

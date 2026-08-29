@@ -85,12 +85,29 @@ export const TEXTE = {
   en: {
     laden: 'Loading…',
 
-    torH: 'Access code',
-    torP: 'This page is not linked anywhere. If somebody gave you the code, this is where it goes.',
-    torPlatz: 'Code',
-    torAuf: 'Enter',
-    torFalsch: 'That is not the code.',
-    torHinweis: 'The code keeps this page quiet, not locked. It is a static file, so anybody determined enough will find the code inside it — that is what it is for and all it claims to do.',
+    anmeldenH: 'Sign in',
+    anmeldenP: 'Skillry decides per account who may open a round. No password to invent — your Google account is enough.',
+    mitGoogle: 'Continue with Google',
+    anmeldenHinweis: 'Signing in loads Firebase from Google. Until you press the button, this page has contacted nobody.',
+    abmelden: 'Sign out',
+    erstAnmelden: 'Sign in first.',
+    gesperrtH: 'Not unlocked yet',
+    gesperrtP: 'Your account is signed in but not on the access list. Opening your own round needs to be unlocked once.',
+    gesperrtHinweis: 'An invite link still works: somebody else’s round you can join right away — you just cannot open one yourself.',
+    zugangAnfragen: 'Request access',
+    verwaltung: 'Administration',
+    anfragen: 'Requests',
+    keineAnfragen: 'No requests.',
+    freischalten: 'Unlock',
+    ablehnen: 'Dismiss',
+    freigeschaltete: 'Unlocked',
+    niemandFrei: 'Nobody unlocked yet.',
+    entziehen: 'Revoke',
+    freigeschaltetOk: 'Unlocked.',
+    rauswerfen: 'Remove from lobby',
+    adminHinweis: 'You are admin because of your email address — that is fixed in firestore.rules and cannot be granted from here. Everybody else needs an entry in this list.',
+    anfrageLaeuft: 'Request sent. You will be unlocked by hand.',
+    anfrageRaus: 'Request sent.',
 
     nameH: 'What should the others call you?',
     nameP: 'No account, no email, no password. The name lives in the lobby and nowhere else.',
@@ -105,7 +122,9 @@ export const TEXTE = {
     discord: 'Join our Discord',
     keineLobbys: 'No public lobbies right now. Open one — you can make it public in the settings.',
     oeffentlich: 'Public lobby',
-    oeffentlichHinweis: 'Shows up under "Browse lobbies" for everyone with access to this page. Off means the code is the only way in.',
+    oeffentlichHinweis: 'Shows up under "Browse lobbies" for everyone signed in. Off means the invite link is the only way in.',
+    nurFrei: 'Unlocked accounts only',
+    nurFreiHinweis: 'Then the invite link alone is not enough — a leaked link is worthless. For a tournament: on.',
     code: 'Lobby code',
     beitreten: 'Join',
     codeFalsch: 'A lobby code is five characters.',
@@ -209,12 +228,29 @@ export const TEXTE = {
   de: {
     laden: 'Wird geladen…',
 
-    torH: 'Zugangscode',
-    torP: 'Diese Seite ist nirgends verlinkt. Wenn dir jemand den Code gegeben hat, gehört er hier hinein.',
-    torPlatz: 'Code',
-    torAuf: 'Rein',
-    torFalsch: 'Das ist nicht der Code.',
-    torHinweis: 'Der Code hält die Seite unauffällig, nicht verschlossen. Sie ist eine statische Datei, der Code steht darin, und wer entschlossen genug sucht, findet ihn — dafür ist er da, und mehr behauptet er nicht.',
+    anmeldenH: 'Anmelden',
+    anmeldenP: 'Skillry entscheidet je Konto, wer eine Runde aufmachen darf. Kein Passwort auszudenken — dein Google-Konto reicht.',
+    mitGoogle: 'Weiter mit Google',
+    anmeldenHinweis: 'Die Anmeldung lädt Firebase von Google. Bis du klickst, hat diese Seite mit niemandem gesprochen.',
+    abmelden: 'Abmelden',
+    erstAnmelden: 'Erst anmelden.',
+    gesperrtH: 'Noch nicht freigeschaltet',
+    gesperrtP: 'Dein Konto ist angemeldet, steht aber nicht auf der Zugangsliste. Eine eigene Runde aufmachen geht erst nach einer Freischaltung.',
+    gesperrtHinweis: 'Ein Einladelink funktioniert trotzdem: bei der Runde von jemand anderem kannst du sofort mitspielen — nur selbst eine aufmachen nicht.',
+    zugangAnfragen: 'Zugang anfragen',
+    verwaltung: 'Verwaltung',
+    anfragen: 'Anfragen',
+    keineAnfragen: 'Keine Anfragen.',
+    freischalten: 'Freischalten',
+    ablehnen: 'Ablehnen',
+    freigeschaltete: 'Freigeschaltet',
+    niemandFrei: 'Noch niemand freigeschaltet.',
+    entziehen: 'Entziehen',
+    freigeschaltetOk: 'Freigeschaltet.',
+    rauswerfen: 'Aus der Lobby werfen',
+    adminHinweis: 'Du bist Admin wegen deiner E-Mail-Adresse — das steht fest in firestore.rules und lässt sich von hier aus nicht vergeben. Alle anderen brauchen einen Eintrag in dieser Liste.',
+    anfrageLaeuft: 'Anfrage ist raus. Freigeschaltet wird von Hand.',
+    anfrageRaus: 'Anfrage abgeschickt.',
 
     nameH: 'Wie sollen dich die anderen nennen?',
     nameP: 'Kein Konto, keine E-Mail, kein Passwort. Der Name steht in der Lobby und sonst nirgends.',
@@ -229,7 +265,9 @@ export const TEXTE = {
     discord: 'Discord beitreten',
     keineLobbys: 'Gerade keine öffentlichen Lobbys. Mach eine auf — öffentlich stellen geht in den Einstellungen.',
     oeffentlich: 'Öffentliche Lobby',
-    oeffentlichHinweis: 'Taucht unter „Lobbys durchsuchen" auf, für jeden mit Zugang zu dieser Seite. Aus heißt: nur über den Code.',
+    oeffentlichHinweis: 'Taucht unter „Lobbys durchsuchen" auf, für jeden Angemeldeten. Aus heißt: nur über den Einladelink.',
+    nurFrei: 'Nur freigeschaltete Konten',
+    nurFreiHinweis: 'Dann reicht der Einladelink allein nicht — ein geleakter Link ist wertlos. Für ein Turnier: an.',
     code: 'Lobby-Code',
     beitreten: 'Beitreten',
     codeFalsch: 'Ein Lobby-Code sind fünf Zeichen.',
@@ -546,6 +584,35 @@ input::placeholder { color: #6a748c; }
 .gb-lobbyinfo { flex: 1; min-width: 0; font-size: .82rem; color: var(--leise); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gb-lobbypfeil { font-size: 1.3rem; line-height: 1; color: var(--leise); }
 
+/* ── Verwaltung ──────────────────────────────────────────────────────────── */
+.gb-verwaltungKnopf { display: block; margin: 16px auto 0; }
+.gb-vBlock { text-align: left; margin-bottom: 18px; }
+.gb-vBlock > .gb-etikett { margin-bottom: 8px; }
+.gb-vListe { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.gb-vListe li {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 9px 11px; border: 1px solid var(--kante); border-radius: var(--r);
+  background: rgba(0,0,0,.22);
+}
+.gb-vName { font-weight: 600; font-size: .9rem; }
+.gb-vMail { flex: 1; min-width: 0; font: 400 .78rem/1.3 var(--mono); color: var(--leise); overflow-wrap: anywhere; }
+.gb-vRolle {
+  font: 600 .68rem/1 var(--sans); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--violett-hell); padding: 4px 7px; border-radius: 999px;
+  border: 1px solid var(--violett-rand); background: rgba(127,34,254,.12);
+}
+
+.gb-google { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 18px; padding: 14px 18px; font-size: 1rem; }
+.gb-google svg { flex: none; }
+.gb-kennung {
+  font: 400 .86rem/1.4 var(--mono); color: var(--violett-hell);
+  background: rgba(0,0,0,.28); border: 1px solid var(--kante); border-radius: var(--r);
+  padding: 9px 12px; margin: 14px 0; overflow-wrap: anywhere;
+}
+.gb-hinweisgut {
+  color: var(--gruen); font-size: .88rem; padding: 10px 12px; margin: 0;
+  border: 1px solid rgba(34,197,94,.4); border-radius: var(--r); background: rgba(34,197,94,.1);
+}
 .gb-kopfzeile { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
 
 /* ── Lobby ───────────────────────────────────────────────────────────────── */
@@ -949,7 +1016,7 @@ export function script(lang) {
     },
     sdk: FB.sdkVersion || '11.0.2',
     maps: KARTE,
-    zugang: GB.zugangscode,
+    adminMail: GB.adminMail || '',
     discord: GB.discord || '',
     standard: GB.standard,
     kontingent: GB.kontingent || null,

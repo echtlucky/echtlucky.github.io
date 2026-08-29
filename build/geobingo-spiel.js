@@ -125,12 +125,6 @@
     return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
   }
 
-  /** Vergleicht Zugangscodes ohne Ruecksicht auf Schreibweise und Bindestriche. */
-  function schluesselGleich(a, b) {
-    var n = function (x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]/g, ''); };
-    return n(a) !== '' && n(a) === n(b);
-  }
-
   // ── Zustand ───────────────────────────────────────────────────────────────
 
   var fb = null, app = null, db = null, auth = null, user = null;
@@ -141,6 +135,8 @@
   var pano = null, svc = null, mapsLaeuft = null;
   var schauPano = null;                 // das Panorama der Auswertung
   var uhr = null;
+  var meinZugang = null;      // 'admin' | 'streamer' | null
+  var anfrageGestellt = false;
   var hudAus = false;
   /* Ob der Spielerkasten zugeklappt ist. Bleibt ueber die Runde hinaus
      stehen: wer verdeckt spielen will, will das nicht jede Runde neu
@@ -149,9 +145,21 @@
   var entwurf = null;                   // Einstellungen, solange die Lobby noch nicht existiert
 
   function ichBinGastgeber() { return !!(lobby && user && lobby.host === user.uid); }
+  /*
+   * Der Name in dieser Reihenfolge: was in der Lobby steht, dann ein selbst
+   * gewaehlter, dann der aus dem Google-Konto.
+   *
+   * Die Reihenfolge ist der Punkt. Was schon in der Lobby steht, gilt — sonst
+   * hiesse jemand nach einem Neuladen ploetzlich anders, und die anderen
+   * saehen zwei Leute, wo einer ist.
+   */
   function meinName() {
     if (user && spieler[user.uid] && spieler[user.uid].name) return spieler[user.uid].name;
-    return holen('gb:name') || 'Gast';
+    var eigen = holen('gb:name');
+    if (eigen) return eigen;
+    if (user && user.displayName) return user.displayName.slice(0, 24);
+    if (user && user.email) return user.email.split('@')[0].slice(0, 24);
+    return 'Gast';
   }
   function meinTeam() { return (user && spieler[user.uid] && spieler[user.uid].team) || 'a'; }
   function spielerZahl() { return Object.keys(spieler).length; }
@@ -181,8 +189,13 @@
       return new Promise(function (fertig, schiefgegangen) {
         var erste = true;
         fb.onAuthStateChanged(auth, function (u) {
+          var vorher = user;
           user = u;
-          if (erste) { erste = false; fertig(); }
+          if (erste) { erste = false; fertig(); return; }
+          /* Abmeldung in einem anderen Tab oder abgelaufene Sitzung: die Seite
+             faellt zurueck auf die Anmeldung, statt mit einem Nutzer
+             weiterzuarbeiten, den es nicht mehr gibt. */
+          if (vorher && !u) { meinZugang = null; verlassenStill(); bild = 'anmeldung'; zeichne(); }
         });
         setTimeout(function () { if (erste) { erste = false; schiefgegangen(new Error('auth')); } }, 15000);
       });
@@ -190,14 +203,72 @@
   }
 
   /*
-   * Anonyme Anmeldung. Ist sie in der Firebase-Konsole nicht eingeschaltet,
-   * kommt `auth/operation-not-allowed` zurueck — und dann sagt die Seite genau
-   * das, samt Weg dorthin, statt „das hat nicht geklappt". Ein Fehler, dessen
-   * Behebung ein Schalter ist, sollte den Schalter nennen.
+   * Anmeldung mit Google — und das ist der Ersatz fuer den Zugangscode, nicht
+   * eine Bequemlichkeit daneben.
+   *
+   * Der Code stand als Klartext in der ausgelieferten HTML-Datei. Das war von
+   * Anfang an als „Tuer, kein Schloss" beschrieben und fuer eine Runde unter
+   * Freunden auch genug. Fuer eine Olympiade, bei der gezielt Zugriff vergeben
+   * wird, ist es nichts wert: wer den Quelltext ansieht, hat ihn.
+   *
+   * Jetzt entscheidet Firestore, und zwar auf Googles Servern. Diese Datei
+   * kann sich irren, luegen oder umgeschrieben werden — sie kommt trotzdem an
+   * kein Dokument heran, das die Regeln ihr nicht geben.
    */
-  function anmelden() {
-    if (user) return Promise.resolve(user);
-    return fb.signInAnonymously(auth).then(function (r) { user = r.user; return user; });
+  function mitGoogle() {
+    var anbieter = new fb.GoogleAuthProvider();
+    // `prompt: select_account` statt stillschweigend das zuletzt benutzte
+    // Konto: auf einem geteilten Rechner ist „wer bin ich hier eigentlich"
+    // genau die Frage, die man beantwortet sehen will.
+    anbieter.setCustomParameters({ prompt: 'select_account' });
+    return fb.signInWithPopup(auth, anbieter).then(function (r) { user = r.user; return user; });
+  }
+
+  function austragen() {
+    verlassenStill();
+    return fb.signOut(auth).then(function () {
+      user = null; meinZugang = null; anfrageGestellt = false;
+      bild = 'anmeldung';
+      zeichne();
+    });
+  }
+
+  /*
+   * Wer bin ich hier?
+   *
+   * Der Admin haengt an der E-Mail-Adresse und braucht keinen Eintrag — genau
+   * so steht es auch in den Regeln, damit es keinen Huhn-und-Ei-Fall gibt, in
+   * dem niemand den ersten Zugang vergeben kann. Alle anderen brauchen ein
+   * Dokument unter skillry_zugang.
+   *
+   * Was diese Funktion herausfindet, steuert nur, WAS DIE SEITE ZEIGT. Ob
+   * jemand wirklich darf, entscheidet Firestore bei jedem Schreibvorgang neu.
+   */
+  function binAdmin() {
+    return !!(user && user.email && C.adminMail
+      && user.email.toLowerCase() === String(C.adminMail).toLowerCase());
+  }
+
+  function zugangPruefen() {
+    if (!user) { meinZugang = null; return Promise.resolve(null); }
+    if (binAdmin()) { meinZugang = 'admin'; return Promise.resolve('admin'); }
+    return fb.getDoc(fb.doc(db, 'skillry_zugang', user.uid)).then(function (s) {
+      meinZugang = s.exists() ? (s.data().rolle || 'streamer') : null;
+      return meinZugang;
+    }).catch(function () { meinZugang = null; return null; });
+  }
+
+  function anfrageStellen() {
+    if (!user) return;
+    schreibe(fb.setDoc(fb.doc(db, 'skillry_anfrage', user.uid), {
+      email: user.email || '',
+      name: user.displayName || (user.email || '').split('@')[0] || 'Ohne Namen',
+      wann: fb.serverTimestamp()
+    })).then(function () {
+      anfrageGestellt = true;
+      melde(L.anfrageRaus, 'gut');
+      zeichne();
+    });
   }
 
   // ── Google Maps ───────────────────────────────────────────────────────────
@@ -412,6 +483,15 @@
          `resource.data.oeffentlich`, und verschachtelte Felder sind in einer
          Firestore-Abfrage nicht so filterbar. Neue Lobbys sind privat. */
       oeffentlich: C.standard.oeffentlich === true,
+      /*
+       * Der Streamer-Schutz. Aus heisst: wer den Einladelink hat, kommt rein.
+       * An heisst: er braucht zusaetzlich ein freigeschaltetes Konto — ein
+       * versehentlich geteilter Link ist damit wertlos.
+       *
+       * Wie  steht das Feld oben auf dem Dokument und nicht unter
+       * , weil die Datenbankregel es beim Beitreten liest.
+       */
+      nurFreigeschaltete: false,
       einst: einst,
       angelegt: fb.serverTimestamp()
     }).then(function () { return c; })
@@ -433,9 +513,8 @@
     c = String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (c.length !== 5) { if (!still) melde(L.codeFalsch, 'fehler'); return Promise.resolve(false); }
 
-    return anmelden().then(function () {
-      return fb.getDoc(fb.doc(db, 'geobingo', c));
-    }).then(function (s) {
+    if (!user) { melde(L.erstAnmelden, 'fehler'); return Promise.resolve(false); }
+    return fb.getDoc(fb.doc(db, 'geobingo', c)).then(function (s) {
       if (!s.exists()) { if (!still) melde(L.lobbyWeg, 'fehler'); weg('gb:lobby'); return false; }
       var d = s.data();
       if (!d.offen) { if (!still) melde(L.lobbyLaeuft, 'fehler'); return false; }
@@ -465,7 +544,12 @@
     });
   }
 
-  function verlassen() {
+  /* Beim Abmelden: Lobby abraeumen, aber nicht neu zeichnen — das macht der
+     Aufrufer, sonst blitzt kurz die Startseite auf, die es gleich nicht mehr
+     gibt. */
+  function verlassenStill() { if (code) verlassen(true); }
+
+  function verlassen(still) {
     var warCode = code, warGastgeber = ichBinGastgeber();
     abmelden();
     clearInterval(uhr); uhr = null;
@@ -478,6 +562,7 @@
     pano = null;
     weg('gb:lobby');
     history.replaceState(null, '', location.pathname);
+    if (still) return;
     bild = 'start';
     zeichne();
   }
@@ -749,7 +834,8 @@
 
   function zeichne() {
     if (bild === 'laden') { wurzel.innerHTML = mitteMeldung(L.laden, true); return; }
-    if (bild === 'tor') { wurzel.innerHTML = torBild(); nachBau(); return; }
+    if (bild === 'anmeldung') { wurzel.innerHTML = anmeldeBild(); nachBau(); return; }
+    if (bild === 'gesperrt') { wurzel.innerHTML = gesperrtBild(); nachBau(); return; }
     if (bild === 'name') { wurzel.innerHTML = nameBild(); nachBau(); return; }
     if (bild === 'start') { wurzel.innerHTML = startBild(); nachBau(); return; }
     if (bild === 'lobby') { wurzel.innerHTML = lobbyBild(); nachBau(); return; }
@@ -781,18 +867,45 @@
     return '<div class="gb-marke"><span class="gb-auge"></span>GeoBingo</div>';
   }
 
-  // ── Bildschirm: Zugangscode ───────────────────────────────────────────────
+  // ── Bildschirm: Anmeldung ─────────────────────────────────────────────────
 
-  function torBild() {
-    return '<div class="gb-mitte"><div class="gb-tafel gb-schmal">'
+  var GOOGLE_ZEICHEN = '<svg width="17" height="17" viewBox="0 0 48 48" aria-hidden="true">'
+    + '<path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.7 30.2.5 24 .5 14.6.5 6.5 5.9 2.6 13.8l7.8 6c1.9-5.6 7.1-9.8 13.6-9.8z"/>'
+    + '<path fill="#4285F4" d="M46.6 24.6c0-1.6-.1-3.2-.4-4.6H24v9.1h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 6.9-10 6.9-17.5z"/>'
+    + '<path fill="#FBBC05" d="M10.4 28.2a14 14 0 0 1 0-8.8l-7.8-6a23.5 23.5 0 0 0 0 20.8l7.8-6z"/>'
+    + '<path fill="#34A853" d="M24 47.5c6.2 0 11.5-2 15.4-5.5l-7.5-5.8c-2 1.4-4.7 2.3-7.9 2.3-6.5 0-11.7-4.2-13.6-9.8l-7.8 6C6.5 42.1 14.6 47.5 24 47.5z"/></svg>';
+
+  function anmeldeBild() {
+    return '<div class="gb-mitte"><div class="gb-tafel gb-schmal" style="text-align:center">'
       + marke()
-      + '<h1>' + esc(L.torH) + '</h1>'
-      + '<p class="gb-still">' + esc(L.torP) + '</p>'
-      + '<form class="gb-reihe" data-tu="tor">'
-      + '<input id="gbTor" type="password" autocomplete="off" spellcheck="false" placeholder="' + esc(L.torPlatz) + '" aria-label="' + esc(L.torH) + '">'
-      + '<button class="gb-knopf gb-haupt" type="submit">' + esc(L.torAuf) + '</button>'
-      + '</form>'
-      + '<p class="gb-fussnote">' + esc(L.torHinweis) + '</p>'
+      + '<h1 style="margin-top:1.2rem">' + esc(L.anmeldenH) + '</h1>'
+      + '<p class="gb-still">' + esc(L.anmeldenP) + '</p>'
+      + '<button class="gb-knopf gb-breit gb-google" data-tu="google">' + GOOGLE_ZEICHEN + esc(L.mitGoogle) + '</button>'
+      + '<p class="gb-fussnote">' + esc(L.anmeldenHinweis) + '</p>'
+      + '</div></div>';
+  }
+
+  /*
+   * Angemeldet, aber nicht freigeschaltet.
+   *
+   * Das ist kein Fehler und liest sich hier auch nicht so: die Seite vergibt
+   * Zugaenge einzeln, und wer neu ist, ist erwartungsgemaess noch nicht dabei.
+   * Er kann sich mit einem Klick melden — und er kann trotzdem mitspielen,
+   * wenn ihn jemand mit einem Einladelink geholt hat. Genau diese Trennung ist
+   * der Sinn: eine Runde AUFMACHEN ist etwas anderes als bei einer MITSPIELEN.
+   */
+  function gesperrtBild() {
+    return '<div class="gb-mitte"><div class="gb-tafel gb-schmal" style="text-align:center">'
+      + marke()
+      + '<h1 style="margin-top:1.2rem">' + esc(L.gesperrtH) + '</h1>'
+      + '<p class="gb-still">' + esc(L.gesperrtP) + '</p>'
+      + '<p class="gb-kennung">' + esc(user && user.email ? user.email : '') + '</p>'
+      + (anfrageGestellt
+        ? '<p class="gb-hinweisgut">' + esc(L.anfrageLaeuft) + '</p>'
+        : '<button class="gb-knopf gb-haupt gb-breit" data-tu="anfrage">' + esc(L.zugangAnfragen) + '</button>')
+      + '<p class="gb-fussnote">' + esc(L.gesperrtHinweis) + '</p>'
+      + '<div class="gb-reihe" style="justify-content:center;margin-top:14px">'
+      + '<button class="gb-still-knopf" data-tu="austragen">' + esc(L.abmelden) + '</button></div>'
       + '</div></div>';
   }
 
@@ -857,7 +970,87 @@
       + '</form></div>'
 
       + '<div class="gb-ausklapp" id="gbLobbyBox" data-da="0"><div id="gbLobbyListe"></div></div>'
+      + (meinZugang === 'admin'
+        ? '<button class="gb-still-knopf gb-verwaltungKnopf" data-tu="verwaltung">' + esc(L.verwaltung) + '</button>'
+          + '<div class="gb-ausklapp" id="gbVerwaltungBox" data-da="0"><div id="gbVerwaltung"></div></div>'
+        : '')
       + '</div></div>';
+  }
+
+  /*
+   * Das Verwaltungsfenster — nur fuer den Admin, und auch das nur der Anzeige
+   * nach.
+   *
+   * Ob jemand wirklich freischalten darf, steht in firestore.rules und haengt
+   * an der E-Mail-Adresse im Anmeldetoken. Wer diese Datei umschreibt, sieht
+   * die Knoepfe und bekommt von der Datenbank eine Ablehnung — die richtige
+   * Richtung, falsch zu liegen.
+   */
+  function verwaltungLaden() {
+    var ziel = document.getElementById('gbVerwaltung');
+    if (!ziel) return;
+    ziel.innerHTML = '<div class="gb-warten"><span class="gb-kreisel"></span>' + esc(L.laden) + '</div>';
+
+    Promise.all([
+      fb.getDocs(fb.collection(db, 'skillry_anfrage')),
+      fb.getDocs(fb.collection(db, 'skillry_zugang')),
+    ]).then(function (beide) {
+      var anfragen = [], zugaenge = [];
+      beide[0].forEach(function (d) { anfragen.push({ uid: d.id, d: d.data() }); });
+      beide[1].forEach(function (d) { zugaenge.push({ uid: d.id, d: d.data() }); });
+
+      var zeile = function (e, knopf) {
+        return '<li><span class="gb-vName">' + esc(e.d.name || '—') + '</span>'
+          + '<span class="gb-vMail">' + esc(e.d.email || '') + '</span>'
+          + knopf + '</li>';
+      };
+
+      ziel.innerHTML =
+        '<div class="gb-vBlock"><span class="gb-etikett">' + esc(L.anfragen)
+        + '<span class="gb-zahl">' + anfragen.length + '</span></span>'
+        + (anfragen.length
+          ? '<ul class="gb-vListe">' + anfragen.map(function (e) {
+            return zeile(e, '<button class="gb-knopf gb-klein gb-haupt" data-frei="' + esc(e.uid) + '">' + esc(L.freischalten) + '</button>'
+              + '<button class="gb-knopf gb-winzig" data-anfrageWeg="' + esc(e.uid) + '">' + esc(L.ablehnen) + '</button>');
+          }).join('') + '</ul>'
+          : '<p class="gb-fussnote">' + esc(L.keineAnfragen) + '</p>')
+        + '</div>'
+
+        + '<div class="gb-vBlock"><span class="gb-etikett">' + esc(L.freigeschaltete)
+        + '<span class="gb-zahl">' + zugaenge.length + '</span></span>'
+        + (zugaenge.length
+          ? '<ul class="gb-vListe">' + zugaenge.map(function (e) {
+            return zeile(e, '<span class="gb-vRolle">' + esc(e.d.rolle || 'streamer') + '</span>'
+              + '<button class="gb-knopf gb-winzig gb-gefahr" data-zugangWeg="' + esc(e.uid) + '">' + esc(L.entziehen) + '</button>');
+          }).join('') + '</ul>'
+          : '<p class="gb-fussnote">' + esc(L.niemandFrei) + '</p>')
+        + '<p class="gb-fussnote">' + esc(L.adminHinweis) + '</p></div>';
+    }).catch(function (e) {
+      ziel.innerHTML = '<p class="gb-fussnote">' + esc(fehlertext(e)) + '</p>';
+    });
+  }
+
+  function freischalten(uid) {
+    fb.getDoc(fb.doc(db, 'skillry_anfrage', uid)).then(function (s) {
+      if (!s.exists()) return;
+      var a = s.data();
+      return fb.setDoc(fb.doc(db, 'skillry_zugang', uid), {
+        email: a.email || '', name: a.name || '', rolle: 'streamer', seit: fb.serverTimestamp()
+      }).then(function () {
+        return fb.deleteDoc(fb.doc(db, 'skillry_anfrage', uid));
+      });
+    }).then(function () {
+      melde(L.freigeschaltetOk, 'gut');
+      verwaltungLaden();
+    }).catch(function (e) { melde(fehlertext(e), 'fehler'); });
+  }
+
+  function zugangEntziehen(uid) {
+    schreibe(fb.deleteDoc(fb.doc(db, 'skillry_zugang', uid))).then(function () { verwaltungLaden(); });
+  }
+
+  function anfrageAblehnen(uid) {
+    schreibe(fb.deleteDoc(fb.doc(db, 'skillry_anfrage', uid))).then(function () { verwaltungLaden(); });
   }
 
   /*
@@ -875,7 +1068,7 @@
     if (!ziel) return;
     ziel.innerHTML = '<div class="gb-warten"><span class="gb-kreisel"></span>' + esc(L.laden) + '</div>';
 
-    anmelden().then(function () {
+    Promise.resolve().then(function () {
       return fb.getDocs(fb.query(
         fb.collection(db, 'geobingo'),
         fb.where('oeffentlich', '==', true),
@@ -906,15 +1099,30 @@
 
   /** Einen der beiden Ausklapp-Bereiche zeigen und den anderen schliessen. */
   function ausklappen(welcher) {
-    var a = document.getElementById('gbCodeBox');
-    var b = document.getElementById('gbLobbyBox');
-    if (!a || !b) return;
-    var ziel = welcher === 'code' ? a : b;
+    var kaesten = {
+      code: document.getElementById('gbCodeBox'),
+      lobbys: document.getElementById('gbLobbyBox'),
+      verwaltung: document.getElementById('gbVerwaltungBox'),
+    };
+    var ziel = kaesten[welcher];
+    if (!ziel) return;
     var offen = ziel.dataset.da !== '1';
-    a.dataset.da = '0'; b.dataset.da = '0';
+    // Immer nur einer offen: drei aufgeklappte Bereiche untereinander sind
+    // keine Startseite mehr, sondern eine Liste.
+    for (var k in kaesten) if (kaesten[k]) kaesten[k].dataset.da = '0';
     ziel.dataset.da = offen ? '1' : '0';
-    if (offen && welcher === 'code') document.getElementById('gbCode').focus();
-    if (offen && welcher === 'lobbys') lobbysLaden();
+    if (!offen) return;
+    if (welcher === 'code') document.getElementById('gbCode').focus();
+    if (welcher === 'lobbys') lobbysLaden();
+    if (welcher === 'verwaltung') verwaltungLaden();
+  }
+
+  /* Rauswerfen. Zusammen mit „nur freigeschaltete Konten" ist das die Antwort
+     auf einen geleakten Einladelink: wer schon drin ist, fliegt raus, und wer
+     es nochmal versucht, kommt nicht mehr herein. */
+  function rauswerfen(uid) {
+    if (!ichBinGastgeber() || !user || uid === user.uid) return;
+    schreibe(fb.deleteDoc(fb.doc(db, 'geobingo', code, 'spieler', uid)));
   }
 
   // ── Bildschirm: Lobby ─────────────────────────────────────────────────────
@@ -937,8 +1145,7 @@
    * waere ein Schloss neben einem offenen Fenster.
    */
   function einladeLink() {
-    var u = location.origin + location.pathname + '?k=' + encodeURIComponent(C.zugang) + '&lobby=' + code;
-    return u;
+    return location.origin + location.pathname + '?lobby=' + code;
   }
 
   function geheim(wert, gross) {
@@ -1075,6 +1282,7 @@
       + kippschalter('nurStaedte', L.nurStaedte, e.nurStaedte, aus, L.nurStaedteHinweis)
       + kippschalter('punkteZeigen', L.punkteZeigen, e.punkteZeigen, aus, L.punkteZeigenHinweis)
       + kippschalter('oeffentlich', L.oeffentlich, lobby.oeffentlich, aus, L.oeffentlichHinweis)
+      + kippschalter('nurFreigeschaltete', L.nurFrei, lobby.nurFreigeschaltete, aus, L.nurFreiHinweis)
       + '</div>'
 
       + '<div class="gb-stellwerk">'
@@ -1160,6 +1368,8 @@
         + (teams ? '<span class="gb-teammarke gb-team' + esc(p.team || 'a') + '">' + esc((p.team || 'a').toUpperCase()) + '</span>' : '<span class="gb-lampe gb-an"></span>')
         + '<span class="gb-spielername">' + esc(p.name) + (uid === lobby.host ? '<em>' + esc(L.gastgeber) + '</em>' : '') + '</span>'
         + (inLobby && teams && ich ? '<button class="gb-knopf gb-winzig" data-tu="teamwechsel">' + esc(L.teamWechseln) + '</button>' : '')
+        + (inLobby && !ich && ichBinGastgeber()
+          ? '<button class="gb-weg" data-raus="' + esc(uid) + '" title="' + esc(L.rauswerfen) + '" aria-label="' + esc(L.rauswerfen) + '">&times;</button>' : '')
         + (!inLobby && tabelle[uid] ? '<span class="gb-punktzahl">' + tabelle[uid].punkte + '</span>' : '')
         + '</li>';
     }).join('') + '</ul>';
@@ -1434,7 +1644,7 @@
     gebunden = true;
 
     document.addEventListener('click', function (ev) {
-      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code],[data-geheim]');
+      var t = ev.target.closest('[data-tu],[data-wort],[data-weg],[data-paket],[data-region],[data-kipp],[data-bewegung],[data-modus],[data-min],[data-punkte],[data-ja],[data-nein],[data-schau],[data-klapp],[data-code],[data-geheim],[data-frei],[data-zugangWeg],[data-anfrageWeg],[data-raus]');
       if (!t) return;
       var d = t.dataset;
 
@@ -1443,6 +1653,10 @@
       if (d.klapp) { klappen(d.klapp); return; }
       if (d.code && d.tu === 'beitretenAus') { beitreten(d.code); return; }
       if (d.schau) { schau(d.schau); return; }
+      if (d.frei) { freischalten(d.frei); return; }
+      if (d.zugangWeg) { zugangEntziehen(d.zugangWeg); return; }
+      if (d.anfrageWeg) { anfrageAblehnen(d.anfrageWeg); return; }
+      if (d.raus) { rauswerfen(d.raus); return; }
       if (d.ja) { stimmeAb(d.ja, 1); return; }
       if (d.nein) { stimmeAb(d.nein, -1); return; }
       if (d.weg) { schreibe(fb.deleteDoc(fb.doc(db, 'geobingo', code, 'woerter', d.weg))); return; }
@@ -1459,7 +1673,7 @@
            nicht unter `einst`. Nicht aus Ordnungsliebe: die Regel fuer `list`
            prueft `resource.data.oeffentlich`, und verschachtelte Felder sind
            dort nicht abfragbar. */
-        if (d.kipp === 'oeffentlich') { oeffentlichKippen(); return; }
+        if (d.kipp === 'oeffentlich' || d.kipp === 'nurFreigeschaltete') { obenKippen(d.kipp); return; }
         einstellen(d.kipp, !(lobby.einst[d.kipp]));
         return;
       }
@@ -1478,8 +1692,12 @@
       else if (tu === 'nochmal') nochmal();
       else if (tu === 'zurueckZurPruefung') schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { zustand: 'pruefung' }));
       else if (tu === 'schauZu') schliesseSchau();
+      else if (tu === 'google') googleAnmelden();
+      else if (tu === 'austragen') austragen();
+      else if (tu === 'anfrage') anfrageStellen();
       else if (tu === 'codeZeigen') ausklappen('code');
       else if (tu === 'lobbys') ausklappen('lobbys');
+      else if (tu === 'verwaltung') ausklappen('verwaltung');
       else if (tu === 'umbenennen') { bild = 'name'; zeichne(); }
       else if (tu === 'teamwechsel') teamWechseln();
       else if (tu === 'alleRegionen') einstellen('regionen', C.regionen.map(function (r) { return r.id; }));
@@ -1492,8 +1710,7 @@
       if (!f) return;
       ev.preventDefault();
       var tu = f.dataset.tu;
-      if (tu === 'tor') torPruefen();
-      else if (tu === 'name') nameSetzen();
+      if (tu === 'name') nameSetzen();
       else if (tu === 'beitreten') beitreten(document.getElementById('gbCode').value);
       else if (tu === 'wort') wortDazu();
     });
@@ -1575,17 +1792,34 @@
 
   // ── Handlungen ────────────────────────────────────────────────────────────
 
-  function torPruefen() {
-    var wert = document.getElementById('gbTor').value;
-    if (!schluesselGleich(wert, C.zugang)) { melde(L.torFalsch, 'fehler'); return; }
-    legen('gb:zutritt', '1');
-    weiterNachTor();
+  function googleAnmelden() {
+    mitGoogle().then(function () {
+      return zugangPruefen();
+    }).then(function () {
+      nachAnmeldung();
+    }).catch(function (e) {
+      var c = String((e && e.code) || e);
+      // Ein zugeklapptes Anmeldefenster ist keine Stoerung, sondern eine
+      // Entscheidung. Dafuer gibt es keine rote Leiste.
+      if (/popup-closed-by-user|cancelled-popup-request/.test(c)) return;
+      melde(fehlertext(e), 'fehler');
+    });
   }
 
-  function weiterNachTor() {
-    bild = holen('gb:name') ? 'start' : 'name';
+  /*
+   * Wohin nach der Anmeldung.
+   *
+   * Wer freigeschaltet ist, landet auf der Startseite. Wer es nicht ist, sieht
+   * die Erklaerung — ES SEI DENN, in der Adresse steht eine Lobby. Dann hat ihn
+   * jemand eingeladen, und der Einladelink ist der Zugang: mitspielen darf er,
+   * eine eigene Runde aufmachen nicht.
+   */
+  function nachAnmeldung() {
+    var eingeladen = new URLSearchParams(location.search).get('lobby');
+    if (!meinZugang && !eingeladen) { bild = 'gesperrt'; zeichne(); return; }
+    bild = 'start';
     zeichne();
-    if (bild === 'start') lobbyAusAdresse();
+    lobbyAusAdresse();
   }
 
   function nameSetzen() {
@@ -1629,7 +1863,7 @@
       punkteZeigen: C.standard.punkteZeigen !== false,
       regionen: (C.standard.regionen || []).slice()
     };
-    anmelden().then(function () {
+    Promise.resolve().then(function () {
       return lobbyAnlegen(einst);
     }).then(function (c) {
       code = c;
@@ -1652,9 +1886,14 @@
     einstellen('minuten', Math.max(1, Math.min(90, (lobby.einst.minuten || 10) + schritt)));
   }
 
-  function oeffentlichKippen() {
+  /* Die beiden Schalter, die oben auf dem Lobby-Dokument liegen statt unter
+     einst — die Datenbankregeln lesen sie, und verschachtelte Felder sind
+     dort nicht abfragbar. */
+  function obenKippen(feld) {
     if (!ichBinGastgeber()) return;
-    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), { oeffentlich: !lobby.oeffentlich }));
+    var d = {};
+    d[feld] = !lobby[feld];
+    schreibe(fb.updateDoc(fb.doc(db, 'geobingo', code), d));
   }
 
   function regionKippen(id) {
@@ -1779,11 +2018,8 @@
    * Laerm.
    */
   firebase().then(function () {
-    if (!schluesselGleich(new URLSearchParams(location.search).get('k'), C.zugang) && !holen('gb:zutritt')) {
-      bild = 'tor'; zeichne(); return;
-    }
-    legen('gb:zutritt', '1');
-    weiterNachTor();
+    if (!user) { bild = 'anmeldung'; zeichne(); return; }
+    return zugangPruefen().then(nachAnmeldung);
   }).catch(function () {
     wurzel.innerHTML = mitteMeldung(L.errAllgemein, false);
   });

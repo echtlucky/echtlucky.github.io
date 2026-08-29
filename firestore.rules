@@ -186,34 +186,93 @@ service cloud.firestore {
       }
     }
 
+    // ── Skillry-Zugang ─────────────────────────────────────────────────────
+    //
+    // Wer darf ueberhaupt ein Skillry-Spiel aufmachen. Gilt bewusst nicht nur
+    // fuer GeoBingo: die Olympiade soll mehrere Spiele bekommen, und eine
+    // zweite Zugangsliste waere eine, die irgendwann abweicht.
+    //
+    // DER ADMIN STEHT HIER UND NICHT IN EINER DATEI, DIE DER BROWSER LAEDT.
+    //
+    // Vorher lag der Zugang als Klartext-Code in der ausgelieferten HTML-Datei.
+    // Das war als „Tuer, kein Schloss" beschrieben und fuer eine Runde unter
+    // Freunden auch genug — fuer eine Olympiade, bei der gezielt Zugriff
+    // vergeben wird, ist es nichts. Diese Regel dagegen laeuft auf Googles
+    // Servern; kein Browser kann sie umgehen, und ein geleakter Link enthaelt
+    // nichts, was einen Zugang eroeffnet.
+    //
+    // `email_verified` gehoert dazu: bei Google-Anmeldung ist es immer wahr,
+    // aber die Regel soll auch dann noch stimmen, wenn spaeter ein Anbieter
+    // dazukommt, bei dem es das nicht ist.
+    function adminMail() {
+      return 'lucassteckel04@gmail.com';
+    }
+    function istAdmin() {
+      return signedIn()
+        && request.auth.token.email == adminMail()
+        && request.auth.token.email_verified == true;
+    }
+    function freigeschaltet() {
+      return istAdmin()
+        || (signedIn() && exists(/databases/$(database)/documents/skillry_zugang/$(request.auth.uid)));
+    }
+
+    // Wer noch nicht freigeschaltet ist, kann sich melden. Das ist der Ersatz
+    // dafuer, dass man niemanden per E-Mail freischalten kann, bevor er sich
+    // zum ersten Mal angemeldet hat: eine Freigabe haengt an der Nutzerkennung,
+    // und die entsteht erst bei der Anmeldung.
+    //
+    // Anlegen darf jeder — aber nur fuer sich selbst und nur mit der Adresse,
+    // die in seinem eigenen Token steht. Damit kann niemand Anfragen im Namen
+    // anderer stellen, und die Liste beim Admin bleibt eine Liste echter Leute.
+    match /skillry_anfrage/{uid} {
+      allow get: if isSelf(uid) || istAdmin();
+      allow list: if istAdmin();
+      allow create: if isSelf(uid)
+        && request.resource.data.email == request.auth.token.email
+        && textOk(request.resource.data.name, 1, 80)
+        && freshTimestamp(request.resource.data.wann);
+      allow update: if false;
+      allow delete: if isSelf(uid) || istAdmin();
+    }
+
+    match /skillry_zugang/{uid} {
+      // Jeder darf nachsehen, ob ER freigeschaltet ist — die Seite muss das
+      // beim Anmelden wissen. Die ganze Liste sieht nur der Admin.
+      allow get: if isSelf(uid) || istAdmin();
+      allow list: if istAdmin();
+
+      // Freischalten und entziehen kann ausschliesslich der Admin. Insbesondere
+      // kann sich niemand selbst eintragen — das ist der ganze Sinn.
+      allow create, update: if istAdmin()
+        && request.resource.data.rolle in ['admin', 'streamer']
+        && textOk(request.resource.data.email, 3, 200)
+        && textOk(request.resource.data.name, 1, 80)
+        && freshTimestamp(request.resource.data.seit);
+      allow delete: if istAdmin();
+    }
+
     // ── GeoBingo ───────────────────────────────────────────────────────────
     //
-    // Eine Lobby ist etwas anderes als ein Forumsbeitrag, und diese Regeln sind
-    // deshalb an drei Stellen bewusst lockerer — jede mit einem Grund.
+    // Drei Dinge, die diese Regeln koennen, und eines, das sie nicht koennen.
     //
-    // 1. `signedIn()` statt `verified()`, anonyme Anmeldungen eingeschlossen.
-    //    Im Forum ist die bestaetigte Adresse die Huerde zwischen Forum und
-    //    offenem Relais: was dort steht, steht oeffentlich und dauerhaft. Eine
-    //    Lobby steht hinter einem Code, den nur bekommt wer ihn weitergereicht
-    //    kriegt, und sie ist nach einer Runde Geschichte. Wer fuer zehn Minuten
-    //    Bingo erst ein Konto anlegen und eine Mail oeffnen muss, spielt nicht.
+    // 1. Eine Lobby AUFMACHEN darf nur, wer freigeschaltet ist. Das ist die
+    //    eigentliche Tuer.
+    // 2. Eine Lobby FINDEN kann nur, wer ihren Code hat — `list` ist ausser
+    //    fuer oeffentliche Lobbys gesperrt.
+    // 3. Wer BEITRETEN darf, entscheidet der Gastgeber: `nurFreigeschaltete`
+    //    macht aus dem Einladelink eine blosse Einladung, die zusaetzlich ein
+    //    freigeschaltetes Konto verlangt. Ein versehentlich geteilter Link ist
+    //    damit wertlos.
     //
-    // 2. `get` ja, `list` nein.
-    //    Ohne diese Trennung koennte jeder Angemeldete die Sammlung `geobingo`
-    //    abfragen und bekaeme jede offene Lobby mit ihrem Code. Eine Lobby
-    //    findet man ueber ihren Code, nie ueber eine Liste. Die Unter-Sammlungen
-    //    brauchen `list` (die Spielerliste ist eine Abfrage), aber dorthin kommt
-    //    nur, wer den Code schon hat.
-    //
-    // 3. WAS DIESE REGELN NICHT KOENNEN, und das ist die Haelfte der Wahrheit:
-    //    Ob auf einem Panorama wirklich ein Hund steht, kann keine
-    //    Datenbankregel pruefen. Ein Fund ist erlaubt, weil er formal richtig
-    //    aussieht, nicht weil er stimmt. Dagegen hilft nur die Auswertung, in
-    //    der die Mitspieler den Daumen heben oder senken — sie ist deshalb kein
-    //    Beiwerk, sondern die eigentliche Kontrolle. Genauso wird der
-    //    Punktestand im Browser gerechnet: wer die Konsole aufmacht, kann sich
-    //    in seiner eigenen Anzeige jede Zahl hinschreiben. Er aendert damit kein
-    //    Dokument, also sehen die anderen weiter den richtigen Stand.
+    // WAS SIE NICHT KOENNEN: pruefen, ob auf einem Panorama wirklich ein Hund
+    // steht. Ein Fund ist erlaubt, weil er formal richtig aussieht, nicht weil
+    // er stimmt. Dagegen hilft nur die Auswertung, in der die Mitspieler den
+    // Daumen heben oder senken — sie ist deshalb kein Beiwerk, sondern die
+    // eigentliche Kontrolle. Genauso wird der Punktestand im Browser gerechnet:
+    // wer die Konsole aufmacht, kann sich in seiner eigenen Anzeige jede Zahl
+    // hinschreiben. Er aendert damit kein Dokument, also sehen die anderen
+    // weiter den richtigen Stand.
     match /geobingo/{code} {
 
       function lobby() {
@@ -226,6 +285,11 @@ service cloud.firestore {
         return signedIn()
           && exists(/databases/$(database)/documents/geobingo/$(code)/spieler/$(request.auth.uid));
       }
+      function darfBeitreten() {
+        return signedIn()
+          && lobby().offen == true
+          && (lobby().nurFreigeschaltete != true || freigeschaltet());
+      }
       function einstOk(e) {
         return e.minuten is int && e.minuten >= 1 && e.minuten <= 90
           && e.bewegung in ['frei', 'pfeile', 'aus']
@@ -235,23 +299,19 @@ service cloud.firestore {
 
       allow get: if signedIn();
 
-      // Auflisten geht NUR fuer Lobbys, die ihr Gastgeber ausdruecklich
-      // oeffentlich gestellt hat.
-      //
-      // Firestore wertet eine `list`-Regel gegen jedes Dokument aus, das die
-      // Abfrage zurueckgeben wuerde. Eine Abfrage ohne
-      // `where('oeffentlich','==',true)` liefert damit zwangslaeufig ein
-      // privates Dokument mit, scheitert an dieser Zeile und wird komplett
-      // abgewiesen. Der Lobby-Browser kann private Lobbys also nicht anzeigen,
-      // auch nicht durch einen Fehler im Client — und `oeffentlich` liegt
-      // deshalb als oberstes Feld hier und nicht unter `einst`.
+      // Auflisten geht NUR fuer Lobbys, die ihr Gastgeber oeffentlich gestellt
+      // hat. Firestore wertet eine `list`-Regel gegen jedes Dokument aus, das
+      // die Abfrage zurueckgeben wuerde — eine Abfrage ohne
+      // where('oeffentlich','==',true) liefert damit zwangslaeufig ein privates
+      // Dokument mit, scheitert hier und wird komplett abgewiesen.
       allow list: if signedIn() && resource.data.oeffentlich == true;
 
-      allow create: if signedIn()
+      allow create: if freigeschaltet()
         && request.resource.data.host == request.auth.uid
         && request.resource.data.zustand == 'lobby'
         && request.resource.data.offen == true
         && request.resource.data.oeffentlich is bool
+        && request.resource.data.nurFreigeschaltete is bool
         && einstOk(request.resource.data.einst)
         && freshTimestamp(request.resource.data.angelegt);
 
@@ -262,15 +322,25 @@ service cloud.firestore {
         && request.resource.data.host == resource.data.host
         && request.resource.data.zustand in ['lobby', 'laeuft', 'pruefung', 'ergebnis']
         && request.resource.data.oeffentlich is bool
+        && request.resource.data.nurFreigeschaltete is bool
         && einstOk(request.resource.data.einst);
 
       allow delete: if istGastgeber();
 
       match /spieler/{uid} {
         allow read: if signedIn();
-        allow create, update: if isSelf(uid)
+
+        // Beitreten heisst: das eigene Dokument anlegen. Ob das erlaubt ist,
+        // haengt an der Lobby und nicht am Link — deshalb darfBeitreten().
+        allow create: if isSelf(uid) && darfBeitreten()
           && textOk(request.resource.data.name, 1, 24)
           && request.resource.data.team in ['a', 'b'];
+
+        // Aendern (Name, Team) darf, wer schon drin ist.
+        allow update: if isSelf(uid)
+          && textOk(request.resource.data.name, 1, 24)
+          && request.resource.data.team in ['a', 'b'];
+
         // Sich selbst austragen darf jeder, hinauswerfen nur der Gastgeber.
         allow delete: if isSelf(uid) || istGastgeber();
       }
