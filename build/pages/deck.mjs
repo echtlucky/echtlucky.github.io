@@ -31,7 +31,7 @@ const T = {
     h1: 'One window. Every server.',
     lede:
       'DECK runs FiveM servers — the one on this machine and every VPS you add. Not a second txAdmin: it asks a different question.',
-    cta: 'Source on GitHub',
+    cta: 'How to build it',
     ctaNexus: 'See NEXUS instead',
 
     fromH: 'Where it comes from',
@@ -61,11 +61,11 @@ const T = {
 
     getH: 'How to get it',
     getP:
-      'DECK is not released yet. The source will be on GitHub; until then it builds from the repository in three steps.',
+      'DECK is not released yet, and the repository is private for now — there is no download and no public source. This is what running it takes.',
     steps: [
       ['Requirements', '.NET 9 SDK and Windows. Nothing else — no Docker, no virtualisation.'],
-      ['Build', '<code>dotnet build DECK.sln</code> in the repository root.'],
-      ['Run', '<code>dotnet run --project src/Deck.App</code>. It brings its own FXServer build and a portable MariaDB.'],
+      ['Runtimes', '<code>werkzeug\\laufzeit-holen.ps1</code> fetches FXServer 35245 and a portable MariaDB — 675 MB, each checked against a pinned SHA-256. They are deliberately not in the repository.'],
+      ['Build and run', '<code>dotnet build DECK.sln</code>, then <code>dotnet run --project src/Deck.App</code>.'],
     ],
 
     nexusH: 'Together with NEXUS',
@@ -78,7 +78,7 @@ const T = {
     h1: 'Ein Fenster. Alle Server.',
     lede:
       'DECK steuert FiveM-Server — den auf diesem Rechner und jeden VPS, den du einträgst. Kein zweites txAdmin: es stellt eine andere Frage.',
-    cta: 'Quelltext auf GitHub',
+    cta: 'Wie man es baut',
     ctaNexus: 'Stattdessen NEXUS ansehen',
 
     fromH: 'Woher es kommt',
@@ -108,11 +108,11 @@ const T = {
 
     getH: 'Wie man es bekommt',
     getP:
-      'DECK ist noch nicht veröffentlicht. Der Quelltext kommt auf GitHub; bis dahin baut es sich in drei Schritten aus dem Repository.',
+      'DECK ist noch nicht veröffentlicht, und das Repository ist vorerst privat — es gibt weder ein Herunterladen noch einen offenen Quelltext. So viel gehört dazu, es zu betreiben.',
     steps: [
       ['Voraussetzung', '.NET 9 SDK und Windows. Sonst nichts — kein Docker, keine Virtualisierung.'],
-      ['Bauen', '<code>dotnet build DECK.sln</code> im Wurzelverzeichnis.'],
-      ['Starten', '<code>dotnet run --project src/Deck.App</code>. Es bringt seinen eigenen FXServer-Bau und eine portable MariaDB mit.'],
+      ['Laufzeiten', '<code>werkzeug\\laufzeit-holen.ps1</code> holt FXServer 35245 und eine portable MariaDB — 675 MB, beide gegen eine festgelegte SHA-256 geprüft. Sie liegen mit Absicht nicht im Repository.'],
+      ['Bauen und starten', '<code>dotnet build DECK.sln</code>, dann <code>dotnet run --project src/Deck.App</code>.'],
     ],
 
     nexusH: 'Zusammen mit NEXUS',
@@ -120,8 +120,6 @@ const T = {
       'NEXUS trägt einen DECK-Eintrag in der Seitenleiste. Liegt DECK auf der Maschine, öffnet der Eintrag es; liegt es nicht da, führt er hierher. Die beiden sind mit Absicht getrennte Programme — DECK spricht SSH, RCON und Prozesse, und das hat in einem Assistenten nichts zu suchen.',
   },
 };
-
-const REPO = 'https://github.com/echtlucky/skillry-deck';
 
 export function body(lang) {
   const t = T[lang];
@@ -133,7 +131,7 @@ export function body(lang) {
     <h1>${t.h1}</h1>
     <p class="lede">${t.lede}</p>
     <div class="btn-row">
-      <a class="btn btn-primary" href="${REPO}">${t.cta}</a>
+      <a class="btn btn-primary" href="#bekommen">${t.cta}</a>
       <a class="btn" href="${href(lang, 'nexus')}">${t.ctaNexus}</a>
     </div>
   </div>
@@ -169,7 +167,7 @@ export function body(lang) {
 
 <hr class="divider">
 
-<section>
+<section id="bekommen">
   <div class="wrap narrow stack-lg">
     <h2>${t.getH}</h2>
     <p>${t.getP}</p>
