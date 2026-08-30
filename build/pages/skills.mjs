@@ -61,6 +61,7 @@ const T = {
     youngH: 'This index is young, and says so',
     youngP:
       'It starts with the skills I can scan myself. It grows by pull request: add an entry, and continuous integration runs AIRLOCK over the skill before it can be merged. An index that lists everything and verifies nothing would be worse than no index at all.',
+    ctaLearn: 'Learn the basics',
     submit: 'Submit a skill',
     howH: 'How to submit',
     howSteps: [
@@ -104,6 +105,7 @@ const T = {
     youngH: 'Dieser Index ist jung, und sagt das auch',
     youngP:
       'Er startet mit den Skills, die ich selbst scannen kann. Er wächst per Pull Request: Eintrag hinzufügen, und die CI lässt AIRLOCK über den Skill laufen, bevor er gemerged werden kann. Ein Index, der alles listet und nichts prüft, wäre schlechter als gar kein Index.',
+    ctaLearn: 'Grundlagen lernen',
     submit: 'Skill einreichen',
     howH: 'Wie du einreichst',
     howSteps: [
@@ -147,6 +149,7 @@ const T = {
     youngH: 'Este índice es joven, y lo dice',
     youngP:
       'Empieza con los skills que yo mismo puedo escanear. Crece por pull request: añade una entrada, y la integración continua pasa AIRLOCK por el skill antes de que pueda fusionarse. Un índice que lo lista todo y no verifica nada sería peor que ningún índice.',
+    ctaLearn: 'Aprender lo básico',
     submit: 'Enviar un skill',
     howH: 'Cómo enviar',
     howSteps: [
@@ -268,7 +271,7 @@ export function body(lang) {
       </div>
       <div class="btn-row">
         <a class="btn btn-primary" href="${SITE.repoSite}/blob/main/README.md#submitting-a-skill">${t.submit}</a>
-        <a class="btn" href="${href(lang, 'learn')}">${T[lang].eyebrow === 'Skill index' ? 'Learn the basics' : 'Grundlagen lernen'}</a>
+        <a class="btn" href="${href(lang, 'learn')}">${t.ctaLearn}</a>
       </div>
     </div>
   </div>

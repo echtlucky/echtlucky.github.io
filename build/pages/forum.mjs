@@ -142,6 +142,7 @@ const T = {
     errGeneric: 'That did not work. Check your connection and try again.',
     errTooShort: 'A little more detail, please — a title needs 6 characters and a message needs 10.',
 
+    catsH: 'Categories',
     rulesH: 'House rules, short version',
     rules: [
       'Assume the person asking is smart and new. Both at once.',
@@ -251,6 +252,7 @@ const T = {
     errGeneric: 'Das hat nicht geklappt. Prüf die Verbindung und versuch es nochmal.',
     errTooShort: 'Etwas mehr Detail bitte — ein Titel braucht 6 Zeichen, eine Nachricht 10.',
 
+    catsH: 'Kategorien',
     rulesH: 'Hausregeln, Kurzfassung',
     rules: [
       'Geh davon aus, dass die fragende Person klug und neu ist. Beides gleichzeitig.',
@@ -360,6 +362,7 @@ const T = {
     errGeneric: 'Eso no ha funcionado. Comprueba la conexión e inténtalo otra vez.',
     errTooShort: 'Un poco más de detalle, por favor — un título necesita 6 caracteres y un mensaje 10.',
 
+    catsH: 'Categorías',
     rulesH: 'Reglas de la casa, versión corta',
     rules: [
       'Da por hecho que quien pregunta es inteligente y nuevo. Las dos cosas a la vez.',
@@ -725,7 +728,7 @@ export function body(lang) {
   const cats = CATEGORIES.map(
     (c) => `<article class="card lift">
       <h3><span class="accent-${c.tone === 'a' ? 'airlock' : c.tone === 'n2' ? 'nexus' : 'index'}">${c[lang]}</span></h3>
-      <p class="muted small">${lang === 'en' ? c.enD : c.deD}</p>
+      <p class="muted small">${c[lang + 'D']}</p>
     </article>`,
   ).join('');
 
@@ -801,7 +804,7 @@ ${board}
 
 <section class="band">
   <div class="wrap stack-lg">
-    <h2 class="head-rule"><span>${lang === 'en' ? 'Categories' : 'Kategorien'}</span></h2>
+    <h2 class="head-rule"><span>${t.catsH}</span></h2>
     <div class="grid grid-3">${cats}</div>
   </div>
 </section>
