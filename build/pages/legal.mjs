@@ -16,6 +16,7 @@ import { slugify } from '../search.mjs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderMarkdown } from '../markdown.mjs';
+import { LANGS } from '../layout.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const LEGAL = join(ROOT, 'content', 'legal');
@@ -36,15 +37,18 @@ function load(name, lang) {
 export function legalPage(spec) {
   return {
     slug: spec.slug,
-    meta: {
-      en: { title: spec.titles.en, description: spec.descriptions.en },
-      de: { title: spec.titles.de, description: spec.descriptions.de },
-    },
+    // Aus LANGS abgeleitet statt je Sprache von Hand: eine neue live-Sprache,
+    // deren titles/descriptions im Spec fehlen, faellt hier sofort als
+    // "undefined" im Seitentitel auf statt still englisch zu bleiben.
+    meta: Object.fromEntries(
+      LANGS.map((l) => [l, { title: spec.titles[l], description: spec.descriptions[l] }]),
+    ),
     body(lang) {
       const md = load(spec.name, lang);
       const notReady = {
         en: 'This document has not been written yet. Until it is, the forum should not be opened to anyone but its author.',
         de: 'Dieses Dokument ist noch nicht geschrieben. Solange das so ist, sollte das Forum niemandem außer seinem Autor offenstehen.',
+        es: 'Este documento aún no está escrito. Mientras sea así, el foro no debería abrirse a nadie más que a su autor.',
       };
 
       if (!md) {
@@ -65,12 +69,13 @@ export function legalPage(spec) {
         (_, token) => `<mark class="todo" title="not filled in yet">${token}</mark>`,
       );
 
+      const zuTun = {
+        en: (n) => `This document still has ${n} value(s) to fill in. It is not valid as it stands.`,
+        de: (n) => `Dieses Dokument enthält noch ${n} nicht ausgefüllte Angabe(n). Es ist so nicht rechtsgültig.`,
+        es: (n) => `A este documento aún le falta(n) ${n} dato(s) por rellenar. Tal como está, no es válido.`,
+      };
       const warn = outstanding.length
-        ? `<div class="note danger" style="margin-bottom:24px"><p>${
-            lang === 'de'
-              ? `Dieses Dokument enthält noch ${outstanding.length} nicht ausgefüllte Angabe(n). Es ist so nicht rechtsgültig.`
-              : `This document still has ${outstanding.length} value(s) to fill in. It is not valid as it stands.`
-          }</p></div>`
+        ? `<div class="note danger" style="margin-bottom:24px"><p>${zuTun[lang](outstanding.length)}</p></div>`
         : '';
 
       /*
@@ -91,9 +96,14 @@ export function legalPage(spec) {
         .map((m) => m[1].replace(/<[^>]*>/g, '').trim())
         .filter(Boolean);
 
+      const weg = {
+        en: { aria: 'Sections of this document', titel: 'On this page' },
+        de: { aria: 'Abschnitte dieses Dokuments', titel: 'Auf dieser Seite' },
+        es: { aria: 'Secciones de este documento', titel: 'En esta página' },
+      };
       const verzeichnis = kapitel.length < 4 ? '' : `
-<nav class="wegweiser" aria-label="${lang === 'de' ? 'Abschnitte dieses Dokuments' : 'Sections of this document'}">
-  <span class="wegweiser-titel">${lang === 'de' ? 'Auf dieser Seite' : 'On this page'}</span>
+<nav class="wegweiser" aria-label="${weg[lang].aria}">
+  <span class="wegweiser-titel">${weg[lang].titel}</span>
   <ol>
     ${kapitel.map((k, i) => `<li><a href="#${slugify(k)}">
       <span class="wegweiser-n">${String(i + 1).padStart(2, '0')}</span>${k}</a></li>`).join('')}
@@ -124,13 +134,15 @@ export const impressum = legalPage({
   titles: {
     en: 'Site notice · Skillry',
     de: 'Impressum · Skillry',
+    es: 'Aviso legal · Skillry',
   },
   descriptions: {
     en: 'Who operates this site, as required by German law.',
     de: 'Wer diese Seite betreibt — Angaben nach deutschem Recht.',
+    es: 'Quién opera este sitio — información exigida por la ley alemana.',
   },
-  eyebrows: { en: 'Site notice', de: 'Impressum' },
-  headings: { en: 'Site notice', de: 'Impressum' },
+  eyebrows: { en: 'Site notice', de: 'Impressum', es: 'Aviso legal' },
+  headings: { en: 'Site notice', de: 'Impressum', es: 'Aviso legal' },
 });
 
 export const privacy = legalPage({
@@ -139,11 +151,13 @@ export const privacy = legalPage({
   titles: {
     en: 'Privacy · Skillry',
     de: 'Datenschutzerklärung · Skillry',
+    es: 'Privacidad · Skillry',
   },
   descriptions: {
     en: 'What this site stores, which is almost nothing, and what the forum stores, which is a little more.',
     de: 'Was diese Seite speichert — nämlich fast nichts — und was das Forum speichert, nämlich etwas mehr.',
+    es: 'Qué guarda este sitio — casi nada — y qué guarda el foro, que es algo más.',
   },
-  eyebrows: { en: 'Privacy', de: 'Datenschutz' },
-  headings: { en: 'Privacy policy', de: 'Datenschutzerklärung' },
+  eyebrows: { en: 'Privacy', de: 'Datenschutz', es: 'Privacidad' },
+  headings: { en: 'Privacy policy', de: 'Datenschutzerklärung', es: 'Política de privacidad' },
 });

@@ -13,6 +13,11 @@ export const meta = {
     description:
       'Eine Adresse, eine Methode, ein Urteil. Die Anfrage, die Antwort, die Statuscodes, die drei Stufen des Scharfschaltens, die dreitägige Nachfrist — und ungeschönt, was diese Schicht nicht leistet.',
   },
+  es: {
+    title: 'API — la comprobación de licencias de Skillry, escrita entera · Skillry',
+    description:
+      'Una dirección, un método, un veredicto. La petición, la respuesta, los códigos de estado, las tres etapas de armado, el periodo de gracia de tres días — y sin maquillaje, lo que esta capa no consigue.',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -36,6 +41,8 @@ const LUA_EXPORTS = {
 exports.skillry_lizenz:Stand()  <span class="c">--&gt; table, never nil</span>`,
   de: `exports.skillry_lizenz:Gilt()   <span class="c">--&gt; true | false | nil</span>
 exports.skillry_lizenz:Stand()  <span class="c">--&gt; Tabelle, nie nil</span>`,
+  es: `exports.skillry_lizenz:Gilt()   <span class="c">--&gt; true | false | nil</span>
+exports.skillry_lizenz:Stand()  <span class="c">--&gt; tabla, nunca nil</span>`,
 };
 
 const LUA_STAND = {
@@ -56,6 +63,15 @@ const LUA_STAND = {
   kontakt    = '…',
   anhalten   = true,        <span class="c">-- ob C.Anhalten scharf ist</span>
   angehalten = false,       <span class="c">-- ob es schon passiert ist</span>
+}`,
+  es: `{
+  stand      = 'aus' | 'unbekannt' | 'gilt' | 'gilt_nicht',
+  bis        = 1790000000,  <span class="c">-- o nil</span>
+  seit       = 1786000000,  <span class="c">-- cuándo empezó el periodo de gracia</span>
+  grund      = '…',         <span class="c">-- o nil</span>
+  kontakt    = '…',
+  anhalten   = true,        <span class="c">-- si C.Anhalten está armado</span>
+  angehalten = false,       <span class="c">-- si ya ha ocurrido</span>
 }`,
 };
 
@@ -94,6 +110,22 @@ CreateThread(function()
   local heil, stand = pcall(function() return exports.skillry_lizenz:Stand() end)
   if heil then skillryLizenzPruefen(stand) end
 end)`,
+  es: `<span class="c">--- Aplicar un veredicto de skillry_lizenz a tu propio recurso.</span>
+local function skillryLizenzPruefen(stand)
+  if stand and stand.stand == 'gilt_nicht' and stand.anhalten then
+    StopResource(GetCurrentResourceName())
+  end
+end
+
+<span class="c">-- Cada cambio — la primera respuesta igual que una revocación semanas después.</span>
+AddEventHandler('skillry_lizenz:stand', skillryLizenzPruefen)
+
+<span class="c">-- Y una mirada tardía, por si el veredicto llegó antes que este recurso.</span>
+CreateThread(function()
+  Wait(20000)
+  local heil, stand = pcall(function() return exports.skillry_lizenz:Stand() end)
+  if heil then skillryLizenzPruefen(stand) end
+end)`,
 };
 
 const HTTP_REQ = {
@@ -107,6 +139,11 @@ User-Agent:   skillry_lizenz/&lt;version from the manifest&gt;`,
 Content-Type: application/json
 Accept:       application/json
 User-Agent:   skillry_lizenz/&lt;Fassung aus dem Manifest&gt;`,
+  es: `POST https://lizenz.skillry.de/v1/pruefen
+
+Content-Type: application/json
+Accept:       application/json
+User-Agent:   skillry_lizenz/&lt;versión del manifiesto&gt;`,
 };
 
 const HTTP_RES = `HTTP/1.1 200 OK
@@ -517,6 +554,207 @@ const T = {
     contactP:
       'Der Kontakt in der Konsole kommt aus <code>C.Kontakt</code> oder aus dem Feld <code>kontakt</code> der Antwort, wenn ein Wiederverkäufer einen setzt. Für alles andere stehen die Angaben im Impressum.',
     contactBtn: 'Impressum und Kontakt',
+  },
+
+  es: {
+    eyebrow: 'API de licencias · POST · JSON',
+    h1: 'Una dirección, un método, un veredicto.',
+    lede:
+      'La API de licencias de Skillry responde exactamente una pregunta: <strong>¿puede este servidor seguir ejecutando hoy los recursos de Skillry?</strong> El recurso <code>skillry_lizenz</code> pregunta una vez por hora — y todo lo que viaja por el cable está escrito abajo, incluidos los lugares donde la comprobación no consigue absolutamente nada.',
+    endpoint: 'POST https://lizenz.skillry.de/v1/pruefen',
+
+    flowH: 'Cómo transcurre la comprobación',
+    flow: [
+      [
+        'El servidor pregunta',
+        'Una vez por hora, <code>skillry_lizenz</code> envía un POST con la clave y un puñado de datos sobre el servidor. Ningún jugador ve nada de esto: el recurso no tiene ni un solo <code>client_script</code>, y las señas de la API de licencias no se reparten a cada uno que se conecta.',
+      ],
+      [
+        'La API responde',
+        'JSON con el campo <code>stand</code>: <code>gilt</code> o <code>gilt_nicht</code>. Cualquier otra cosa — un 500, un tiempo agotado, un cuerpo vacío, un JSON sin <code>stand</code> — es expresamente <em>no saber</em>, y no una negativa.',
+      ],
+      [
+        'El recurso actúa',
+        'Una negativa se comprueba una segunda vez diez minutos después antes de que pase nada, y solo se detiene algo si <code>C.Anhalten</code> está armado. No saber lleva al periodo de gracia: tres días en los que no ocurre nada.',
+      ],
+    ],
+
+    wireH: 'Cómo se conecta un script',
+    wireP:
+      'Quien ejecuta el paquete Skillry entero no tiene nada que hacer aquí: <code>skillry_lizenz</code> detiene por sí solo todo lo que empiece por <code>skillry_</code>. El bloque de abajo es para los otros dos casos — un script vendido suelto, y recursos con otro nombre.',
+
+    keyH: '1 — La clave va en server.cfg',
+    keyP:
+      'La clave pertenece al servidor del cliente, no al código fuente. La variable de entorno <code>SKILLRY_LIZENZ_KEY</code> hace el mismo trabajo — para quien guarda su <code>server.cfg</code> en un repositorio.',
+    keyNoteH: '<code>set</code>, no <code>sets</code> ni <code>setr</code>',
+    keyNoteP:
+      '<code>sets</code> escribiría la clave en la info del servidor, donde la lee cualquier navegador de servidores. <code>setr</code> se la mandaría a cada cliente conectado.',
+
+    manifestH: '2 — La línea en tu propio manifiesto',
+    manifestP:
+      'Esta línea es parte del bloque y no una formalidad. Sin ella tu recurso arranca incluso cuando falta <code>skillry_lizenz</code>, y <code>exports.skillry_lizenz</code> lanza un error al primer acceso. Con ella, directamente no arranca — que aquí es la respuesta correcta: un recurso cuya comprobación de licencia no está es un recurso corriendo sin comprobar.',
+
+    blockH: '3 — El bloque va en un archivo de servidor',
+    blockP:
+      'En un archivo de <strong>servidor</strong> del recurso que quieres proteger. No en un archivo de cliente y no en un <code>shared_script</code>: los exports existen solo en el servidor, y una llamada desde el otro lado devuelve <code>nil</code> — sin error y sin línea en el log. La comprobación parecería una comprobación y no encontraría nunca nada.',
+    blockWhy: [
+      [
+        'Por qué el evento y no un bucle',
+        '<code>Gilt()</code> devuelve <code>nil</code> mientras la primera respuesta está pendiente — y si la API no es alcanzable, sigue pendiente durante tres días. Un bucle de arranque correría tres días a una llamada por segundo tras una respuesta que no existe. El evento se dispara con cada <em>cambio</em>, y la primera respuesta siempre es un cambio.',
+      ],
+      [
+        'Por qué los veinte segundos',
+        'El evento no llega a un recurso que arranca <em>después</em> del veredicto. <code>skillry_lizenz</code> espera cinco segundos y luego hasta dos minutos por el identificador de Cfx; mira antes y solo aprendes que nadie ha preguntado aún, mira después y el recurso corre sin comprobar más tiempo del necesario.',
+      ],
+      [
+        'Por qué el pcall, existiendo la dependencia',
+        '<code>dependency</code> cubre el momento del arranque y nada más. Si <code>skillry_lizenz</code> se detiene con el servidor en marcha, el export lanza un error al acceder — un error en la consola de un cliente, causado por nuestra comprobación de licencia, justo en el momento en que de todas formas no puede responder. Si la consulta falla, no pasa nada y el siguiente veredicto pone el recurso al día.',
+      ],
+      [
+        'Lo que a propósito no hace',
+        'No se detiene ante la ausencia de conocimiento: <code>stand</code> tiene que ser <code>gilt_nicht</code> explícitamente. <code>if not gilt then</code> sería un error, porque <code>nil</code> es falsy en Lua y el recurso se pararía solo en los primeros segundos tras cada arranque. Respeta <code>C.Anhalten</code>, así que la etapa 2 sigue siendo un simulacro. Y no vuelve a arrancar nada por su cuenta.',
+      ],
+    ],
+
+    exportsH: 'Los exports y el evento',
+    exportsP:
+      'Ambos existen solo en el servidor. Una llamada en el cliente devuelve <code>nil</code>, sin error y sin línea en el log.',
+    exportsNoteH: '<code>nil</code> es una de tres respuestas, no un «no»',
+    exportsNoteP:
+      '<code>Gilt()</code> devuelve <code>nil</code> mientras la primera respuesta está pendiente. Escribir <code>if not Gilt() then StopResource(…)</code> detiene tu recurso en los primeros segundos tras cada arranque. <code>true</code> también vuelve cuando la comprobación está apagada del todo — si no se comprueba nada, todo está permitido, y a un bloque incrustado no le incumbe notarlo.',
+    standP: '<code>Stand()</code> siempre devuelve una tabla:',
+    eventP:
+      'El evento se dispara con cada <em>cambio</em> de estado, no con cada comprobación — si no, sería el mismo mensaje veinticuatro veces al día, y un oyente que actuara sobre él actuaría veinticuatro veces.',
+    eventNoteH: 'Un <code>TriggerEvent</code>, y a propósito ningún <code>RegisterNetEvent</code>',
+    eventNoteP:
+      'Un evento de red con este nombre podría lanzarlo cualquier jugador, diciéndole a cada recurso que la licencia es válida. Una comprobación que el comprobado puede responderse a sí mismo no es una comprobación.',
+
+    stagesH: 'Las tres etapas de armado',
+    stagesP0:
+      '<strong>La etapa 1 es la predeterminada.</strong> Un <code>skillry_lizenz</code> recién instalado no comprueba nada y no contacta con nadie hasta que alguien lo arma a propósito — todo lo de arriba describe lo que pasa después de esa decisión, no antes.',
+    stagesWarn: 'Sáltate la etapa 2 y estarás probando tu API de licencias por primera vez en un servidor con jugadores dentro.',
+    stagesHead: ['Etapa', '<code>C.An</code>', '<code>C.Anhalten</code>', 'Qué pasa'],
+    stages: [
+      ['1', '<code>false</code>', '<code>false</code>', 'Nada. Ni petición, ni hilo en espera, una línea en la consola. <code>Gilt()</code> devuelve <code>true</code>.'],
+      ['2', '<code>true</code>', '<code>false</code>', 'Comprueba y registra <strong>qué pasaría</strong>. No se detiene nada; el mensaje dice en voz alta que no tiene consecuencias.'],
+      ['3', '<code>true</code>', '<code>true</code>', 'Armado.'],
+    ],
+    stagesP:
+      'Te quedas en la etapa 2 hasta tener <strong>una semana de logs sin una sola negativa falsa</strong>. Una semana, porque solo una semana contiene un fin de semana, un reinicio, un release y una noche en la que algo nuestro estuvo roto.',
+
+    contractH: 'El contrato: la petición',
+    sourceNoteH: 'Esta página es la copia, no el original',
+    sourceNoteP:
+      'El texto vinculante es el README que acompaña a <code>skillry_lizenz</code>. Esta página lo reproduce. Dos descripciones del mismo contrato se separan con el tiempo, y entonces te crees la equivocada — así que si estas dos alguna vez discrepan, el README tiene razón y esta página no.',
+    reqHead: ['Campo', 'Tipo', 'Significado'],
+    req: [
+      [
+        'schluessel',
+        'texto',
+        'La clave de licencia. <strong>En el cuerpo, no en la dirección</strong> — las direcciones acaban en el log de acceso de cada intermediario, en el campo referrer y en cada captura de pantalla de un mensaje de error. Tampoco en una cabecera: las cabeceras se registran en casi cualquier reverse proxy en cuanto alguien enciende la depuración.',
+      ],
+      [
+        'kennung',
+        'texto',
+        'La <code>web_baseUrl</code> del servidor. Única por servidor, derivada de la clave de licencia de Cfx, pública de todas formas en la lista de servidores — y sin valor para quien la robe. <strong>Puede estar vacía</strong>: al arrancar aún no está disponible, y con <code>sv_lan 1</code> nunca.',
+      ],
+      ['name', 'texto', '<code>sv_hostname</code>.'],
+      ['spiel', 'texto', '<code>gamename</code>, en la práctica siempre <code>gta5</code>.'],
+      ['plaetze', 'número', '<code>sv_maxclients</code>.'],
+      ['laufzeit', 'número', 'Segundos desde que arrancó este servidor. No es decoración: una clave que reaparece una y otra vez con un uptime pequeño y días entre sus peticiones es un patrón, no una casualidad.'],
+      ['fassung', 'texto', 'La versión del manifiesto, para que el log muestre quién sigue en un build viejo sin que un cliente tenga que informar de nada.'],
+      ['lizenz', 'texto', 'Solo con <code>C.LizenzMitschicken = true</code>: la <code>sv_licenseKey</code> real. <strong>Apagado por defecto</strong>, y así debería quedarse.'],
+    ],
+    reqNoteP:
+      '<strong>No va en el cuerpo: la dirección del servidor.</strong> Viene de la conexión, y la API la ve por sí misma. Un campo <code>adresse</code> sería una afirmación del mismísimo servidor que se está comprobando, y como prueba no valdría nada.',
+    kennungNoteH: '<code>kennung</code> no debe comprobarse nunca contra un formato',
+    kennungNoteP:
+      'Cfx.re está cambiando el esquema y antepone <code>deprecated-</code> al identificador viejo. Una comprobación contra <code>^[0-9a-z]{8}\\.users\\.cfx\\.re$</code> descartaría en silencio cada identificador — y con él la única función que muestra si una clave corre en dos servidores. Lo que hace falta es una cadena única por servidor y que no cambie. Eso es todo lo que tiene que ser.',
+
+    resH: 'El contrato: la respuesta',
+    resP: 'HTTP 200 con JSON:',
+    resHead: ['Campo', 'Obligatorio', 'Significado'],
+    res: [
+      ['stand', 'sí', '<code>"gilt"</code> o <code>"gilt_nicht"</code>. <strong>Cualquier otra cosa se trata como no saber</strong>, no como negativa.'],
+      ['bis', 'no', 'Momento Unix en el que caduca la licencia. Ausente significa sin límite. También es el techo del periodo de gracia: una licencia que caduca el martes no corre hasta el viernes porque alguien cortara la conexión el lunes.'],
+      ['grund', 'con <code>gilt_nicht</code>', 'Texto plano para la consola del operador. Lo lee una persona, así que es una frase y no un número de error.'],
+      ['kontakt', 'no', 'Sustituye a <code>C.Kontakt</code>, para que en el mensaje aparezca el contacto de un revendedor en vez del nuestro.'],
+      ['hinweis', 'no', 'Una línea que aparece en la consola incluso con <code>gilt</code> — «tu suscripción termina en 5 días». Se imprime solo con un <em>cambio</em>, para que no esté ahí veinticuatro veces al día.'],
+    ],
+
+    codesH: 'Los códigos de estado',
+    codesP:
+      'Solo dos cosas son un no: <code>stand = "gilt_nicht"</code> con HTTP 200, y <strong>401, 402, 403</strong> — clave desconocida o revocada, impago, suspensión.',
+    codesP2:
+      'Todo lo demás es no saber, y no saber recibe el periodo de gracia: un tiempo agotado, un 500, un 404, la página de error de un intermediario, un cuerpo vacío, un JSON sin el campo <code>stand</code>. Una avería no puede terminarle la tarde a nadie.',
+    ruleH: 'La única regla del lado de la API',
+    ruleP:
+      'Un fallo nuestro no debe salir jamás como negativa. Responder 403 ante la duda detiene todos los servidores de pago a la vez, y ese es el único desenlace que de verdad podría acabar con este proyecto.',
+    rule: [
+      'Una consulta de base de datos rota se convierte en <strong>503</strong>, nunca en 403.',
+      'Un cuerpo ilegible se convierte en <strong>400</strong>, nunca en 401. Uno demasiado grande, en <strong>413</strong>.',
+      'Demasiadas peticiones se convierten en <strong>429</strong>, nunca en 403.',
+      'Una consulta que no responde en cinco segundos se convierte en <strong>503</strong>.',
+      'Una <strong>tabla de licencias vacía</strong> se convierte en 503, nunca en 401 — si no, un nombre de base de datos equivocado o una restauración vacía haría parecer desconocida cada clave, y cada servidor de pago se detendría en menos de una hora sin que nada pareciera roto.',
+      'Si falta la base de datos, el servicio <strong>directamente no arranca</strong>, en vez de levantarse y responder 503 en silencio.',
+    ],
+
+    revokeH: 'Qué hace de verdad una revocación',
+    revokeP:
+      'No hay canal de vuelta — la API no puede tocar a un servidor. Una revocación surte efecto la próxima vez que el servidor pregunta, o sea <strong>como muy tarde en una hora</strong> (<code>C.TaktMinuten</code>), más diez minutos para la segunda mirada (<code>C.NegativTaktMinuten</code>).',
+    revokeP2:
+      'Esa segunda mirada es la razón de que una revocación no sea inmediata, y es deliberada: <strong>una única negativa puede ser un error nuestro.</strong> Una migración que renombra una columna; una caché que sirve la respuesta del vecino; una errata que pone cada fila en revocado. En los tres casos la API responde limpia, rápida y con HTTP 200 — y sin la segunda mirada detendría a todos los clientes a la vez. Una revocación nunca tiene prisa; una falsa alarma que golpea a todos de golpe es una tarde que no quieres repetir.',
+
+    outageH: 'Qué pasa cuando la API está caída',
+    outageP:
+      'Nada, durante tres días. El periodo de gracia corre desde la <strong>última comprobación con éxito</strong>, no desde el arranque del servidor del cliente.',
+    outageHead: ['Después de', 'Qué nota el operador'],
+    outage: [
+      ['1 hora', 'Nada. Una línea en la consola y por lo demás nada en absoluto. Ese es exactamente el objetivo — la avería más probable, nuestro propio reinicio o release, no debe notarse.'],
+      ['1 día', 'Sigue sin haber más que líneas de consola. Un tercio del periodo de gracia está gastado y el juego corre sin cambios.'],
+      ['36 horas', 'Un aviso en cada comprobación que <strong>nombra la hora</strong> a la que ocurrirá la parada. Un día y medio de preaviso, no un segundo y medio.'],
+      ['72 horas', 'Los recursos se detienen — con un motivo y un contacto.'],
+    ],
+    whyP:
+      'Las 72 horas no son una sensación. El caso que fija el número es la tarde del viernes: un certificado caducado, un registro DNS, un dominio vencido — descubierto por el aviso de un cliente, arreglado por un ser humano que duerme, trabaja o va en tren. Eso son algo menos de 60 horas. 72 lo cubre con aire, y aquí el aire es barato.',
+    stopH: 'Qué hace una parada, y qué no',
+    stopP:
+      'Detiene, y nada más. <strong>Ningún sabotaje escondido</strong>: nada que altere filas de la base de datos, haga desaparecer dinero, borre vehículos o solo empiece a morder días después. Un daño que no se ve de inmediato acabará golpeando con certeza a un cliente de pago, por un error del lado <em>nuestro</em> — y un script que cambia datos en silencio por sospecha hace imposible cada sesión de depuración, incluida la nuestra. Tampoco se rearranca nada solo: cuando la licencia vuelve a valer, la consola lo dice, y los recursos detenidos vuelven con el siguiente reinicio del servidor, disparado por una persona que sabe quién está conectado.',
+    honestH: 'La pega honesta',
+    honestP:
+      '<strong>El periodo de gracia no se recuerda a través de un reinicio.</strong> Reinicia, y tienes uno nuevo. Esto es sabido y aceptado: un archivo o una entrada KVP en la máquina de un ladrón es exactamente igual de fácil de borrar que esta comprobación entera. Un estado que no protege pero puede romper es un estado de más. Lo que queda es el patrón en la API — el uptime en cada petición, la dirección del remitente registrada por la propia API, el identificador, la versión.',
+
+    limitsH: 'Qué no hace esta capa',
+    limitsLede:
+      'Es un umbral, no una cerradura. Esta sección está aquí por la misma razón por la que abre el README del propio recurso: fija la expectativa con la que hay que leer todo lo de arriba.',
+    limitsP1:
+      'Un archivo Lua en el servidor de otro es texto plano. Quien tiene los archivos también tiene <code>config.lua</code> — y <code>C.An = false</code> es una línea que borras antes de que se enfríe el café. Alguien más concienzudo borra el bloque del archivo de servidor; alguien con prisa renombra <code>skillry_lizenz</code> hasta que la entrada <code>dependency</code> deja de morder.',
+    limitsP2:
+      'Eso no es una debilidad de esta implementación, es la situación: <strong>el servidor tiene que ejecutar el código, así que el servidor tiene que tener el código.</strong> Cada comprobación que vive dentro del script entregado se puede esquivar con una línea cambiada. Una comprobación que no pudiera esquivarse tendría que vivir fuera del código entregado — y para eso existe exactamente una herramienta, abajo.',
+    limitsP3:
+      'El denominador común: funciona con <strong>clientes, no con ladrones</strong>. Un cliente que cancela y sigue jugando se detiene. Un ladrón que lee el archivo, no.',
+    doesH: 'Qué sí hace',
+    does: [
+      ['Conocimiento', 'Qué servidor ejecuta los scripts, desde cuándo, con cuántas plazas, en qué build. Eso es soporte y ventas, no defensa — y es la parte que rinde a diario.'],
+      ['Un interruptor de emergencia', 'Una clave revocada detiene la operación <em>honesta</em>: una devolución de cargo, una suscripción cancelada, una copia pasada a un segundo servidor.'],
+      ['Una fecha de caducidad', 'Una suscripción es un punto en el tiempo. El entitlement de Cfx.re por sí mismo no conoce ninguno.'],
+    ],
+    escrowH: 'Y si quieres más: Asset Escrow',
+    escrowP:
+      'Cfx.re cifra los recursos en la entrega. El cliente entonces no recibe archivos Lua legibles, sino un recurso que solo corre en un servidor al que se le asignó el entitlement. Esa es la única etapa que de verdad detiene a un atacante, y está en manos de Cfx.re, no en las nuestras.',
+    escrowP2:
+      'Las dos responden preguntas distintas. <strong>Escrow</strong> responde «¿puede este servidor ejecutar el código siquiera?» — dura, inesquivable y sin noción del tiempo. <strong>Esta capa</strong> responde «¿la suscripción sigue pagada, y qué sé de este servidor?» — blanda, esquivable, pero con fecha de caducidad, revocación y log. Si solo puedes tener una, toma escrow. Si vendes, necesitas las dos: escrow por sí solo no puede terminar una suscripción.',
+    escrowNoteH: 'La <code>sv_licenseKey</code> no se recoge',
+    escrowNoteP:
+      'Es la credencial del cliente ante Cfx.re, no la nuestra. Quien la tenga puede operar un servidor bajo identidad ajena. Recogerla convertiría nuestra API de licencias en un lugar donde un asalto merece la pena — y a cada cliente en alguien que nos confió algo que nunca pedimos. Tampoco hace falta: <code>web_baseUrl</code> hace lo mismo y es inofensiva.',
+
+    askH: 'Preguntas sobre la integración',
+    askP: 'Pregunta en el foro. Un contrato que solo entiende su remitente no es un contrato.',
+    askBtn: 'Ir al foro',
+    contactH: 'A quién llegas, y dónde',
+    contactP:
+      'El contacto de la consola sale de <code>C.Kontakt</code>, o del campo <code>kontakt</code> de la respuesta cuando un revendedor pone uno. Para todo lo demás, los datos están en el aviso legal.',
+    contactBtn: 'Aviso legal y contacto',
   },
 };
 

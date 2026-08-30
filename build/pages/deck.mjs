@@ -23,6 +23,11 @@ export const meta = {
     description:
       'Ein Fenster für alle FiveM-Server: diesen Rechner und jeden VPS, den du einträgst. Konsole, Spieler und Tickzeit in Echtzeit — und ein Neustart des Panels reißt den Spielserver nicht mit.',
   },
+  es: {
+    title: 'DECK — control de flota para servidores de FiveM · Skillry',
+    description:
+      'Una ventana para todos los servidores de FiveM: esta máquina y cada VPS que añadas. Consola, jugadores y tiempo de tick en tiempo real — y reiniciar el panel no arrastra al servidor del juego.',
+  },
 };
 
 const T = {
@@ -118,6 +123,53 @@ const T = {
     nexusH: 'Zusammen mit NEXUS',
     nexusP:
       'NEXUS trägt einen DECK-Eintrag in der Seitenleiste. Liegt DECK auf der Maschine, öffnet der Eintrag es; liegt es nicht da, führt er hierher. Die beiden sind mit Absicht getrennte Programme — DECK spricht SSH, RCON und Prozesse, und das hat in einem Assistenten nichts zu suchen.',
+  },
+
+  es: {
+    eyebrow: 'DECK · en desarrollo',
+    h1: 'Una ventana. Todos los servidores.',
+    lede:
+      'DECK dirige servidores de FiveM — el de esta máquina y cada VPS que añadas. No es un segundo txAdmin: hace una pregunta distinta.',
+    cta: 'Cómo compilarlo',
+    ctaNexus: 'Ver NEXUS mientras tanto',
+
+    fromH: 'De dónde viene',
+    fromP:
+      'Un servidor alquilado se canceló, la copia de seguridad tenía que correr en alguna parte, y levantarlo a mano cada vez acabó cansando. DECK es lo que salió de ahí — construido para una pregunta que txAdmin no hace: <em>¿cómo llevo un proyecto a través de varias máquinas?</em>',
+
+    diffH: 'Cuatro cosas que hace distinto',
+    diff: [
+      ['Destino y proyecto son dos cosas',
+       'Un <strong>destino</strong> es una máquina — este PC, un VPS, más adelante un segundo. Un <strong>proyecto</strong> es un servidor: recursos, configuración, base de datos, una versión de FXServer fijada. Un proyecto, muchos destinos. Probar en local y pasar luego al VPS es un cambio en un menú — no un segundo montaje que mantienes sincronizado a mano.'],
+      ['El panel no es el proceso padre',
+       'txAdmin arranca el servidor como hijo suyo: si cae el panel, cae el servidor con él. Aquí corre desacoplado, la salida a un archivo, los comandos por RCON. DECK apunta el número de proceso y se vuelve a enganchar en el siguiente arranque. <strong>Reiniciar el panel es invisible para los jugadores.</strong>'],
+      ['La versión está fijada, no es casualidad',
+       'Un proyecto lleva su versión de FXServer como declaración. Los builds conviven lado a lado, y cambiar uno no sobrescribe el otro. Un servidor que corre 35245 en local y 35574 fuera tiene errores que en casa no ves nunca.'],
+      ['El tiempo de tick es una diferencia, no una media',
+       'El endpoint de rendimiento entrega totales desde el arranque. Si los divides, obtienes la media de los últimos tres días — un número que deja de moverse. DECK divide el delta: la media de los últimos dos segundos, y esa sí se mueve. Si el endpoint está cerrado, muestra un guion, no un cero.'],
+    ],
+
+    haveH: 'Qué lleva dentro hoy',
+    have: [
+      'Arrancar, reiniciar y parar — de forma ordenada, para que los datos de los jugadores se escriban',
+      'Consola en vivo con color por recurso, tamaño ajustable e historial de comandos',
+      'Jugadores con ping, tiempo de conexión e identificadores para copiar',
+      'Flota: alcanzabilidad, latencia, datos del sistema por SSH',
+      'Credenciales en la cuenta de Windows, nunca en un archivo de configuración',
+    ],
+
+    getH: 'Cómo conseguirlo',
+    getP:
+      'DECK aún no está publicado, y el repositorio es privado por ahora — no hay descarga ni código fuente abierto. Esto es lo que hace falta para ejecutarlo.',
+    steps: [
+      ['Requisitos', '.NET 9 SDK y Windows. Nada más — sin Docker, sin virtualización.'],
+      ['Runtimes', '<code>werkzeug\\laufzeit-holen.ps1</code> descarga FXServer 35245 y una MariaDB portátil — 675 MB, ambos comprobados contra un SHA-256 fijado. A propósito no están en el repositorio.'],
+      ['Compilar y arrancar', '<code>dotnet build DECK.sln</code>, luego <code>dotnet run --project src/Deck.App</code>.'],
+    ],
+
+    nexusH: 'Junto con NEXUS',
+    nexusP:
+      'NEXUS lleva una entrada de DECK en su barra lateral. Si DECK está en la máquina, la entrada lo abre; si no está, te trae aquí. Los dos son programas separados a propósito — DECK habla SSH, RCON y procesos, y eso no pinta nada dentro de un asistente.',
   },
 };
 

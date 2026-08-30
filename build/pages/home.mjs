@@ -102,6 +102,11 @@ export const meta = {
     description:
       'Das Dach über einer Familie von Projekten: AIRLOCK und NEXUS für Leute, die KI benutzen, FiveM-Skripte und ein Rollenspielserver für GTA V, Browser-Spiele, ein durchsuchbarer Skill-Index und ein Forum. Offen entwickelt, unter einem Zeichen.',
   },
+  es: {
+    title: 'Skillry — una red: herramientas, juegos, comunidad',
+    description:
+      'El techo sobre una familia de proyectos: AIRLOCK y NEXUS para gente que usa IA, scripts de FiveM y un servidor de rol para GTA V, juegos de navegador, un índice de skills consultable y un foro. Desarrollado en abierto, bajo un mismo símbolo.',
+  },
 };
 
 const T = {
@@ -315,6 +320,111 @@ const T = {
       ['Keine Tracker, keine Analytics, keine Cookies', 'Diese Seite setzt nichts und speichert nichts außer zwei Einstellungen, die du selbst wählst — hell oder dunkel, und die Tiefe im Lernbereich. Beide verlassen deinen Browser nie.'],
       ['Kein Konto nötig, um irgendetwas zu lesen', 'Zum Lesen des Forums brauchst du kein Konto. Zum Schreiben schon: es läuft über Firebase, mit einer E-Mail-Adresse, die du bestätigen musst. Das Passwort hasht Firebase — dieser Code sieht es nie — und die Datenschutzseite benennt jeden Beteiligten.'],
       ['Alles ist nachprüfbar', 'Jede Zahl auf dieser Seite kommt aus einem Skript, das du selbst laufen lassen kannst — und wo selbst gemessen wurde, steht das dabei.'],
+    ],
+  },
+
+  es: {
+    eyebrow: 'Un símbolo · muchos proyectos · código abierto',
+    h1: 'Una <span class="lit">red</span>. Herramientas, juegos, comunidad.',
+    lede:
+      'Skillry es el techo sobre una familia de proyectos: herramientas para gente que usa IA, scripts y un servidor de rol para GTA V, juegos para el rato libre y un foro para cualquier pregunta. Desarrollado en abierto, bajo un mismo símbolo — y cada puerta de aquí abajo existe hoy.',
+    ctaPrimary: 'Echar un vistazo',
+    ctaSecondary: 'Ir a los juegos',
+
+    bereicheEyebrow: 'Qué hay aquí',
+    bereicheH: 'Nueve puertas, y detrás de cada una algo real.',
+    gruppeKi: 'Para gente que usa IA',
+    gruppeSpiel: 'Para GTA V y servidores',
+    gruppeNetz: 'Comunidad y juegos',
+    bereicheLede: 'Tres áreas, un símbolo. Nada de aquí abajo es un anzuelo: cada número sale de los datos detrás de la página, y cada puerta se abre.',
+    bereiche: [
+      { slug: 'airlock', zahl: '2', h: 'Herramientas',
+        p: 'AIRLOCK lee un archivo de skill como lo haría un asistente. NEXUS mantiene las piezas en un solo lugar en vez de en cinco ventanas.',
+        cta: 'Ver las herramientas' },
+      { slug: 'skills', zahl: String(N_SKILLS), h: 'Índice de skills',
+        p: 'Cada skill lleva un veredicto que produjo el escáner — no uno que alguien tecleó. Consúltalo antes de instalar.',
+        cta: 'Buscar en el índice' },
+      { slug: 'learn', zahl: String(N_THEMEN), h: 'Aprender',
+        p: 'Cómo se engaña a los asistentes de IA, respondido en dos profundidades — primero en lenguaje claro, con detalle técnico si lo pides.',
+        cta: 'Empezar a leer' },
+      { slug: 'scripts', zahl: String(N_SKRIPTE), h: 'Scripts de FiveM',
+        p: 'Recursos para un servidor de rol de GTA V, cada uno con la versión que declara. Una cesta que entrega tu selección a una persona.',
+        cta: 'Ver los scripts' },
+      { extern: 'https://roleplay.skillry.de/', wort: 'GTA V', h: 'Servidor de rol',
+        p: 'Un servidor de rol alemán con sus propias reglas y su propio mundo — corriendo sobre los mismos recursos que aquí se venden.',
+        cta: 'Visitar el servidor' },
+      { slug: 'api', wort: 'v1', h: 'Licencia',
+        p: 'Comprar un script significa recibir una licencia. El contrato de detrás está publicado, respuesta a respuesta.',
+        cta: 'Leer el contrato' },
+      { slug: 'forum', zahl: '6', h: 'Foro',
+        p: 'Preguntar qué significa algo, recomendar un skill, informar de un falso positivo. Las preguntas de principiante son el sentido de todo esto.',
+        cta: 'Abrir el foro' },
+      { slug: 'games', zahl: String(N_SPIELBAR), h: 'Juegos',
+        p: 'Juegos pequeños que corren enteros en tu navegador, y GeoBingo para rondas de Street View junto a un stream. Hay más en camino.',
+        cta: 'Ir a los juegos' },
+      { extern: SITE.github, wort: 'MIT', h: 'Código abierto', ak: ' ak-mono',
+        p: 'Todo lo de aquí se desarrolla en abierto y lleva licencia MIT — el sitio, el escáner, los juegos. Lee, abre issues, participa.',
+        cta: 'Ver en GitHub' },
+    ],
+
+    problemEyebrow: 'Por qué existe Skillry',
+    problemH: 'Un skill es un archivo de texto. Nadie lo comprueba.',
+    problemBody: [
+      'Los asistentes de IA cargan instrucciones escritas por desconocidos — archivos de texto simples que nada comprueba, y un texto puede llevar caracteres que no ocupan ni un píxel en tu pantalla. Ahí empezó Skillry, y por eso existen AIRLOCK, el índice y la sección Aprender. La versión corta está en el terminal de abajo; la larga vive en Aprender.',
+    ],
+
+    beweisDatei: 'pdf-helper/SKILL.md',
+    beweisFuss: 'Nada de lo de arriba es maquetación. Los 1000 puntos de código invisibles están de verdad en ese archivo, y la frase citada es lo que deletrean en cuanto se traducen de vuelta a texto.',
+
+    productsEyebrow: 'Dos productos',
+    productsH: 'Pensados para trabajar juntos, útiles por separado',
+    airlockTag: 'Seguridad',
+    airlockH: 'AIRLOCK',
+    airlockLede: 'Verificación de cadena de suministro para skills de agente.',
+    airlockPoints: [
+      'Lee un skill y decodifica todo lo oculto de vuelta a texto',
+      'Fija lo que aprobaste — en un lockfile firmado',
+      'Te avisa cuando un skill cambió, incluso con cambios que ningún diff enseña',
+      'Cero dependencias, completamente offline, no ejecuta nada',
+    ],
+    nexusTag: 'Espacio de trabajo',
+    nexusH: 'NEXUS',
+    nexusLede: 'El centro de mando sobre tu Windows.',
+    nexusPoints: [
+      'Asistente de IA, lanzador, navegador, editor de código y estudio en una app nativa',
+      'Local primero — habla con cualquier endpoint compatible con OpenAI, la nube es opcional',
+      'Neutral ante proveedores: tú eliges el endpoint y el modelo',
+      'Windows, .NET 8, controlable hasta el fondo desde un archivo de configuración',
+    ],
+    learnMore: 'Saber más',
+    inDevelopment: 'En desarrollo · v0.9.0',
+
+    startEyebrow: 'Empieza aquí',
+    startH: 'Tres entradas, según quién seas',
+    paths: [
+      {
+        h: 'Uso IA y quiero estar tranquilo',
+        p: 'No necesitas saber qué es un carácter de ancho cero. La sección Aprender responde cinco preguntas dos veces — primero en claro, con precisión si la pides.',
+        cta: 'Guía en lenguaje claro',
+      },
+      {
+        h: 'Llevo un servidor de GTA V',
+        p: 'Recursos de FiveM, cada uno con la versión que declara, una cesta que termina en un mensaje a una persona, y un contrato de licencia publicado.',
+        cta: 'Ir a los scripts',
+      },
+      {
+        h: 'Solo quiero jugar',
+        p: 'Reflejos, Parejas y Secuencia corren directamente en tu navegador y no guardan nada. GeoBingo juega rondas de Street View junto a un stream.',
+        cta: 'Ir a los juegos',
+      },
+    ],
+
+    trustEyebrow: 'Cómo se comporta este sitio',
+    trustH: 'Aquí nada te observa',
+    trustPoints: [
+      ['Sin rastreadores, sin analítica, sin cookies', 'Esta página no coloca nada y no guarda nada salvo dos ajustes que eliges tú — claro u oscuro, y la profundidad en Aprender. Ninguno de los dos sale nunca de tu navegador.'],
+      ['No hace falta cuenta para leer nada', 'Para leer el foro no necesitas cuenta. Para escribir sí: corre sobre Firebase, con un correo que tienes que confirmar. La contraseña la hashea Firebase — este código no la ve nunca — y la página de privacidad nombra a cada implicado.'],
+      ['Todo se puede comprobar', 'Cada número de este sitio sale de un script que puedes ejecutar tú — y donde algo se midió en casa, lo pone al lado.'],
     ],
   },
 };

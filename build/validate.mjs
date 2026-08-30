@@ -18,6 +18,10 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+// Die Liste der live-Sprachen kommt aus dem Bau selbst: geht eine Sprache
+// live, pruefen alle Schleifen hier sie automatisch mit, statt dass jemand
+// eine zweite Liste nachziehen muss, die irgendwann nicht mehr stimmt.
+import { LANGS } from './layout.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const catalog = JSON.parse(readFileSync(join(ROOT, 'content', 'catalog.json'), 'utf8'));
@@ -47,7 +51,7 @@ for (const s of catalog.skills) {
 
   if (s.url && !/^https:\/\//.test(s.url)) fail(id, 'url must be https');
 
-  for (const lang of ['en', 'de']) {
+  for (const lang of LANGS) {
     if (!s.title?.[lang]) fail(id, `title.${lang} is missing`);
     if (!s.description?.[lang]) fail(id, `description.${lang} is missing`);
     else if (s.description[lang].length > 320) fail(id, `description.${lang} is over 320 characters`);
@@ -82,15 +86,15 @@ for (const s of catalog.skills) {
    * would drop a genuinely relevant entry — it is a different axis of trust,
    * which is exactly why it is listed.
    *
-   * So it declares why, in both languages, and the index prints that reason on
+   * So it declares why, in every live language, and the index prints that reason on
    * the card. The rule from the comment above applies to this warning too: one
    * that fires where neither of its remedies applies teaches the reader to
    * ignore warnings.
    */
   if (s.unscannable) {
     if (s.scan) fail(id, 'an entry cannot be both unscannable and carry a scan');
-    else if (!s.unscannable.en || !s.unscannable.de) {
-      fail(id, 'unscannable must say why, in both languages');
+    else if (LANGS.some((l) => !s.unscannable[l])) {
+      fail(id, 'unscannable must say why, in every live language');
     }
   } else if (s.scan === null || s.scan === undefined) {
     warnings.push(`${id}: no verdict recorded — run "npm run rescan" or remove the entry`);
@@ -156,7 +160,7 @@ if (!Array.isArray(shop.products) || shop.products.length === 0) {
 
     if (!SEMVER.test(String(p.version ?? ''))) bad(id, 'version must be the x.y.z from fxmanifest.lua');
 
-    for (const lang of ['en', 'de']) {
+    for (const lang of LANGS) {
       if (!p.title?.[lang]) bad(id, `title.${lang} is missing`);
       if (!p.summary?.[lang]) bad(id, `summary.${lang} is missing`);
       else if (p.summary[lang].length > 320) bad(id, `summary.${lang} is over 320 characters`);
@@ -187,7 +191,7 @@ if (!Array.isArray(shop.products) || shop.products.length === 0) {
           if (!Number.isInteger(m.w) || !Number.isInteger(m.h) || m.w <= 0 || m.h <= 0) {
             bad(id, 'media needs integer w and h, or the layout shifts on load');
           }
-          if (m.type === 'image' && !m.alt?.en) bad(id, 'an image needs alt text in both languages');
+          if (m.type === 'image' && LANGS.some((l) => !m.alt?.[l])) bad(id, 'an image needs alt text in every live language');
         }
     }
   }
@@ -211,7 +215,7 @@ errors.push(...shopErrors);
 // passiert (`L.regeln` war im Seitenmodul ein Array und kein Satz), und genau
 // deshalb steht die Prüfung jetzt hier statt im Gedächtnis.
 //
-// Die zweite Hälfte ist die Sprachparität: eine Seite, die in beiden Sprachen
+// Die zweite Hälfte ist die Sprachparität: eine Seite, die in allen live-Sprachen
 // gebaut wird, hat in beiden dieselben Schlüssel — sonst bekommt eine davon
 // Löcher, die niemand sieht, der nur die andere liest.
 
@@ -222,7 +226,7 @@ const gbFehler = [];
   const quelle = readFileSync(join(ROOT, 'build', 'geobingo-spiel.js'), 'utf8');
   const benutzt = new Set([...quelle.matchAll(/\bL\.([A-Za-z0-9_]+)/g)].map((m) => m[1]));
 
-  for (const lang of ['en', 'de']) {
+  for (const lang of LANGS) {
     for (const key of benutzt) {
       const wert = TEXTE[lang][key];
       if (wert === undefined) {
@@ -245,7 +249,7 @@ const gbFehler = [];
   for (const r of gb.regionen) {
     if (ids.has(r.id)) gbFehler.push(`geobingo: Region "${r.id}" gibt es zweimal`);
     ids.add(r.id);
-    for (const f of ['en', 'de']) if (!r[f]) gbFehler.push(`geobingo: Region "${r.id}" hat keinen ${f}-Namen`);
+    for (const f of LANGS) if (!r[f]) gbFehler.push(`geobingo: Region "${r.id}" hat keinen ${f}-Namen`);
     if (!r.boxen?.length) gbFehler.push(`geobingo: Region "${r.id}" hat keine boxen — mit "nur Innenstädte" aus wäre sie leer`);
     if (!r.staedte?.length) gbFehler.push(`geobingo: Region "${r.id}" hat keine staedte — mit "nur Innenstädte" an wäre sie leer`);
 
@@ -301,9 +305,9 @@ const gbFehler = [];
   }
 
   for (const p of gb.pakete) {
-    for (const f of ['en', 'de', 'enD', 'deD']) if (!p[f]) gbFehler.push(`geobingo: Paket "${p.id}" hat kein ${f}`);
+    for (const f of [...LANGS, ...LANGS.map((l) => l + 'D')]) if (!p[f]) gbFehler.push(`geobingo: Paket "${p.id}" hat kein ${f}`);
     for (const w of p.woerter ?? []) {
-      if (!w.en || !w.de) gbFehler.push(`geobingo: ein Wort in "${p.id}" fehlt in einer Sprache`);
+      if (LANGS.some((l) => !w[l])) gbFehler.push(`geobingo: ein Wort in "${p.id}" fehlt in einer Sprache`);
       // Drei Punkte ist keine Hausmeinung, sondern das, was die Firestore-Regel
       // durchlässt. Eine Vier hier wäre ein Wort, das kein Spieler je fangen kann.
       if (![1, 2, 3].includes(w.p)) gbFehler.push(`geobingo: "${w.de ?? '?'}" hat ${w.p} Punkte — erlaubt sind 1, 2 oder 3`);

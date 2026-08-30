@@ -1,4 +1,4 @@
-import { href, SITE } from '../layout.mjs';
+import { href, SITE, GEBIETSSCHEMA } from '../layout.mjs';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,27 +22,38 @@ export const meta = {
     description:
       'Ein Forum für Leute, die KI-Assistenten benutzen: fragen was etwas bedeutet, einen Skill teilen, einen False Positive melden. Anmeldung mit GitHub — kein neues Passwort nötig.',
   },
+  es: {
+    title: 'Foro — pregunta, comparte, informa · Skillry',
+    description:
+      'Un foro para gente que usa asistentes de IA: preguntar qué significa algo, compartir un skill, informar de un falso positivo. Acceso con GitHub — sin contraseña nueva que inventar.',
+  },
 };
 
 export const CATEGORIES = [
-  { id: 'help', en: 'Help & questions', de: 'Hilfe & Fragen', tone: 'i',
+  { id: 'help', en: 'Help & questions', de: 'Hilfe & Fragen', es: 'Ayuda y preguntas', tone: 'i',
     enD: 'Anything you want to understand. No question is too basic.',
-    deD: 'Alles, was du verstehen willst. Keine Frage ist zu einfach.' },
-  { id: 'skills', en: 'Skills', de: 'Skills', tone: 'a',
+    deD: 'Alles, was du verstehen willst. Keine Frage ist zu einfach.',
+    esD: 'Todo lo que quieras entender. Ninguna pregunta es demasiado básica.' },
+  { id: 'skills', en: 'Skills', de: 'Skills', es: 'Skills', tone: 'a',
     enD: 'Recommend one, ask whether one is any good, or submit one for the index.',
-    deD: 'Einen empfehlen, fragen ob einer taugt, oder einen für den Index einreichen.' },
-  { id: 'false-positives', en: 'False positives', de: 'False Positives', tone: 'i',
+    deD: 'Einen empfehlen, fragen ob einer taugt, oder einen für den Index einreichen.',
+    esD: 'Recomendar uno, preguntar si uno vale, o enviar uno para el índice.' },
+  { id: 'false-positives', en: 'False positives', de: 'False Positives', es: 'Falsos positivos', tone: 'i',
     enD: 'AIRLOCK flagged something harmless. The most useful report there is.',
-    deD: 'AIRLOCK hat etwas Harmloses markiert. Die nützlichste Meldung überhaupt.' },
-  { id: 'misses', en: 'Misses', de: 'Übersehenes', tone: 'a',
+    deD: 'AIRLOCK hat etwas Harmloses markiert. Die nützlichste Meldung überhaupt.',
+    esD: 'AIRLOCK marcó algo inofensivo. El aviso más útil que existe.' },
+  { id: 'misses', en: 'Misses', de: 'Übersehenes', es: 'Pasado por alto', tone: 'a',
     enD: 'It passed something it should have caught. Worth even more.',
-    deD: 'Es hat etwas durchgelassen, das es hätte fangen müssen. Noch mehr wert.' },
-  { id: 'ideas', en: 'Ideas', de: 'Ideen', tone: 'n2',
+    deD: 'Es hat etwas durchgelassen, das es hätte fangen müssen. Noch mehr wert.',
+    esD: 'Dejó pasar algo que debería haber cazado. Vale aún más.' },
+  { id: 'ideas', en: 'Ideas', de: 'Ideen', es: 'Ideas', tone: 'n2',
     enD: 'Rules, features, or something the tools should do and do not.',
-    deD: 'Regeln, Funktionen, oder etwas das die Werkzeuge tun sollten und nicht tun.' },
-  { id: 'showcase', en: 'Showcase', de: 'Zeigen', tone: 'n2',
+    deD: 'Regeln, Funktionen, oder etwas das die Werkzeuge tun sollten und nicht tun.',
+    esD: 'Reglas, funciones, o algo que las herramientas deberían hacer y no hacen.' },
+  { id: 'showcase', en: 'Showcase', de: 'Zeigen', es: 'Muestra tu trabajo', tone: 'n2',
     enD: 'Something you built or found. NEXUS setups welcome.',
-    deD: 'Etwas, das du gebaut oder gefunden hast. NEXUS-Setups willkommen.' },
+    deD: 'Etwas, das du gebaut oder gefunden hast. NEXUS-Setups willkommen.',
+    esD: 'Algo que construiste o encontraste. Los setups de NEXUS son bienvenidos.' },
 ];
 
 const T = {
@@ -131,6 +142,7 @@ const T = {
     errGeneric: 'That did not work. Check your connection and try again.',
     errTooShort: 'A little more detail, please — a title needs 6 characters and a message needs 10.',
 
+    catsH: 'Categories',
     rulesH: 'House rules, short version',
     rules: [
       'Assume the person asking is smart and new. Both at once.',
@@ -240,6 +252,7 @@ const T = {
     errGeneric: 'Das hat nicht geklappt. Prüf die Verbindung und versuch es nochmal.',
     errTooShort: 'Etwas mehr Detail bitte — ein Titel braucht 6 Zeichen, eine Nachricht 10.',
 
+    catsH: 'Kategorien',
     rulesH: 'Hausregeln, Kurzfassung',
     rules: [
       'Geh davon aus, dass die fragende Person klug und neu ist. Beides gleichzeitig.',
@@ -262,6 +275,116 @@ const T = {
     privacyH: 'Was das Forum speichert',
     privacyP:
       'Deine E-Mail-Adresse, einen selbst gewählten Anzeigenamen und das, was du schreibst. Das Passwort hasht Firebase, es erreicht diese Seite nie. Beiträge und Profile liegen in Firestore in der EU; Firebase Authentication selbst läuft in den USA, dort entstehen also der Kontodatensatz und die Anmelde-Protokolle. Lesen braucht kein Konto und schreibt nichts auf dein Gerät — die Anmeldetechnik lädt erst, wenn du sie benutzt.',
+  },
+
+  es: {
+    eyebrow: 'Foro',
+    h1: 'Pregunta lo que sea. Las preguntas de principiante son el sentido de esto.',
+    lede:
+      'Un lugar para preguntar qué significa algo, recomendar un skill, informar de un falso positivo, o decir que una regla se equivocó. Nada aquí da por hecho que ya conoces el vocabulario.',
+    leisteSub: 'pregunta · comparte · informa',
+    leisteNav: 'Zonas del foro',
+    signIn: 'Iniciar sesión',
+    signInGithub: 'Continuar con GitHub',
+    orEmail: 'o con un correo electrónico',
+    signUp: 'Crear cuenta',
+    signOut: 'Cerrar sesión',
+    signedInAs: 'Sesión iniciada como',
+    whyAccount: 'Una cuenta aquí es un correo y una contraseña. Firebase guarda la contraseña con hash — este sitio no la ve nunca y no puede perderla.',
+    emailLabel: 'Correo',
+    passwordLabel: 'Contraseña',
+    nameLabel: 'Nombre visible',
+    namePlaceholder: 'Lo que debe aparecer en tus publicaciones',
+    haveAccount: '¿Ya tienes cuenta? Inicia sesión',
+    needAccount: '¿Aún sin cuenta? Crea una',
+    forgot: '¿Contraseña olvidada?',
+    resetSent: 'Si esa dirección tiene una cuenta, el enlace de restablecimiento va de camino.',
+    verifyH: 'Confirma tu correo electrónico',
+    verifyP: 'Leer puedes leerlo todo. Para publicar, abre el enlace del correo que acabamos de enviar — evita que alguien se registre con una dirección que no es suya.',
+    verifyResend: 'Enviarlo de nuevo',
+    verifySent: 'Enviado. Mira tu bandeja de entrada, y la carpeta de spam.',
+    verifyDone: 'Ya lo confirmé',
+    pwTooShort: 'Las contraseñas necesitan al menos 8 caracteres. La longitud gana a la puntuación.',
+    emailInvalid: 'Eso no parece una dirección de correo.',
+    errInUse: 'Ya hay una cuenta con esa dirección. Inicia sesión con ella.',
+    errWrong: 'Ese correo y esa contraseña no coinciden con ninguna cuenta.',
+    errWeak: 'Firebase rechazó esa contraseña por débil. Prueba una más larga.',
+    errMany: 'Demasiados intentos. Espera unos minutos.',
+    newThread: '+ POST',
+    newThreadH: 'Escribir una publicación',
+    cancel: 'Cancelar',
+    post: 'Publicar',
+    posting: 'Publicando…',
+    titleLabel: 'Título',
+    titleTooShort: 'El título necesita al menos seis caracteres.',
+    bodyTooShort: 'Al menos diez caracteres — lo bastante para que alguien pueda responder.',
+    titlePlaceholder: '¿Cuál es tu pregunta, en una línea?',
+    bodyLabel: 'Mensaje',
+    bodyPlaceholder: 'Da suficiente detalle para que alguien pueda responder de verdad. Pega la salida exacta si la hay.',
+    categoryLabel: 'Categoría',
+    replyPlaceholder: 'Escribe una respuesta…',
+    reply: 'Responder',
+    replies: 'respuestas',
+    voteUp: 'Útil',
+    voteDown: 'No útil',
+    errVote: 'El voto no llegó.',
+    share: 'Compartir',
+    linkCopied: 'Enlace copiado.',
+    fmtBold: 'Negrita',
+    fmtItalic: 'Cursiva',
+    fmtUnderline: 'Subrayado',
+    fmtCode: 'Código',
+    fmtH: 'Encabezado',
+    fmtList: 'Lista',
+    fmtNum: 'Lista numerada',
+    fmtQuote: 'Cita',
+    fmtLink: 'Enlace',
+    fmtBlock: 'Bloque de código',
+    fmtStrike: 'Tachado',
+    fmtRule: 'Separador',
+    preview: 'Vista previa',
+    write: 'Escribir',
+    previewEmpty: 'Aún no hay nada escrito.',
+    fmtHint: 'Dos asteriscos para negrita, uno para cursiva, dos guiones bajos para subrayado.',
+    noComments: 'Aún no hay respuestas. La tuya sería la primera.',
+    answersH: 'Respuestas',
+    pinned: 'Fijado',
+    answer: 'Responder',
+    replyOne: 'respuesta',
+    back: '← Todos los hilos',
+    loading: 'Cargando…',
+    emptyCat: 'Aquí aún no hay hilos. El tuyo sería el primero.',
+    signInToPost: 'Inicia sesión para publicar.',
+    allCats: 'Todos',
+    deleted: '[retirado]',
+    delete: 'Retirar',
+    confirmDelete: '¿Retirar esto? Se queda en el historial, marcado como retirado.',
+    errGeneric: 'Eso no ha funcionado. Comprueba la conexión e inténtalo otra vez.',
+    errTooShort: 'Un poco más de detalle, por favor — un título necesita 6 caracteres y un mensaje 10.',
+
+    catsH: 'Categorías',
+    rulesH: 'Reglas de la casa, versión corta',
+    rules: [
+      'Da por hecho que quien pregunta es inteligente y nuevo. Las dos cosas a la vez.',
+      'Responde la pregunta que se hizo antes que la que te habría gustado que hicieran.',
+      'Nada de «búscalo en Google». Si fuera obvio, esa persona no estaría aquí.',
+      'Nunca publiques credenciales, tokens ni archivos privados — ni siquiera tachados, ni siquiera como ejemplo.',
+      'Un hallazgo trata de un archivo, no de la persona que lo escribió.',
+    ],
+    secH: '¿Encontraste algo serio?',
+    secP:
+      'Si crees que algo se puede explotar activamente, no abras un hilo público. Usa el formulario privado de aviso de seguridad — me llega a mí y a nadie más hasta que haya un arreglo.',
+    secCta: 'Informar en privado',
+
+    setupH: 'El foro aún no está encendido',
+    setupP:
+      'Esta página está construida y espera un proyecto de Firebase al que apuntar. Hasta entonces aquí no carga nada y no se guarda nada — que es exactamente el mismo aspecto que tiene una configuración rota, así que lo dice en claro en vez de mostrar un tablón vacío.',
+    setupCta: 'Guía de puesta en marcha',
+    setupAlt: 'Usar GitHub Discussions mientras tanto',
+
+    privacyH: 'Qué guarda el foro',
+    privacyP:
+      'Tu dirección de correo, un nombre visible que eliges tú, y lo que publicas. La contraseña la hashea Firebase y no llega nunca a este sitio. Las publicaciones y los perfiles viven en Firestore en la UE; Firebase Authentication en sí corre en EE. UU., así que el registro de la cuenta y los logs de acceso se procesan allí. Leer el foro no necesita cuenta y no escribe nada en tu dispositivo — la maquinaria de acceso solo carga cuando la usas.',
   },
 };
 
@@ -605,7 +728,7 @@ export function body(lang) {
   const cats = CATEGORIES.map(
     (c) => `<article class="card lift">
       <h3><span class="accent-${c.tone === 'a' ? 'airlock' : c.tone === 'n2' ? 'nexus' : 'index'}">${c[lang]}</span></h3>
-      <p class="muted small">${lang === 'en' ? c.enD : c.deD}</p>
+      <p class="muted small">${c[lang + 'D']}</p>
     </article>`,
   ).join('');
 
@@ -681,7 +804,7 @@ ${board}
 
 <section class="band">
   <div class="wrap stack-lg">
-    <h2 class="head-rule"><span>${lang === 'en' ? 'Categories' : 'Kategorien'}</span></h2>
+    <h2 class="head-rule"><span>${t.catsH}</span></h2>
     <div class="grid grid-3">${cats}</div>
   </div>
 </section>
@@ -1267,7 +1390,7 @@ export function script(lang) {
     '  function when(ts) {',
     '    if (!ts || !ts.toDate) return "";',
     '    var d = ts.toDate();',
-    '    return d.toLocaleDateString(' + JSON.stringify(lang === 'de' ? 'de-DE' : 'en-GB') + ', { year: "numeric", month: "short", day: "numeric" }) + ", " + d.toLocaleTimeString(' + JSON.stringify(lang === 'de' ? 'de-DE' : 'en-GB') + ', { hour: "2-digit", minute: "2-digit" });',
+    '    return d.toLocaleDateString(' + JSON.stringify(GEBIETSSCHEMA[lang]) + ', { year: "numeric", month: "short", day: "numeric" }) + ", " + d.toLocaleTimeString(' + JSON.stringify(GEBIETSSCHEMA[lang]) + ', { hour: "2-digit", minute: "2-digit" });',
     '  }',
     '  function threadId() { return new URLSearchParams(location.search).get("t"); }',
     '  function canModerate() { return user && MODS.indexOf(user.uid) !== -1; }',

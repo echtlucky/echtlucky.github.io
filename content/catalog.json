@@ -20,11 +20,13 @@
       ],
       "title": {
         "en": "Review a skill before installing it",
-        "de": "Einen Skill prüfen, bevor er installiert wird"
+        "de": "Einen Skill prüfen, bevor er installiert wird",
+        "es": "Comprobar un skill antes de instalarlo"
       },
       "description": {
         "en": "Scans a SKILL.md for hidden text, instruction override and credential reach, then explains the verdict in plain language. Use it on anything a stranger sent you.",
-        "de": "Prüft eine SKILL.md auf versteckten Text, Instruction Override und Zugriff auf Zugangsdaten und erklärt das Urteil im Klartext. Für alles, was dir jemand Fremdes geschickt hat."
+        "de": "Prüft eine SKILL.md auf versteckten Text, Instruction Override und Zugriff auf Zugangsdaten und erklärt das Urteil im Klartext. Für alles, was dir jemand Fremdes geschickt hat.",
+        "es": "Comprueba un SKILL.md en busca de texto oculto, instruction override y acceso a credenciales, y explica el veredicto en lenguaje claro. Para todo lo que te haya enviado un desconocido."
       },
       "scan": {
         "verdict": "pass",
@@ -62,11 +64,13 @@
       ],
       "title": {
         "en": "Approve a skill collection and sign it",
-        "de": "Eine Skill-Sammlung freigeben und signieren"
+        "de": "Eine Skill-Sammlung freigeben und signieren",
+        "es": "Aprobar y firmar una colección de skills"
       },
       "description": {
         "en": "Records your decision as a signed lockfile: a hash per file, all hashed into one root, signed with a local key. Turns 'I read this once' into something enforceable.",
-        "de": "Hält deine Entscheidung als signiertes Lockfile fest: ein Hash je Datei, alle in eine Wurzel gehasht, mit lokalem Schlüssel signiert. Macht aus „einmal gelesen“ etwas Durchsetzbares."
+        "de": "Hält deine Entscheidung als signiertes Lockfile fest: ein Hash je Datei, alle in eine Wurzel gehasht, mit lokalem Schlüssel signiert. Macht aus „einmal gelesen“ etwas Durchsetzbares.",
+        "es": "Registra tu decisión como lockfile firmado: un hash por archivo, todos reunidos en una raíz, firmada con clave local. Convierte «lo leí una vez» en algo exigible."
       },
       "scan": {
         "verdict": "pass",
@@ -103,11 +107,13 @@
       ],
       "title": {
         "en": "Check installed skills for drift",
-        "de": "Installierte Skills auf Drift prüfen"
+        "de": "Installierte Skills auf Drift prüfen",
+        "es": "Comprobar la deriva de los skills instalados"
       },
       "description": {
         "en": "Tells you whether the skills running today are the ones you approved. Catches the case where the visible text is unchanged and only the invisible layer moved.",
-        "de": "Sagt dir, ob die Skills von heute noch die sind, die du freigegeben hast. Erwischt auch den Fall, in dem nur die unsichtbare Ebene sich bewegt hat."
+        "de": "Sagt dir, ob die Skills von heute noch die sind, die du freigegeben hast. Erwischt auch den Fall, in dem nur die unsichtbare Ebene sich bewegt hat.",
+        "es": "Te dice si los skills de hoy siguen siendo los que aprobaste. Caza también el caso en el que solo se movió la capa invisible."
       },
       "scan": {
         "verdict": "pass",
@@ -143,11 +149,13 @@
       ],
       "title": {
         "en": "Reveal hidden characters in any text",
-        "de": "Versteckte Zeichen in beliebigem Text aufdecken"
+        "de": "Versteckte Zeichen in beliebigem Text aufdecken",
+        "es": "Destapar caracteres ocultos en cualquier texto"
       },
       "description": {
         "en": "Works on anything, not only skills — an issue comment, a commit message, a snippet from a web page. Decodes invisible payloads back into readable text.",
-        "de": "Funktioniert mit allem, nicht nur mit Skills — Issue-Kommentar, Commit-Nachricht, Textschnipsel aus dem Netz. Dekodiert unsichtbare Payloads zurück in lesbaren Text."
+        "de": "Funktioniert mit allem, nicht nur mit Skills — Issue-Kommentar, Commit-Nachricht, Textschnipsel aus dem Netz. Dekodiert unsichtbare Payloads zurück in lesbaren Text.",
+        "es": "Funciona con todo, no solo con skills — un comentario de issue, un mensaje de commit, un fragmento sacado de la red. Decodifica cargas invisibles de vuelta a texto legible."
       },
       "scan": {
         "verdict": "pass",
@@ -184,11 +192,13 @@
       ],
       "title": {
         "en": "Write a skill that passes review",
-        "de": "Einen Skill schreiben, der die Prüfung besteht"
+        "de": "Einen Skill schreiben, der die Prüfung besteht",
+        "es": "Escribir un skill que pase la revisión"
       },
       "description": {
         "en": "Declare what you reach for, avoid the phrasings that look like an injection, and know which escape hatch to use when a literal really is needed.",
-        "de": "Deklariere, wonach du greifst, vermeide Formulierungen, die wie eine Injection aussehen, und wisse, welche Ausnahme du nimmst, wenn ein Literal wirklich nötig ist."
+        "de": "Deklariere, wonach du greifst, vermeide Formulierungen, die wie eine Injection aussehen, und wisse, welche Ausnahme du nimmst, wenn ein Literal wirklich nötig ist.",
+        "es": "Declara a qué accedes, evita formulaciones que parezcan una inyección, y sabe qué excepción tomas cuando un literal es realmente necesario."
       },
       "scan": {
         "verdict": "pass",
@@ -226,11 +236,13 @@
       ],
       "title": {
         "en": "Anthropic’s own skill collection",
-        "de": "Anthropics eigene Skill-Sammlung"
+        "de": "Anthropics eigene Skill-Sammlung",
+        "es": "La colección de skills de la propia Anthropic"
       },
       "description": {
         "en": "The first-party reference collection: document handling, canvas design, artifact building and more. Licensing is mixed — most are Apache-2.0, but the docx, pdf, pptx and xlsx skills are source-available and not open source.",
-        "de": "Die First-Party-Referenzsammlung: Dokumentverarbeitung, Canvas-Design, Artifact-Bau und mehr. Die Lizenzierung ist gemischt — das meiste ist Apache-2.0, aber die Skills docx, pdf, pptx und xlsx sind source-available und nicht Open Source."
+        "de": "Die First-Party-Referenzsammlung: Dokumentverarbeitung, Canvas-Design, Artifact-Bau und mehr. Die Lizenzierung ist gemischt — das meiste ist Apache-2.0, aber die Skills docx, pdf, pptx und xlsx sind source-available und nicht Open Source.",
+        "es": "La colección de referencia de primera mano: procesamiento de documentos, diseño en canvas, construcción de artifacts y más. La licencia es mixta — la mayoría es Apache-2.0, pero los skills docx, pdf, pptx y xlsx son source-available y no open source."
       },
       "scan": {
         "verdict": "review",
@@ -264,11 +276,13 @@
       ],
       "title": {
         "en": "The official plugin marketplace",
-        "de": "Der offizielle Plugin-Marktplatz"
+        "de": "Der offizielle Plugin-Marktplatz",
+        "es": "El mercado oficial de plugins"
       },
       "description": {
         "en": "Anthropic’s curated plugin listing. Worth reading their own caveat: they state they cannot verify that third-party plugins work as intended or that they will not change.",
-        "de": "Anthropics kuratierte Plugin-Liste. Der eigene Vorbehalt ist lesenswert: Anthropic schreibt selbst, dass nicht überprüft werden kann, ob Plugins Dritter wie beabsichtigt funktionieren oder ob sie sich ändern."
+        "de": "Anthropics kuratierte Plugin-Liste. Der eigene Vorbehalt ist lesenswert: Anthropic schreibt selbst, dass nicht überprüft werden kann, ob Plugins Dritter wie beabsichtigt funktionieren oder ob sie sich ändern.",
+        "es": "La lista curada de plugins de Anthropic. Su propia advertencia merece leerse: la misma Anthropic escribe que no puede verificar si los plugins de terceros funcionan como se pretende ni si cambian."
       },
       "scan": {
         "verdict": "pass",
@@ -298,11 +312,13 @@
       ],
       "title": {
         "en": "Security audit skills from a professional firm",
-        "de": "Security-Audit-Skills von einer Fachfirma"
+        "de": "Security-Audit-Skills von einer Fachfirma",
+        "es": "Skills de auditoría de seguridad de una firma especializada"
       },
       "description": {
         "en": "CodeQL and Semgrep static analysis, variant analysis across a codebase, fix verification and differential review. Note the share-alike licence if you plan to redistribute.",
-        "de": "Statische Analyse mit CodeQL und Semgrep, Variantenanalyse über eine Codebasis, Fix-Verifikation und Differential-Review. Die Share-alike-Lizenz beachten, falls du weiterverteilen willst."
+        "de": "Statische Analyse mit CodeQL und Semgrep, Variantenanalyse über eine Codebasis, Fix-Verifikation und Differential-Review. Die Share-alike-Lizenz beachten, falls du weiterverteilen willst.",
+        "es": "Análisis estático con CodeQL y Semgrep, análisis de variantes sobre una base de código, verificación de arreglos y revisión diferencial. Atiende a la licencia share-alike si quieres redistribuir."
       },
       "scan": {
         "verdict": "review",
@@ -336,11 +352,13 @@
       ],
       "title": {
         "en": "Azure deployment and diagnostics",
-        "de": "Azure-Deployment und Diagnose"
+        "de": "Azure-Deployment und Diagnose",
+        "es": "Despliegue y diagnóstico en Azure"
       },
       "description": {
         "en": "First-party skills for deploying to Azure, diagnosing running services and querying with Kusto.",
-        "de": "First-Party-Skills fürs Deployment nach Azure, die Diagnose laufender Dienste und Abfragen mit Kusto."
+        "de": "First-Party-Skills fürs Deployment nach Azure, die Diagnose laufender Dienste und Abfragen mit Kusto.",
+        "es": "Skills de primera mano para desplegar en Azure, diagnosticar servicios en marcha y consultar con Kusto."
       },
       "scan": {
         "verdict": "review",
@@ -374,11 +392,13 @@
       ],
       "title": {
         "en": "The skills installer CLI",
-        "de": "Das Installer-CLI für Skills"
+        "de": "Das Installer-CLI für Skills",
+        "es": "El CLI instalador de skills"
       },
       "description": {
         "en": "The `npx skills` command line installer rather than a skill collection itself — the thing most people use to put skills on their machine.",
-        "de": "Der Kommandozeilen-Installer `npx skills`, keine Skill-Sammlung — das Werkzeug, mit dem die meisten Leute Skills auf ihre Maschine bringen."
+        "de": "Der Kommandozeilen-Installer `npx skills`, keine Skill-Sammlung — das Werkzeug, mit dem die meisten Leute Skills auf ihre Maschine bringen.",
+        "es": "El instalador de línea de comandos `npx skills`, no una colección de skills — la herramienta con la que la mayoría lleva skills a su máquina."
       },
       "scan": {
         "verdict": "pass",
@@ -411,11 +431,13 @@
       ],
       "title": {
         "en": "Browser automation for agents",
-        "de": "Browser-Automatisierung für Agenten"
+        "de": "Browser-Automatisierung für Agenten",
+        "es": "Automatización de navegador para agentes"
       },
       "description": {
         "en": "Lets an assistant drive a real browser. Note that it is a CLI distributed alongside skills rather than a pure skill, so it brings an executable with it.",
-        "de": "Lässt einen Assistenten einen echten Browser steuern. Beachte: Es ist ein CLI, das zusammen mit Skills verteilt wird, kein reiner Skill — es bringt also eine ausführbare Datei mit."
+        "de": "Lässt einen Assistenten einen echten Browser steuern. Beachte: Es ist ein CLI, das zusammen mit Skills verteilt wird, kein reiner Skill — es bringt also eine ausführbare Datei mit.",
+        "es": "Deja que un asistente controle un navegador de verdad. Ojo: es un CLI que se distribuye junto a skills, no un skill puro — trae consigo un ejecutable."
       },
       "scan": {
         "verdict": "pass",
@@ -449,11 +471,13 @@
       ],
       "title": {
         "en": "A large community workflow collection",
-        "de": "Eine große Community-Workflow-Sammlung"
+        "de": "Eine große Community-Workflow-Sammlung",
+        "es": "Una gran colección comunitaria de flujos de trabajo"
       },
       "description": {
         "en": "One of the most widely installed community collections, covering planning, debugging and development workflow. Large surface area — worth scanning before installing wholesale.",
-        "de": "Eine der am weitesten verbreiteten Community-Sammlungen, mit Planung, Debugging und Entwicklungs-Workflow. Große Oberfläche — vor der Komplettinstallation lohnt ein Scan."
+        "de": "Eine der am weitesten verbreiteten Community-Sammlungen, mit Planung, Debugging und Entwicklungs-Workflow. Große Oberfläche — vor der Komplettinstallation lohnt ein Scan.",
+        "es": "Una de las colecciones comunitarias más extendidas, con planificación, depuración y flujo de desarrollo. Superficie grande — antes de instalarla entera conviene un escaneo."
       },
       "scan": {
         "verdict": "pass",
@@ -486,11 +510,13 @@
       ],
       "title": {
         "en": "Engineering practice skills",
-        "de": "Skills für Entwicklungspraxis"
+        "de": "Skills für Entwicklungspraxis",
+        "es": "Skills de práctica de desarrollo"
       },
       "description": {
         "en": "Test-driven development, code review habits and TypeScript practice from a well-known educator in that space.",
-        "de": "Testgetriebene Entwicklung, Review-Gewohnheiten und TypeScript-Praxis von einem bekannten Vermittler in dem Feld."
+        "de": "Testgetriebene Entwicklung, Review-Gewohnheiten und TypeScript-Praxis von einem bekannten Vermittler in dem Feld.",
+        "es": "Desarrollo guiado por tests, hábitos de revisión y práctica de TypeScript, de un divulgador conocido del campo."
       },
       "scan": {
         "verdict": "pass",
@@ -522,11 +548,13 @@
       ],
       "title": {
         "en": "UI and UX design guidance",
-        "de": "UI- und UX-Design-Anleitung"
+        "de": "UI- und UX-Design-Anleitung",
+        "es": "Guía de diseño UI y UX"
       },
       "description": {
         "en": "Design systems, colour, typography and layout guidance for building interfaces — one of the most installed design skills.",
-        "de": "Designsysteme, Farbe, Typografie und Layout für den Bau von Oberflächen — einer der am häufigsten installierten Design-Skills."
+        "de": "Designsysteme, Farbe, Typografie und Layout für den Bau von Oberflächen — einer der am häufigsten installierten Design-Skills.",
+        "es": "Sistemas de diseño, color, tipografía y maquetación para construir interfaces — uno de los skills de diseño más instalados."
       },
       "scan": {
         "verdict": "pass",
@@ -560,11 +588,13 @@
       ],
       "title": {
         "en": "Scientific research capabilities",
-        "de": "Fähigkeiten für wissenschaftliches Arbeiten"
+        "de": "Fähigkeiten für wissenschaftliches Arbeiten",
+        "es": "Capacidades para trabajo científico"
       },
       "description": {
         "en": "Skills for scientific work and access to research databases. The commonly-cited K-Dense-AI/claude-scientific-skills URL redirects here; this is the canonical one.",
-        "de": "Skills für wissenschaftliche Arbeit und Zugriff auf Forschungsdatenbanken. Die oft zitierte URL K-Dense-AI/claude-scientific-skills leitet hierher um; das hier ist die kanonische."
+        "de": "Skills für wissenschaftliche Arbeit und Zugriff auf Forschungsdatenbanken. Die oft zitierte URL K-Dense-AI/claude-scientific-skills leitet hierher um; das hier ist die kanonische.",
+        "es": "Skills para trabajo científico y acceso a bases de datos de investigación. La URL tantas veces citada K-Dense-AI/claude-scientific-skills redirige aquí; esta es la canónica."
       },
       "scan": {
         "verdict": "review",
@@ -598,11 +628,13 @@
       ],
       "title": {
         "en": "Technical SEO and structured data",
-        "de": "Technisches SEO und strukturierte Daten"
+        "de": "Technisches SEO und strukturierte Daten",
+        "es": "SEO técnico y datos estructurados"
       },
       "description": {
         "en": "Technical SEO, schema markup and reporting — one of the few well-used skills aimed at marketing rather than engineering.",
-        "de": "Technisches SEO, Schema-Markup und Reporting — einer der wenigen gut genutzten Skills, die auf Marketing statt Entwicklung zielen."
+        "de": "Technisches SEO, Schema-Markup und Reporting — einer der wenigen gut genutzten Skills, die auf Marketing statt Entwicklung zielen.",
+        "es": "SEO técnico, marcado schema y reporting — uno de los pocos skills bien usados que apuntan a marketing en vez de a desarrollo."
       },
       "scan": {
         "verdict": "pass",
@@ -635,11 +667,13 @@
       ],
       "title": {
         "en": "Working with video",
-        "de": "Arbeiten mit Video"
+        "de": "Arbeiten mit Video",
+        "es": "Trabajar con vídeo"
       },
       "description": {
         "en": "Video processing and understanding. The clearest entry in a category that is otherwise thin — most media skills have little usage behind them.",
-        "de": "Videoverarbeitung und -verständnis. Der deutlichste Eintrag in einer sonst dünnen Kategorie — die meisten Medien-Skills haben wenig Nutzung dahinter."
+        "de": "Videoverarbeitung und -verständnis. Der deutlichste Eintrag in einer sonst dünnen Kategorie — die meisten Medien-Skills haben wenig Nutzung dahinter.",
+        "es": "Procesamiento y comprensión de vídeo. La entrada más clara de una categoría por lo demás flaca — la mayoría de skills de medios tienen poco uso detrás."
       },
       "scan": {
         "verdict": "pass",
@@ -672,11 +706,13 @@
       ],
       "title": {
         "en": "An agent framework with bundled skills",
-        "de": "Ein Agenten-Framework mit mitgelieferten Skills"
+        "de": "Ein Agenten-Framework mit mitgelieferten Skills",
+        "es": "Un framework de agentes con skills incluidos"
       },
       "description": {
         "en": "An agent project rather than a pure skill collection, but it ships skills worth reading as reference implementations.",
-        "de": "Eher ein Agenten-Projekt als eine reine Skill-Sammlung, liefert aber Skills mit, die als Referenzimplementierungen lesenswert sind."
+        "de": "Eher ein Agenten-Projekt als eine reine Skill-Sammlung, liefert aber Skills mit, die als Referenzimplementierungen lesenswert sind.",
+        "es": "Más un proyecto de agentes que una colección pura de skills, pero trae skills que merecen leerse como implementaciones de referencia."
       },
       "scan": {
         "verdict": "block",
@@ -711,11 +747,13 @@
       ],
       "title": {
         "en": "A large index of community skills",
-        "de": "Ein großer Index von Community-Skills"
+        "de": "Ein großer Index von Community-Skills",
+        "es": "Un gran índice de skills de la comunidad"
       },
       "description": {
         "en": "One of the biggest community lists. It has no licence file, so treat reuse of its contents carefully, and note that a list is not a verification.",
-        "de": "Eine der größten Community-Listen. Sie hat keine Lizenzdatei — Weiterverwendung der Inhalte also mit Vorsicht. Und: Eine Liste ist keine Prüfung."
+        "de": "Eine der größten Community-Listen. Sie hat keine Lizenzdatei — Weiterverwendung der Inhalte also mit Vorsicht. Und: Eine Liste ist keine Prüfung.",
+        "es": "Una de las listas comunitarias más grandes. No tiene archivo de licencia — reutiliza su contenido con cuidado. Y: una lista no es una revisión."
       },
       "scan": {
         "verdict": "pass",
@@ -749,11 +787,13 @@
       ],
       "title": {
         "en": "OpenAI’s plugin collection",
-        "de": "OpenAIs Plugin-Sammlung"
+        "de": "OpenAIs Plugin-Sammlung",
+        "es": "La colección de plugins de OpenAI"
       },
       "description": {
         "en": "The successor to openai/skills, which is deprecated and now redirects here. Different runtime, listed for orientation across the ecosystem.",
-        "de": "Der Nachfolger von openai/skills, das eingestellt ist und hierher umleitet. Andere Laufzeit, gelistet zur Orientierung im Ökosystem."
+        "de": "Der Nachfolger von openai/skills, das eingestellt ist und hierher umleitet. Andere Laufzeit, gelistet zur Orientierung im Ökosystem.",
+        "es": "El sucesor de openai/skills, que está descontinuado y redirige aquí. Otra runtime, listada para orientarse en el ecosistema."
       },
       "scan": {
         "verdict": "pass",
@@ -787,16 +827,19 @@
       ],
       "title": {
         "en": "The official MCP registry",
-        "de": "Das offizielle MCP-Register"
+        "de": "Das offizielle MCP-Register",
+        "es": "El registro oficial de MCP"
       },
       "description": {
         "en": "Verifies namespace ownership through GitHub, DNS or HTTP — identity rather than code. A different axis of trust from scanning, and a good one.",
-        "de": "Prüft Namespace-Eigentum über GitHub, DNS oder HTTP — Identität statt Code. Eine andere Vertrauensachse als Scannen, und eine gute."
+        "de": "Prüft Namespace-Eigentum über GitHub, DNS oder HTTP — Identität statt Code. Eine andere Vertrauensachse als Scannen, und eine gute.",
+        "es": "Verifica la propiedad del namespace por GitHub, DNS o HTTP — identidad en vez de código. Otro eje de confianza distinto del escaneo, y uno bueno."
       },
       "scan": null,
       "unscannable": {
         "en": "Not a skill file. The registry verifies namespace ownership through GitHub, DNS or HTTP — there is no SKILL.md here for the engine to read.",
-        "de": "Keine Skill-Datei. Das Register prüft Namespace-Eigentum über GitHub, DNS oder HTTP — es gibt hier kein SKILL.md, das die Engine lesen könnte."
+        "de": "Keine Skill-Datei. Das Register prüft Namespace-Eigentum über GitHub, DNS oder HTTP — es gibt hier kein SKILL.md, das die Engine lesen könnte.",
+        "es": "No hay archivo de skill. El registro verifica la propiedad del namespace por GitHub, DNS o HTTP — aquí no existe un SKILL.md que el motor pudiera leer."
       }
     }
   ]

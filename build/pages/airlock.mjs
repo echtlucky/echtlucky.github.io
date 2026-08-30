@@ -22,6 +22,11 @@ export const meta = {
     description:
       'AIRLOCK liest einen Agent-Skill, bevor dein Assistent es tut, dekodiert alles Versteckte zurück in Text und schreibt das Freigegebene in einem signierten Lockfile fest. Null Dependencies, komplett offline, führt nichts aus.',
   },
+  es: {
+    title: 'AIRLOCK — verificación de cadena de suministro para skills de agente · Skillry',
+    description:
+      'AIRLOCK lee un skill de agente antes de que lo haga tu asistente, decodifica todo lo oculto de vuelta a texto y fija lo aprobado en un lockfile firmado. Cero dependencias, completamente offline, no ejecuta nada.',
+  },
 };
 
 const T = {
@@ -152,6 +157,71 @@ const T = {
       ['Das ist Trust-on-First-Use, keine Provenienz', 'Die Freigabe hängt an einem Schlüssel auf deiner Maschine. Kein Transparency Log, keine Attestierung durch Dritte. Es sagt dir, dass ein Skill sich seit deinem Blick nicht verändert hat. Es kann dir nicht sagen, dass er je sicher war.'],
       ['Die Regeln sind Heuristiken', 'Ein Befund mit der Stufe heuristic heißt „schau hin“, nicht „Urteil“ — und das Werkzeug sagt immer, was davon zutrifft.'],
       ['Ein entschlossener Angreifer umgeht ein Muster', 'Das Ziel ist, die Kosten des Versteckens zu erhöhen und stille Änderung unmöglich zu machen — nicht, die Klasse zu schließen.'],
+    ],
+  },
+
+  es: {
+    eyebrow: 'AIRLOCK · MIT · Node 20+',
+    h1: 'Lee el archivo antes de que lo haga tu asistente.',
+    lede:
+      'Un skill es texto ejecutable sin firma. AIRLOCK lo lee primero, convierte todo lo oculto de vuelta a texto legible — y luego se encarga de que siga siendo el archivo que aprobaste.',
+    ctaRepo: 'Conseguirlo en GitHub',
+    ctaDocs: 'Leer las tripas',
+
+    demoH: 'Qué te enseña de verdad',
+    demoP:
+      'Este archivo se lee como una ayuda de PDF competente y declara una sola herramienta. La carga son mil caracteres que no ocupan espacio, sentados entre dos frases.',
+
+    beweisDatei: 'fixtures/poisoned-pdf-helper/SKILL.md',
+    beweisFuss: 'Este archivo de ejemplo viene con el repositorio. Ejecuta el comando tú y obtienes la misma salida — los 1000 portadores están en el archivo, y la frase citada es lo que decodifican.',
+    startH: 'Montado en un minuto',
+    startP: 'Node 20 o más nuevo. Nada que instalar — sin dependencias, sin cuenta, sin servicio.',
+
+    flowH: 'Tres comandos, tres momentos',
+    flow: [
+      {
+        cmd: 'airlock scan',
+        h: 'Antes de instalar',
+        p: 'Alguien te manda un skill. Léelo primero con AIRLOCK. Recibes uno de tres veredictos — y si algo estaba oculto, la frase que deletreaba.',
+      },
+      {
+        cmd: 'airlock lock',
+        h: 'Cuando ya lo has leído',
+        p: 'Registra tu decisión como lockfile firmado — un hash por archivo, todos reunidos en una raíz, la raíz firmada con tu clave. Es la diferencia entre «esto lo miré una vez» y «exactamente estos bytes son los que aprobé».',
+      },
+      {
+        cmd: 'airlock verify',
+        h: 'Cada vez a partir de ahí',
+        p: 'Exit 0 significa: nada se ha movido. Exit 1 significa: algo sí — y dice qué. El archivo cambió, salta una regla nueva, el skill alcanza un sitio nuevo, o el propio lockfile fue editado.',
+      },
+    ],
+
+    diffH: 'El cambio que un diff no puede enseñar',
+    diffP:
+      'Cada archivo se hashea dos veces: una como bytes puros, otra sin la capa invisible. Cuando el primer hash se mueve y el segundo no, el cambio entero era invisible — y quien compare las dos versiones línea a línea no verá absolutamente nada.',
+
+    skillsH: 'Viene como skills — y pasa su propia revisión',
+    skillsP:
+      'Cinco skills de agente para que tu asistente pueda manejarlo por ti. Son skills de agente, así que AIRLOCK también los cubre: una batería de tests comprueba que los cinco escanean limpio, llevan cero caracteres invisibles y declaran cada alcance. 44 comprobaciones.',
+    browseSkills: 'Verlos en el índice',
+
+    factsH: 'Los números honestos',
+    facts: [
+      ['29', 'reglas en cuatro familias'],
+      ['29/29', 'cubiertas por el corpus de pruebas'],
+      ['4', 'baterías de tests, todas en verde'],
+      ['0', 'dependencias'],
+      ['0', 'llamadas de red, nunca'],
+      ['1', 'falso positivo, declarado'],
+    ],
+    factsNote:
+      'Precisión 93 %, exhaustividad 100 %, N=22 — medido contra un corpus creado junto a las reglas. Eso es consistencia interna, no una medición de campo. El único falso positivo está etiquetado dentro del corpus y se cuenta en vez de excluirse.',
+
+    limitsH: 'Qué no demuestra',
+    limits: [
+      ['Esto es confiar en el primer uso, no procedencia', 'La aprobación cuelga de una clave en tu máquina. Sin registro de transparencia, sin atestación de terceros. Te dice que un skill no ha cambiado desde que lo miraste. No puede decirte que alguna vez fuera seguro.'],
+      ['Las reglas son heurísticas', 'Un hallazgo con nivel heuristic significa «mira aquí», no «veredicto» — y la herramienta siempre dice cuál de los dos es.'],
+      ['Un atacante decidido esquiva un patrón', 'El objetivo es subir el coste de esconder algo y hacer imposible el cambio silencioso — no cerrar la clase entera.'],
     ],
   },
 };

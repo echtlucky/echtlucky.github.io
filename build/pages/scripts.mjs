@@ -29,7 +29,7 @@
  * for those are hidden by a <noscript> stylesheet rather than shown and dead.
  */
 
-import { href, SITE } from '../layout.mjs';
+import { href, SITE, GEBIETSSCHEMA } from '../layout.mjs';
 import { grainOn } from '../grain.mjs';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -64,9 +64,9 @@ const N = PRODUCTS.length;
  * gilt im Menue in `build/header.mjs`.
  */
 const SPIEL_NAMEN = {
-  gta5: { en: 'GTA V', de: 'GTA V' },
-  gta6: { en: 'GTA VI', de: 'GTA VI' },
-  egal: { en: 'Game-independent', de: 'Spielunabhängig' },
+  gta5: { en: 'GTA V', de: 'GTA V', es: 'GTA V' },
+  gta6: { en: 'GTA VI', de: 'GTA VI', es: 'GTA VI' },
+  egal: { en: 'Game-independent', de: 'Spielunabhängig', es: 'Independiente del juego' },
 };
 const SPIEL_VON = (p) => p.spiel ?? 'gta5';
 const SPIEL_ANZAHL = PRODUCTS.reduce((z, p) => {
@@ -77,7 +77,7 @@ const SPIEL_ANZAHL = PRODUCTS.reduce((z, p) => {
 
 /** „Alle" zuerst, danach jedes Spiel mit Eintraegen in fester Reihenfolge. */
 const SPIELE = [
-  { key: 'alle', l: { en: 'All', de: 'Alle' }, n: PRODUCTS.length },
+  { key: 'alle', l: { en: 'All', de: 'Alle', es: 'Todos' }, n: PRODUCTS.length },
   ...Object.keys(SPIEL_NAMEN)
     .filter((k) => SPIEL_ANZAHL[k])
     .map((k) => ({ key: k, l: SPIEL_NAMEN[k], n: SPIEL_ANZAHL[k] })),
@@ -108,6 +108,11 @@ export const meta = {
     title: 'Skripte — die FiveM-Ressourcen von Skillry, mit Warenkorb · Skillry',
     description:
       'Jede FiveM-Ressource von Skillry mit ihrer Fassung und den Abhängigkeiten, die sie deklariert — als Raster oder als Liste. Ein Warenkorb, der eine Auswahl sammelt und an einen Menschen übergibt: keine Kasse, keine Preise solange keine feststehen, und kein Skriptcode in deinem Browser.',
+  },
+  es: {
+    title: 'Scripts — los recursos de FiveM de Skillry, con cesta · Skillry',
+    description:
+      'Cada recurso de FiveM de Skillry con su versión y las dependencias que declara — en cuadrícula o en lista. Una cesta que recoge una selección y se la entrega a una persona: sin caja, sin precios mientras no los haya, y sin código de scripts en tu navegador.',
   },
 };
 
@@ -305,6 +310,101 @@ const T = {
     askForum: 'Zum Forum',
     askImpressum: 'Impressum und Kontakt',
   },
+
+  es: {
+    eyebrow: 'FiveM · recursos de Skillry',
+    h1: `${plural(N, 'script de FiveM', 'scripts de FiveM')}. Una cesta, y ninguna caja.`,
+    lede:
+      'Los recursos de FiveM de Skillry, listados uno a uno, cada cual con la versión que declara. Junta lo que te interese — la cesta recoge la selección y se la entrega a una persona. Aquí no se paga nada, aquí no se descarga nada, y <strong>el código fuente de un script en venta no llega nunca a este navegador</strong>.',
+    countLine: `${plural(N, 'script', 'scripts')} · datos tocados por última vez el ${DATA.updated}`,
+
+    filterLabel: 'Filtrar por juego',
+    countPattern: '{n} de {all} scripts',
+    viewLabel: 'Vista',
+    viewGrid: 'Cuadrícula',
+    viewList: 'Lista',
+    countWord: plural(N, 'script', 'scripts'),
+
+    honestH: 'Tres cosas que esta página no tiene a propósito',
+    honest: [
+      [
+        'Precios',
+        N_PRICED === 0
+          ? 'Ningún script de aquí lleva precio, porque ninguno está fijado. Un número que alguien se toma en serio es peor que ningún número. El campo existe en <code>content/scripts.json</code>; en cuanto se rellene, el precio aparece aquí y en la cesta.'
+          : `Hay precio fijado para ${N_PRICED} de ${N} scripts. Los demás no llevan ninguno, y no muestran ninguno — un número que alguien se toma en serio es peor que ningún número.`,
+      ],
+      [
+        'Una caja',
+        'No hay paso de pago ni proveedor de pagos. La cesta termina en un mensaje que envías tú. Una caja a medio construir sería peor que ninguna.',
+      ],
+      [
+        'Capturas que no existen',
+        N_MEDIA === 0
+          ? 'De ninguno de estos scripts hay todavía material. En vez de inventar algo, cada vista previa es un marco vacío que dice qué debería ir ahí.'
+          : `${N_UI} de ${N} scripts enseñan su interfaz, dibujada desde los archivos reales con datos de ejemplo. ${N_SHOT === 0 ? 'Ninguno' : String(N_SHOT)} enseña una grabación del juego en marcha. Los ${N - N_MEDIA} restantes muestran un marco vacío que dice qué debería ir ahí — en vez de algo inventado.`,
+      ],
+    ],
+
+    listH: 'Todos los scripts',
+    detailWord: 'Detalles',
+    requiresWord: 'Necesita',
+    docWord: 'El contrato entero está en la página de la API',
+    permaWord: 'Enlace a este script',
+    addWord: 'Añadir a la cesta',
+    addedWord: 'En la cesta',
+    noShotCaption:
+      'De este script no hay aún grabación alguna. Aquí debería ir una captura o un clip corto del juego — este marco es un hueco, no una imagen de nada.',
+    noShotLabel: 'Sin material',
+    shotCaption: 'Una grabación del juego.',
+    uiCaption: 'La interfaz del script, con datos de ejemplo. Dibujada desde los archivos reales, no un boceto.',
+    sharedCaption: 'Lo que este script pone en pantalla — dibujado por la interfaz compartida skillry_ui, con datos de ejemplo de los archivos reales.',
+
+    versionH: 'Qué significa el número de versión de cada tarjeta',
+    versionP: `Es la <code>version</code> del propio <code>fxmanifest.lua</code> del recurso, sin cambios. Esta página no deriva ningún estado de ella: todo lo que esté por debajo de 1.0.0 está sin terminar, y la descripción es la mejor guía de qué significa eso en cada caso. A día de hoy: ${N_STABLE} de ${N} en 1.0.0 o más.`,
+
+    basketH: 'Cesta',
+    basketP:
+      'La cesta vive en esta página y en ninguna otra. Ninguna otra página tiene una; la cabecera solo enlaza hasta aquí. La selección se queda en tu propio navegador y no va a nadie hasta que la envíes tú.',
+    basketNoJs:
+      'La cesta necesita JavaScript. Sin él, todos los scripts y todas las descripciones siguen en esta página — escríbeme sin más y nombra los que quieras.',
+    basketEmpty: 'Aún no hay nada elegido. Cada tarjeta tiene un botón.',
+    basketOne: 'artículo',
+    basketMany: 'artículos',
+    removeWord: 'Quitar',
+    clearWord: 'Vaciar la cesta',
+    copyWord: 'Copiar la lista',
+    copiedWord: 'Copiada.',
+    copyFailWord: 'Tu navegador no quiso copiarla. Selecciona el texto de arriba y cópialo tú.',
+    mailWord: 'Enviar por correo',
+    discordWord: 'Enviar por Discord',
+    discordHint: 'Copia la lista antes — un enlace de Discord no puede llevarla por ti.',
+    mailSubject: 'Scripts de Skillry — consulta',
+    tooLong:
+      'La lista es demasiado larga para un correo preparado. Cópiala y envíala tú.',
+    noPriceFoot:
+      'De ninguna de estas posiciones hay precio guardado. Esta lista es una selección, no una factura.',
+    someNoPriceOne: 'Una posición no tiene precio guardado, así que no hay total.',
+    someNoPriceMany: '{n} posiciones no tienen precio guardado, así que no hay total.',
+    sumWord: 'Total',
+    textHead: 'Cesta — scripts de FiveM de Skillry',
+    textLabel: 'La cesta como texto plano, lista para copiar',
+    barGo: 'Ir a la cesta',
+
+    truthH: 'Por qué aquí no hay código de scripts',
+    truth: [
+      'Lo que un navegador carga, cualquiera puede leerlo. Minificar y ofuscar son un umbral de unos minutos, no una cerradura — y nada en este sitio te va a contar otra cosa.',
+      'Por eso, de los recursos en venta esta página lleva solo lo que ya es público de todas formas: el nombre, la versión, una frase, y las dependencias que cada uno declara. Ni Lua, ni configuración, ni un solo fragmento.',
+      'La protección que de verdad aguanta está en otra parte, y en este sitio se puede leer entera en vez de solo afirmarse aquí. <strong>Cfx.re Asset Escrow</strong> cifra el recurso en la entrega, así que el cliente no recibe Lua legible en absoluto. <strong>La comprobación de licencias</strong> responde si una suscripción sigue valiendo hoy, y se puede revocar. Escrow es la parte que detiene a un atacante; la comprobación de licencias es la parte que puede terminar una suscripción. Ninguna sustituye a la otra.',
+      'Exactamente por eso una vista previa aquí es siempre una imagen, una grabación o una reconstrucción — nunca código fuente entregado.',
+    ],
+    truthCta: 'Leer la API de licencias entera',
+
+    askH: 'Antes de pedir',
+    askP:
+      'Preguntas sobre un script, sobre lo que necesita, o sobre si dos de ellos se llevan bien: pregunta en el foro, o escribe directamente. La dirección está en el aviso legal.',
+    askForum: 'Ir al foro',
+    askImpressum: 'Aviso legal y contacto',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -326,7 +426,7 @@ const anchor = (id) => `produkt-${String(id).replace(/_/g, '-')}`;
 function money(value, lang) {
   if (typeof value !== 'number' || !isFinite(value)) return '';
   try {
-    return new Intl.NumberFormat(lang === 'de' ? 'de-DE' : 'en-GB', {
+    return new Intl.NumberFormat(GEBIETSSCHEMA[lang], {
       style: 'currency',
       currency: DATA.currency || 'EUR',
     }).format(value);
@@ -752,7 +852,7 @@ export function script(lang) {
   var L = ${json(L)};
   var HANDOFF = ${json({ discord: String(DATA.handoff?.discord || ''), email: String(DATA.handoff?.email || '') })};
   var CUR = ${json(DATA.currency || 'EUR')};
-  var LOC = ${json(lang === 'de' ? 'de-DE' : 'en-GB')};
+  var LOC = ${json(GEBIETSSCHEMA[lang])};
   var K_VIEW = 'skillry:scripts:view';
   var K_CART = 'skillry:scripts:cart';
   var MAX = 200;          // more positions than there are scripts, and a ceiling

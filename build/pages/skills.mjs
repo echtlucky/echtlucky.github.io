@@ -19,6 +19,11 @@ export const meta = {
     description:
       'Ein durchsuchbarer Index für Agent-Skills, bei dem jeder Skill ein Urteil trägt, das durch einen echten AIRLOCK-Scan entstanden ist — nicht per Hand eingetippt. Einträge, die keine Skill-Datei sind, sagen das. Eigene Skills per Pull Request einreichen.',
   },
+  es: {
+    title: 'Índice de skills — cada skill lleva un veredicto de escaneo · Skillry',
+    description:
+      'Un índice de skills de agente en el que cada skill lleva un veredicto producido por pasarle AIRLOCK de verdad — no tecleado a mano. Las entradas que no son archivos de skill lo dicen. Envía los tuyos por pull request.',
+  },
 };
 
 const T = {
@@ -56,6 +61,7 @@ const T = {
     youngH: 'This index is young, and says so',
     youngP:
       'It starts with the skills I can scan myself. It grows by pull request: add an entry, and continuous integration runs AIRLOCK over the skill before it can be merged. An index that lists everything and verifies nothing would be worse than no index at all.',
+    ctaLearn: 'Learn the basics',
     submit: 'Submit a skill',
     howH: 'How to submit',
     howSteps: [
@@ -99,12 +105,57 @@ const T = {
     youngH: 'Dieser Index ist jung, und sagt das auch',
     youngP:
       'Er startet mit den Skills, die ich selbst scannen kann. Er wächst per Pull Request: Eintrag hinzufügen, und die CI lässt AIRLOCK über den Skill laufen, bevor er gemerged werden kann. Ein Index, der alles listet und nichts prüft, wäre schlechter als gar kein Index.',
+    ctaLearn: 'Grundlagen lernen',
     submit: 'Skill einreichen',
     howH: 'Wie du einreichst',
     howSteps: [
       ['Forken und Eintrag ergänzen', 'Ein Objekt in <code>content/catalog.json</code>: Name, Quelle, Link, was er macht. <code>scan</code> bleibt <code>null</code>.'],
       ['Pull Request aufmachen', 'Die CI holt den Skill, lässt AIRLOCK darüber laufen und schreibt das Urteil in deinen Eintrag. Diesen Teil füllst du nicht selbst aus.'],
       ['Ein Mensch liest drüber', 'Ein <code>block</code>-Urteil lehnt den Eintrag nicht automatisch ab — manchmal löst ein Security-Werkzeug berechtigt die eigenen Regeln aus. Es heißt aber, dass jemand im Pull Request erklärt, warum.'],
+    ],
+  },
+
+  es: {
+    eyebrow: 'Índice de skills',
+    h1: 'Cada skill dice si está limpio.',
+    lede:
+      'Listas de skills hay muchas. Lo que ninguna te dice: si un skill es seguro de instalar. Aquí cada skill lleva un veredicto que <strong>salió de ejecutar el escáner de verdad</strong> — la fecha y la versión del motor están en la tarjeta, y el script que los genera está en el repositorio. Una entrada es un registro y no un archivo de skill; no lleva veredicto y explica por qué — porque eso no es lo mismo que un veredicto que falta.',
+    countOne: 'skill en el índice',
+    countMany: 'skills en el índice',
+    updated: 'Veredictos actualizados por última vez',
+    searchLabel: 'Buscar skills',
+    searchPlaceholder: 'Buscar por nombre, propósito o etiqueta…',
+    all: 'Todos',
+    clear: 'Quitar filtros',
+    noResults: 'Nada coincide con eso. Prueba una búsqueda más corta o quita los filtros.',
+    resultsOne: 'resultado',
+    resultsMany: 'resultados',
+    by: 'de',
+    declares: 'declara',
+    reaches: 'alcanza',
+    nothingDeclared: 'nada declarado',
+    view: 'Ver la fuente',
+    scannedOn: 'escaneado',
+    engine: 'motor',
+    verdicts: { pass: 'pass', review: 'review', block: 'block', unscanned: 'sin analizar', unscannable: 'no escaneable' },
+    verdictHelpH: 'Qué significan los veredictos',
+    verdictHelp: [
+      ['pass', 'Ninguna regla saltó. Eso no es una garantía — lee los límites antes de tratarlo como una.'],
+      ['review', 'Alcanza más lejos de lo que afirma. Merece una mirada deliberada, no un vistazo.'],
+      ['block', 'Se encontró algo seguro y serio. No lo instales sin haber leído el hallazgo.'],
+      ['unscanned', 'Listado pero aún sin verificar. Mostrado con honestidad en vez de asumirse limpio en silencio.'],
+      ['unscannable', 'No hay archivo de skill que leer — la entrada es un servicio o un registro. El porqué está en su tarjeta: «sin veredicto» y «nada que escanear» no son lo mismo.'],
+    ],
+    youngH: 'Este índice es joven, y lo dice',
+    youngP:
+      'Empieza con los skills que yo mismo puedo escanear. Crece por pull request: añade una entrada, y la integración continua pasa AIRLOCK por el skill antes de que pueda fusionarse. Un índice que lo lista todo y no verifica nada sería peor que ningún índice.',
+    ctaLearn: 'Aprender lo básico',
+    submit: 'Enviar un skill',
+    howH: 'Cómo enviar',
+    howSteps: [
+      ['Haz un fork y añade una entrada', 'Un objeto en <code>content/catalog.json</code>: nombre, fuente, enlace, qué hace. <code>scan</code> se queda en <code>null</code>.'],
+      ['Abre un pull request', 'La CI descarga el skill, le pasa AIRLOCK y escribe el veredicto en tu entrada. Esa parte no la rellenas tú.'],
+      ['Una persona lo lee', 'Un veredicto <code>block</code> no rechaza la entrada automáticamente — a veces una herramienta de seguridad dispara sus propias reglas con razón. Sí significa que alguien explica el porqué en el pull request.'],
     ],
   },
 };
@@ -220,7 +271,7 @@ export function body(lang) {
       </div>
       <div class="btn-row">
         <a class="btn btn-primary" href="${SITE.repoSite}/blob/main/README.md#submitting-a-skill">${t.submit}</a>
-        <a class="btn" href="${href(lang, 'learn')}">${T[lang].eyebrow === 'Skill index' ? 'Learn the basics' : 'Grundlagen lernen'}</a>
+        <a class="btn" href="${href(lang, 'learn')}">${t.ctaLearn}</a>
       </div>
     </div>
   </div>

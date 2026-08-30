@@ -49,6 +49,11 @@ export const meta = {
     description:
       'Dein Skillry-Konto verwalten: Anzeigename, E-Mail-Adresse, Passwort, verknuepfte Anmeldungen und Sitzungen.',
   },
+  es: {
+    title: 'Cuenta · Skillry',
+    description:
+      'Gestiona tu cuenta de Skillry: nombre visible, correo electrónico, contraseña, inicios de sesión conectados y sesiones.',
+  },
 };
 
 const T = {
@@ -213,6 +218,87 @@ const T = {
     working: 'Einen Moment…',
     signedOut: 'Du bist nicht angemeldet.',
     toSignIn: 'Zur Anmeldung',
+  },
+  es: {
+    h1: 'Cuenta',
+    lede: 'Todo lo de tu inicio de sesión, en un solo lugar.',
+    navProfile: 'Perfil',
+    navSignIn: 'Inicio de sesión',
+    navLinked: 'Inicios de sesión conectados',
+    navSessions: 'Sesiones',
+    navDanger: 'Zona de peligro',
+
+    profileH: 'Perfil',
+    nameL: 'Nombre visible',
+    nameHint: 'El nombre que llevan tus publicaciones en el foro. Lo ve todo el mundo.',
+    save: 'Guardar',
+    savedOk: 'Guardado.',
+
+    mailH: 'Correo electrónico',
+    mailCurrent: 'Dirección actual',
+    mailNew: 'Dirección nueva',
+    mailChange: 'Cambiar la dirección',
+    mailPending:
+      'A la dirección nueva ha salido una confirmación. El cambio vale en cuanto abras el enlace allí — hasta entonces sigue valiendo la antigua.',
+    verified: 'confirmada',
+    unverified: 'sin confirmar',
+    resend: 'Enviar la confirmación de nuevo',
+    resentOk: 'Enviada.',
+
+    pwH: 'Contraseña',
+    pwNew: 'Contraseña nueva',
+    pwRepeat: 'Repetir',
+    pwChange: 'Cambiar la contraseña',
+    pwMismatch: 'Las dos entradas no son iguales.',
+    pwShort: 'Al menos ocho caracteres.',
+    pwOk: 'Contraseña cambiada.',
+    pwNone:
+      'Esta cuenta entra por Google o GitHub y aquí no tiene contraseña alguna. No hay nada que cambiar.',
+
+    linkedH: 'Inicios de sesión conectados',
+    linkedHint:
+      'Cada vía conectada lleva a la misma cuenta. Una tiene que quedarse — si no, te dejarías fuera a ti mismo.',
+    connect: 'Conectar',
+    disconnect: 'Desconectar',
+    lastOne: 'Esta es la única vía de entrada. Conecta primero una segunda.',
+    linkedOk: 'Conectado.',
+    unlinkedOk: 'Desconectado.',
+    pwLogin: 'Correo y contraseña',
+
+    sessionsH: 'Sesiones',
+    signOutHere: 'Cerrar sesión en este dispositivo',
+    sessionsNote:
+      'Esto cierra tu sesión en este navegador. Los demás dispositivos conservan la suya hasta que caduque — revocarlas necesita el servicio de licencias, y ese aún no sabe hacerlo.',
+
+    dangerH: 'Eliminar la cuenta',
+    dangerNote:
+      'La cuenta y su inicio de sesión desaparecen para siempre. Las publicaciones del foro se quedan, con el nombre que llevaban — si no, se desmoronaría cada conversación de la que forman parte.',
+    delete: 'Eliminar la cuenta',
+    delConfirm: 'Escribe ELIMINAR para confirmar',
+    delWord: 'ELIMINAR',
+    delWrong: 'Sin confirmar — la palabra no coincidía.',
+    delOk: 'La cuenta ya no existe.',
+
+    reauthH: 'Confirma que eres tú',
+    reauthWhy:
+      'Este cambio pesa, y tu inicio de sesión fue hace un rato. Confirmar de nuevo significa: un navegador dejado abierto no basta.',
+    reauthPw: 'Tu contraseña',
+    reauthGo: 'Confirmar',
+    reauthPopup: 'Confirmar con',
+    cancel: 'Cancelar',
+
+    toPortal: 'Portal de clientes',
+    toPosts: 'Mis publicaciones',
+    sideSafeH: 'Qué podemos ver',
+    sideSafe:
+      'Tu contraseña nunca — Firebase la guarda con hash. Los accesos por Google o GitHub nos dan un identificador y una dirección, nada más.',
+    sideMgrH: 'Deja hacer al gestor de contraseñas',
+    sideMgr:
+      'Los campos están marcados para que el navegador y el gestor de contraseñas se ofrezcan a guardarlos y rellenarlos. Una contraseña que nunca tecleas es una que nadie puede leerte por encima del hombro.',
+    noConf: 'El inicio de sesión no está configurado en este build.',
+    working: 'Un momento…',
+    signedOut: 'No has iniciado sesión.',
+    toSignIn: 'Al inicio de sesión',
   },
 };
 
@@ -544,15 +630,15 @@ export function script(lang) {
     '   * jemand, der seinen Namen aendern wollte.',
     '   */',
     '  var TEXTE = {',
-    '    "auth/requires-recent-login": ' + JSON.stringify(lang === 'de' ? 'Dafuer musst du dich frisch bestaetigen.' : 'That needs a fresh confirmation.') + ',',
-    '    "auth/wrong-password": ' + JSON.stringify(lang === 'de' ? 'Das Passwort stimmt nicht.' : 'That password is not right.') + ',',
-    '    "auth/invalid-credential": ' + JSON.stringify(lang === 'de' ? 'Das Passwort stimmt nicht.' : 'That password is not right.') + ',',
-    '    "auth/email-already-in-use": ' + JSON.stringify(lang === 'de' ? 'Diese Adresse gehoert schon zu einem Konto.' : 'That address already belongs to an account.') + ',',
-    '    "auth/invalid-email": ' + JSON.stringify(lang === 'de' ? 'Diese Adresse sieht nicht richtig aus.' : 'That address does not look right.') + ',',
-    '    "auth/weak-password": ' + JSON.stringify(lang === 'de' ? 'Das Passwort ist zu kurz.' : 'That password is too short.') + ',',
-    '    "auth/credential-already-in-use": ' + JSON.stringify(lang === 'de' ? 'Dieser Zugang haengt schon an einem anderen Konto.' : 'That sign-in already belongs to another account.') + ',',
-    '    "auth/popup-closed-by-user": ' + JSON.stringify(lang === 'de' ? 'Das Fenster wurde geschlossen, bevor es fertig war.' : 'The window closed before it finished.') + ',',
-    '    "auth/network-request-failed": ' + JSON.stringify(lang === 'de' ? 'Keine Verbindung.' : 'No connection.') + '',
+    '    "auth/requires-recent-login": ' + JSON.stringify(({ de: 'Dafuer musst du dich frisch bestaetigen.', es: 'Para eso tienes que confirmarte de nuevo.', en: 'That needs a fresh confirmation.' })[lang]) + ',',
+    '    "auth/wrong-password": ' + JSON.stringify(({ de: 'Das Passwort stimmt nicht.', es: 'La contraseña no es correcta.', en: 'That password is not right.' })[lang]) + ',',
+    '    "auth/invalid-credential": ' + JSON.stringify(({ de: 'Das Passwort stimmt nicht.', es: 'La contraseña no es correcta.', en: 'That password is not right.' })[lang]) + ',',
+    '    "auth/email-already-in-use": ' + JSON.stringify(({ de: 'Diese Adresse gehoert schon zu einem Konto.', es: 'Esa dirección ya pertenece a una cuenta.', en: 'That address already belongs to an account.' })[lang]) + ',',
+    '    "auth/invalid-email": ' + JSON.stringify(({ de: 'Diese Adresse sieht nicht richtig aus.', es: 'Esa dirección no parece correcta.', en: 'That address does not look right.' })[lang]) + ',',
+    '    "auth/weak-password": ' + JSON.stringify(({ de: 'Das Passwort ist zu kurz.', es: 'La contraseña es demasiado corta.', en: 'That password is too short.' })[lang]) + ',',
+    '    "auth/credential-already-in-use": ' + JSON.stringify(({ de: 'Dieser Zugang haengt schon an einem anderen Konto.', es: 'Ese acceso ya cuelga de otra cuenta.', en: 'That sign-in already belongs to another account.' })[lang]) + ',',
+    '    "auth/popup-closed-by-user": ' + JSON.stringify(({ de: 'Das Fenster wurde geschlossen, bevor es fertig war.', es: 'La ventana se cerró antes de terminar.', en: 'The window closed before it finished.' })[lang]) + ',',
+    '    "auth/network-request-failed": ' + JSON.stringify(({ de: 'Keine Verbindung.', es: 'Sin conexión.', en: 'No connection.' })[lang]) + '',
     '  };',
     '  function lesbar(e) {',
     '    var c = e && e.code;',

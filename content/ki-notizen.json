@@ -27,6 +27,10 @@
       "en": {
         "titel": "Assistants work longer in one go",
         "text": "Away from one answer per question, towards runs across many steps. Whether a model notices its own mistake matters more than its size."
+      },
+      "es": {
+        "titel": "Los asistentes trabajan más tiempo de un tirón",
+        "text": "Lejos de una respuesta por pregunta, hacia ejecuciones de muchos pasos. Que un modelo note su propio error importa más que su tamaño."
       }
     },
     {
@@ -39,6 +43,10 @@
       "en": {
         "titel": "Tools are the actual jump",
         "text": "A model that only talks is an adviser. One that reads files and runs commands is a colleague — with everything that means for rights."
+      },
+      "es": {
+        "titel": "Las herramientas son el verdadero salto",
+        "text": "Un modelo que solo habla es un consejero. Uno que lee archivos y ejecuta comandos es un empleado — con todos los permisos que eso arrastra."
       }
     },
     {
@@ -51,6 +59,10 @@
       "en": {
         "titel": "Instructions inside foreign text",
         "text": "When an assistant reads outside content, that content can address it. What you read is not an order. AIRLOCK sits on exactly that line."
+      },
+      "es": {
+        "titel": "Instrucciones dentro de texto ajeno",
+        "text": "Si un asistente lee contenido ajeno, dentro puede haber algo dirigido a él. Lo leído no es un encargo. Justo en esa frontera se sienta AIRLOCK."
       }
     },
     {
@@ -63,6 +75,10 @@
       "en": {
         "titel": "Context costs more than compute",
         "text": "Large context windows solve less than expected: what is in them beats how much. Excerpts beat the whole folder."
+      },
+      "es": {
+        "titel": "El contexto cuesta más que el cómputo",
+        "text": "Las ventanas de contexto grandes resuelven menos de lo esperado: lo que hay dentro cuenta más que cuánto. Los fragmentos ganan a la carpeta entera."
       }
     }
   ]

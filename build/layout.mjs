@@ -71,8 +71,15 @@ const FIREBASE_CFG = JSON.parse(
 );
 const FIREBASE_READY = Boolean(FIREBASE_CFG.apiKey && FIREBASE_CFG.projectId);
 
-export const LANGS = ['en', 'de'];
+export const LANGS = ['en', 'de', 'es'];
 export const DEFAULT_LANG = 'en';
+
+/**
+ * Was Intl, toLocaleDateString und og:locale je Sprache bekommen. Jede Sprache
+ * in LANGS braucht hier einen Eintrag — der Bau greift direkt zu, und ein
+ * fehlender Eintrag fiele als "undefined" im Quelltext jeder Seite auf.
+ */
+export const GEBIETSSCHEMA = { en: 'en-GB', de: 'de-DE', es: 'es-ES' };
 
 /**
  * The absolute origin, read from the same file the build reads it from.
@@ -237,6 +244,68 @@ const HEADER_STRINGS = {
       errGeneric: 'Das hat nicht geklappt.',
     },
   },
+  es: {
+    menu: { open: 'Abrir menú', close: 'Cerrar', all: 'Todo en este sitio', onPage: 'En esta página', spiel: 'Por juego', bald: 'pronto', keine: 'aún ninguno', auch: 'También aquí' },
+    find: {
+      placeholder: 'Buscar o saltar a…',
+      aria: 'Buscar páginas, secciones, skills y acciones',
+      navigate: 'para moverte',
+      open: 'para abrir',
+      noResults: 'Nada coincide con eso.',
+      result: 'resultado',
+      resultsWord: 'resultados',
+      page: 'Página',
+      section: 'Sección',
+      skill: 'Skill',
+      action: 'Acción',
+      here: 'En esta página',
+    },
+    quick: { newPost: 'Escribir en el foro', newPostShort: 'Nueva publicación' },
+    act: {
+      theme: 'Cambiar entre claro y oscuro',
+      lang: 'Elegir idioma',
+      newPost: 'Escribir en el foro',
+      newPostShort: 'Nueva publicación',
+      signIn: 'Iniciar sesión',
+      signOut: 'Cerrar sesión',
+    },
+    auth: {
+      signIn: 'Iniciar sesión',
+      account: 'Cuenta',
+      why: 'Una cuenta es una dirección de correo y una contraseña. Firebase guarda la contraseña con hash — este sitio nunca la ve.',
+      name: 'Nombre visible',
+      email: 'Correo electrónico',
+      password: 'Contraseña',
+      submitIn: 'Iniciar sesión',
+      submitUp: 'Crear cuenta',
+      swapUp: '¿Aún sin cuenta?',
+      swapIn: '¿Ya tienes una?',
+      forgot: 'Contraseña olvidada',
+      working: 'Un momento…',
+      lazyNote: 'Iniciar sesión carga Firebase desde Google. Hasta que pulses el botón, esta página no ha hablado con nadie.',
+      verifyH: 'Falta un paso',
+      verifyP: 'Confirma la dirección en el correo que te enviamos y recarga. Leer ya funciona; para escribir hace falta la confirmación.',
+      verifyShort: 'Confirmar correo',
+      resend: 'Enviar de nuevo',
+      recheck: 'Ya la confirmé',
+      resendOk: 'Enviado.',
+      stillUnverified: 'Sigue sin confirmar.',
+      resetSent: 'Si esa dirección existe, el enlace va de camino.',
+      myPosts: 'Mis publicaciones',
+      konto: 'Cuenta',
+      portal: 'Portal de clientes',
+      signOut: 'Cerrar sesión',
+      errMail: 'Eso no parece una dirección de correo.',
+      errShort: 'Al menos ocho caracteres.',
+      errName: 'Un nombre con al menos dos caracteres.',
+      errWrong: 'El correo o la contraseña no son correctos.',
+      errInUse: 'Esa dirección ya tiene una cuenta.',
+      errWeak: 'Firebase considera esa contraseña demasiado débil.',
+      errMany: 'Demasiados intentos. Prueba en unos minutos.',
+      errNet: 'Sin conexión con Firebase.',
+      errGeneric: 'Eso no ha funcionado.',
+    },
+  },
 };
 
 export const UI = {
@@ -336,6 +405,49 @@ export const UI = {
         + 'Grand Theft Auto and Rockstar Games are trademarks of Take-Two Interactive Software, Inc.',
     },
   },
+  es: {
+    ...HEADER_STRINGS.es,
+    tagline: 'Herramientas para gente que usa IA y quiere saber qué está ejecutando.',
+    nav: { airlock: 'AIRLOCK', nexus: 'NEXUS', deck: 'DECK', scripts: 'Scripts', skills: 'Índice de skills', learn: 'Aprender', api: 'API', forum: 'Foro', games: 'Juegos', werkzeuge: 'Herramientas', geobingo: 'GeoBingo' },
+    searchPlaceholder: 'Buscar',
+    searchHint: 'Buscar en este sitio',
+    searchEverything: 'Buscar páginas, skills y guías…',
+    typeToSearch: 'Empieza a escribir para buscar en todo el sitio.',
+    noResults: 'Nada encontrado. Prueba con otra palabra.',
+    navigate: 'para moverte',
+    open: 'para abrir',
+    page: 'página',
+    section: 'sección',
+    result: 'resultado',
+    resultsWord: 'resultados',
+    themeLabel: 'Cambiar entre claro y oscuro',
+    skipLink: 'Saltar al contenido',
+    footer: {
+      scriptsGta5: 'Para GTA V',
+      scriptsEgal: 'Independiente del juego',
+      products: 'Productos',
+      resources: 'Material',
+      community: 'Comunidad',
+      about: 'Acerca de',
+      docs: 'Documentación',
+      source: 'Código fuente',
+      catalogue: 'Índice de skills',
+      submit: 'Enviar un skill',
+      forum: 'Foro',
+      discussions: 'GitHub Discussions',
+      learn: 'Entender la seguridad de la IA',
+      security: 'Informar de un fallo de seguridad',
+      legal: 'Legal',
+      impressum: 'Aviso legal',
+      privacy: 'Privacidad',
+      // Dieselbe Richtigstellung wie in der englischen Fassung ganz oben.
+      note: 'Desarrollado en abierto. Sin rastreadores, sin analítica, sin publicidad. Cada página salvo el foro y GeoBingo es completamente autónoma; esas dos hablan con Google, y la página de privacidad dice exactamente qué significa eso.',
+      rights: 'Licencia MIT — libre para leer, bifurcar y reutilizar.',
+      // Wörtlich dieselbe englische Formel wie oben — die Begründung steht dort.
+      rockstar: 'SKILLRY IS NOT APPROVED, SPONSORED, OR ENDORSED BY ROCKSTAR GAMES. '
+        + 'Grand Theft Auto and Rockstar Games are trademarks of Take-Two Interactive Software, Inc.',
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -352,7 +464,7 @@ export const UI = {
 /**
  * Die Sprachen des Netzwerks.
  *
- * Zwei sind LIVE (jede Seite existiert vollstaendig in ihnen), elf sind
+ * Drei sind LIVE (jede Seite existiert vollstaendig in ihnen), zehn sind
  * ANGEKUENDIGT. Der Unterschied ist hart: eine live-Sprache haengt in LANGS
  * und wird komplett gebaut; eine angekuendigte steht im Waehler als graue
  * Zeile mit "bald" — dieselbe Regel wie bei GTA VI im Skripte-Menue: was es
@@ -364,7 +476,7 @@ export const UI = {
 export const SPRACHEN = [
   { code: 'de', name: 'Deutsch', live: true },
   { code: 'en', name: 'English', live: true },
-  { code: 'es', name: 'Español', live: false },
+  { code: 'es', name: 'Español', live: true },
   { code: 'fr', name: 'Français', live: false },
   { code: 'it', name: 'Italiano', live: false },
   { code: 'pt', name: 'Português', live: false },
@@ -609,6 +721,12 @@ const HINWEIS_TEXT = {
     ok: 'Verstanden',
     mehr: 'Datenschutz',
   },
+  es: {
+    h: 'Sin cookies',
+    p: 'Este sitio no coloca ninguna, no mide nada y no muestra publicidad. En su navegador solo hay lo que usted mismo ajustó. El foro y GeoBingo hablan con Google en cuanto los usa.',
+    ok: 'Entendido',
+    mehr: 'Privacidad',
+  },
 };
 
 const hinweis = (lang) => {
@@ -755,7 +873,7 @@ export function render(page) {
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonical}">
 <meta property="og:site_name" content="${SITE.name}">
-<meta property="og:locale" content="${page.lang === 'de' ? 'de_DE' : 'en_GB'}">
+<meta property="og:locale" content="${GEBIETSSCHEMA[page.lang].replace('-', '_')}">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="${favicon}">
 <link rel="alternate" hreflang="${page.lang}" href="${ORIGIN}${href(page.lang, page.slug)}">
@@ -817,27 +935,26 @@ ${HEADER_JS({
   urls: {
     forum: href(page.lang, 'forum'),
     /*
-     * ZWEI FELDER, DIE HIER GEFEHLT HABEN — UND ES IST DASSELBE MUSTER WIE
-     * DAMALS BEI fb.sdk
+     * DIESES FELD HAT HIER GEFEHLT — UND ES IST DASSELBE MUSTER WIE DAMALS
+     * BEI fb.sdk
      *
-     * Das Kopfskript liest C.urls.newPost und C.urls.alt. Beide gab es nicht.
-     * Ein fehlendes Feld ist in JavaScript kein Fehler, sondern undefined, und
+     * Das Kopfskript liest C.urls.newPost. Das Feld gab es nicht. Ein
+     * fehlendes Feld ist in JavaScript kein Fehler, sondern undefined, und
      * undefined in einer Adresse ergibt eine gueltige Adresse:
      *
      *     quick.href = C.urls.newPost   ->   https://skillry.de/undefined
      *
-     * Der Knopf "+ POST" oben rechts fuehrte damit auf die 404-Seite, und der
-     * Sprungbefehl fuer den Sprachwechsel ebenso. Nichts hat gewarnt: kein
-     * Build-Fehler, kein Konsolenfehler, keine rote Zeile. Nur eine Seite, die
-     * hoeflich sagt, dass es sie nicht gibt.
+     * Der Knopf "+ POST" oben rechts fuehrte damit auf die 404-Seite. Nichts
+     * hat gewarnt: kein Build-Fehler, kein Konsolenfehler, keine rote Zeile.
+     * Nur eine Seite, die hoeflich sagt, dass es sie nicht gibt.
      *
-     * `alt` heisst dasselbe wie `other` — der eine Name steht in der Suche,
-     * der andere in der Sprachumschaltung. Statt einen umzubenennen und den
-     * zweiten Fundort zu uebersehen, stehen jetzt beide da.
+     * Hier standen ausserdem `alt` und `other` — die Adresse "dieser Seite in
+     * der jeweils anderen Sprache". Mit zwei Sprachen war das eindeutig; mit
+     * dreien gibt es "die andere" nicht mehr. Der Suchbefehl fuer den
+     * Sprachwechsel oeffnet seitdem den Waehler im Kopf, der alle Sprachen
+     * kennt, statt blind irgendwohin zu springen.
      */
     newPost: href(page.lang, 'forum') + '?new=1',
-    alt: href(page.lang === 'de' ? 'en' : 'de', page.slug),
-    other: href(page.lang === 'de' ? 'en' : 'de', page.slug),
     index: '/search-index.json',
   },
 })}
