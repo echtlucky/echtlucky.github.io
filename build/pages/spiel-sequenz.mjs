@@ -27,6 +27,11 @@ export const meta = {
     description:
       'Vier Felder, eine wachsende Folge: ansehen, nachspielen, jede Stufe einen Schritt länger. Läuft komplett im Browser — kein Konto, nichts wird gespeichert.',
   },
+  es: {
+    title: 'Secuencia — cadena de colores · Skillry Games',
+    description:
+      'Cuatro campos, una cadena que crece: mírala, repítela, un paso más largo en cada nivel. Corre entero en tu navegador — sin cuenta, nada se guarda.',
+  },
 };
 
 const T = {
@@ -55,6 +60,19 @@ const T = {
     level: 'Stufe', best: 'Beste',
     feld: 'Feld',
     zurueck: 'Alle Spiele', idee: 'Ein Spiel vorschlagen',
+  },
+  es: {
+    eyebrow: 'Skillry Games',
+    chip: 'En esta página',
+    h1: 'Secuencia',
+    lede: 'Cuatro campos en cuatro colores de la red. La cadena se reproduce una vez sola — luego te toca a ti, y cada nivel añade un paso más. ¿Hasta dónde llegas?',
+    jsNote: 'Este juego necesita JavaScript. Sin él, nada más en esta página hace nada por su cuenta tampoco.',
+    so: ['Pulsa Empezar y mira: los campos se encienden por orden.', 'Repite el mismo orden — clic, o con Tab hasta el campo y Enter.', 'Cada nivel añade un paso. Un toque equivocado termina la partida; tu mejor marca se queda hasta que cierres la pestaña.'],
+    start: 'Empezar', wieder: 'Otra vez',
+    schau: 'Mira…', dran: 'Te toca', vorbei: 'En el nivel {n} se acabó.',
+    level: 'Nivel', best: 'Mejor',
+    feld: 'Campo',
+    zurueck: 'Todos los juegos', idee: 'Proponer un juego',
   },
 };
 

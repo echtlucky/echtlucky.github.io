@@ -39,6 +39,11 @@ export const meta = {
     description:
       'Die Spielseite des Skillry-Netzwerks: Reflex, Paare und Sequenz laufen komplett im Browser; GeoBingo jagt Wörter in Street View, und GeoRadar rät um die Wette, wo auf der Welt du stehst.',
   },
+  es: {
+    title: 'Juegos — jugables directamente en el navegador · Skillry',
+    description:
+      'La parte de juego de la red Skillry: Reflejos, Parejas y Secuencia funcionan por completo en tu navegador; GeoBingo caza palabras en Street View, y GeoRadar convierte en carrera adivinar en qué punto del mundo estás.',
+  },
 };
 
 const T = {
@@ -130,6 +135,51 @@ const T = {
       ['Pixel-Duell', 'Einer malt mit Pixeln, die Lobby rät. Der schnellste richtige Tipp punktet.'],
       ['Blitzrechnen', 'Sechzig Sekunden Kopfrechnen, eine gemeinsame Bestenliste je Lobby.'],
       ['Turm', 'Die wandernden Blöcke so hoch und so gerade stapeln, wie die Nerven es zulassen.'],
+    ],
+  },
+  es: {
+    eyebrow: 'Skillry Games',
+    h1: 'Juega, aquí mismo.',
+    lede:
+      'Los juegos son parte de la red. Cada uno tiene su propia página — un enlace que se puede compartir. Los pequeños corren enteros en tu navegador y no guardan nada; GeoBingo tiene su propia página y sus propias reglas. Lo que aún se está construyendo lo dice, en vez de aparentar.',
+    liveH: 'Jugable ya',
+    nachher: 'En desarrollo',
+    nachherLede: 'Anunciado, sin enlace — un enlace a algo que aún no existe es un error disfrazado de oferta. El progreso aterriza primero aquí.',
+    ideenH: 'Ideas de juegos',
+    ideenLede: 'Lo que podría llegar a la red a continuación. Nada de esto es una promesa — son candidatos, y el orden lo decide el foro. Leer no necesita cuenta.',
+    ideenCta: 'Votar en el foro',
+    chipHier: 'Jugable',
+    chipKonto: 'Requiere iniciar sesión',
+    chipBald: 'En desarrollo',
+    chipIdee: 'Idea',
+    spielen: 'Jugar',
+
+    spiele: {
+      geobingo: {
+        h: 'GeoBingo',
+        p: 'Una ronda de bingo en vivo dentro de Google Street View, construida para ir a pantalla completa junto a un stream. Una sala, una lista de palabras compartida, y una revisión en la que cada hallazgo se puede discutir como un panorama 3D de verdad.',
+        hinweis: 'Corre detrás de un inicio de sesión de Google y habla con Google en cuanto juegas — esa página lo dice antes de hacerlo. Nuevo: un minimapa del mundo en la esquina — ábrelo, haz clic en cualquier sitio, y el panorama salta justo ahí (quién puede, lo decide un ajuste de la sala).',
+      },
+      georadar: {
+        h: 'GeoRadar',
+        p: 'El lado GeoGuessr de GeoBingo: todos aterrizan en el MISMO punto de Street View y compiten por adivinar dónde queda en el mapa del mundo — la marca más cercana gana, y el reloj deshace empates.',
+        hinweis: 'Un solo juego con GeoBingo: misma sala, mismos códigos, cambiable como modo en los ajustes y jugable por separado.',
+      },
+      reflex: { h: 'Reflejos', p: 'Cinco rondas contra tus propios nervios. La superficie se enciende tras una espera aleatoria — acierta lo más rápido que puedas.' },
+      paare: { h: 'Parejas', p: 'Dieciséis cartas, ocho parejas, una de ellas el propio símbolo de Skillry. Ganan los menos movimientos.' },
+      sequenz: { h: 'Secuencia', p: 'Cuatro campos, una cadena que crece: mírala, repítela, un paso más largo en cada nivel.' },
+    },
+
+    netzH: 'Red multijugador',
+    netzP: 'Salas con códigos de cinco caracteres, como las que GeoBingo ya tiene — extendidas a los juegos pequeños, para que Reflejos y Parejas se conviertan en duelos. Misma cuenta, mismos códigos, mismas reglas sobre qué se guarda.',
+
+    ideen: [
+      ['Sprint de palabras', 'Teclear las palabras que caen antes de que aterricen — mecanografía rápida como duelo.'],
+      ['Arena de quiz', 'Preguntas escritas por la comunidad en el foro, jugadas en salas.'],
+      ['Descifracódigos', 'Romper el código de colores en los menos intentos posibles — Mastermind, edición de la red.'],
+      ['Duelo de píxeles', 'Uno dibuja con píxeles, la sala adivina. La respuesta correcta más rápida puntúa.'],
+      ['Cálculo relámpago', 'Sesenta segundos de cálculo mental, una clasificación compartida por sala.'],
+      ['Torre', 'Apilar los bloques que van y vienen tan alto y tan recto como te dejen los nervios.'],
     ],
   },
 };

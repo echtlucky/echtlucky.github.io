@@ -23,6 +23,11 @@ export const meta = {
     description:
       'Sechzehn Karten, acht Paare, eines davon das Skillry-Zeichen selbst. Wenigste Züge gewinnen. Läuft komplett im Browser — kein Konto, nichts wird gespeichert.',
   },
+  es: {
+    title: 'Parejas — juego de memoria · Skillry Games',
+    description:
+      'Dieciséis cartas, ocho parejas, una de ellas el propio símbolo de Skillry. Ganan los menos movimientos. Corre entero en tu navegador — sin cuenta, nada se guarda.',
+  },
 };
 
 const T = {
@@ -51,6 +56,19 @@ const T = {
     win: 'Alle acht! {m} Züge in {s}s.',
     card: 'Karte',
     zurueck: 'Alle Spiele', idee: 'Ein Spiel vorschlagen',
+  },
+  es: {
+    eyebrow: 'Skillry Games',
+    chip: 'En esta página',
+    h1: 'Parejas',
+    lede: 'Dieciséis cartas, ocho parejas, una de ellas el propio símbolo de Skillry. Ganan los menos movimientos — contra ti, que eres el rival más duro disponible.',
+    jsNote: 'Este juego necesita JavaScript. Sin él, nada más en esta página hace nada por su cuenta tampoco.',
+    so: ['Da la vuelta a dos cartas. Si coinciden, se quedan y dan un paso atrás.', 'Si no coinciden: recuerda dónde estaban — el reloj solo arranca con tu primer movimiento.', 'Encontradas las ocho: tus movimientos y tu tiempo quedan fijados. Baraja de nuevo y mejóralos.'],
+    moves: 'Movimientos', found: 'Parejas', time: 'Tiempo',
+    neu: 'Barajar de nuevo',
+    win: '¡Las ocho! {m} movimientos en {s}s.',
+    card: 'Carta',
+    zurueck: 'Todos los juegos', idee: 'Proponer un juego',
   },
 };
 

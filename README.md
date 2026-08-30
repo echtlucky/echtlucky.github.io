@@ -34,12 +34,12 @@ build/
   site.mjs        the build — emits every page once per language
   layout.mjs      page shell: header, nav, language switch, footer
   theme.mjs       design tokens and the stylesheet
-  pages/          one module per page, content in both languages
+  pages/          one module per page, content in every live language
   geobingo-spiel.js  the GeoBingo client, plain JS rather than a string array
   rescan.mjs      re-derives skill index verdicts from the real engine
   validate.mjs    structure, "nobody types their own verdict", the script
                   catalogue's price and image rules, and that the game never
-                  reads a string neither language has
+                  reads a string any live language is missing
   linkcheck.mjs   every internal link must resolve
 content/
   catalog.json    the skill index
@@ -55,8 +55,9 @@ A page module exports `slug`, `meta`, `body(lang)`, and optionally `script(lang)
 and `head(lang)`. `head` is where a page keeps CSS nobody else needs — the shop
 layout has no business loading on the Impressum.
 
-English lives at the root, German under `/de/`. Adding a language means adding
-it to `LANGS` and filling in the strings — the loop does the rest.
+English lives at the root, German under `/de/`, Spanish under `/es/`. Adding
+a language means adding it to `LANGS` and filling in the strings — the loop
+does the rest, and the validator refuses a language that is only half there.
 
 ## The skill index
 

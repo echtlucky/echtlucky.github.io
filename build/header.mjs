@@ -51,16 +51,18 @@ export const SITEMAP = {
     lede: {
       en: 'Reads a skill file the way an assistant would, and tells you what it found.',
       de: 'Liest eine Skill-Datei so, wie ein Assistent es täte, und sagt dir, was drinsteht.',
+      es: 'Lee un archivo de skill como lo haría un asistente, y te dice qué encontró.',
     },
-    cta: { en: 'Open AIRLOCK', de: 'AIRLOCK öffnen' },
+    cta: { en: 'Open AIRLOCK', de: 'AIRLOCK öffnen', es: 'Abrir AIRLOCK' },
     extra: {
       en: 'Nearby',
       de: 'In der Nähe',
+      es: 'Cerca de aquí',
       items: [
-        { l: { en: 'Scanned skills', de: 'Geprüfte Skills' }, h: (lang) => href(lang, 'skills') },
-        { l: { en: 'What can go wrong', de: 'Was schiefgehen kann' }, h: (lang) => href(lang, 'learn') },
-        { l: { en: 'Source code', de: 'Quellcode' }, h: () => SITE.repoAirlock, ext: true },
-        { l: { en: 'Report a false positive', de: 'False Positive melden' }, h: (lang) => `${href(lang, 'forum')}?cat=false-positives` },
+        { l: { en: 'Scanned skills', de: 'Geprüfte Skills', es: 'Skills analizados' }, h: (lang) => href(lang, 'skills') },
+        { l: { en: 'What can go wrong', de: 'Was schiefgehen kann', es: 'Qué puede salir mal' }, h: (lang) => href(lang, 'learn') },
+        { l: { en: 'Source code', de: 'Quellcode', es: 'Código fuente' }, h: () => SITE.repoAirlock, ext: true },
+        { l: { en: 'Report a false positive', de: 'False Positive melden', es: 'Informar de un falso positivo' }, h: (lang) => `${href(lang, 'forum')}?cat=false-positives` },
       ],
     },
   },
@@ -69,15 +71,17 @@ export const SITEMAP = {
     lede: {
       en: 'A Windows app that keeps the pieces in one place instead of five windows.',
       de: 'Eine Windows-App, die die Teile an einem Ort hält statt in fünf Fenstern.',
+      es: 'Una app de Windows que mantiene las piezas en un solo lugar en vez de en cinco ventanas.',
     },
-    cta: { en: 'Open NEXUS', de: 'NEXUS öffnen' },
+    cta: { en: 'Open NEXUS', de: 'NEXUS öffnen', es: 'Abrir NEXUS' },
     extra: {
       en: 'Nearby',
       de: 'In der Nähe',
+      es: 'Cerca de aquí',
       items: [
-        { l: { en: 'Source code', de: 'Quellcode' }, h: () => SITE.repoNexus, ext: true },
-        { l: { en: 'Show your setup', de: 'Dein Setup zeigen' }, h: (lang) => `${href(lang, 'forum')}?cat=showcase` },
-        { l: { en: 'Why it sits next to AIRLOCK', de: 'Warum es neben AIRLOCK steht' }, h: (lang) => href(lang, 'airlock') },
+        { l: { en: 'Source code', de: 'Quellcode', es: 'Código fuente' }, h: () => SITE.repoNexus, ext: true },
+        { l: { en: 'Show your setup', de: 'Dein Setup zeigen', es: 'Enseña tu setup' }, h: (lang) => `${href(lang, 'forum')}?cat=showcase` },
+        { l: { en: 'Why it sits next to AIRLOCK', de: 'Warum es neben AIRLOCK steht', es: 'Por qué está junto a AIRLOCK' }, h: (lang) => href(lang, 'airlock') },
       ],
     },
   },
@@ -86,16 +90,18 @@ export const SITEMAP = {
     lede: {
       en: 'Every FiveM resource with the version it declares — and a basket that ends in a message, not at a till.',
       de: 'Jede FiveM-Ressource mit der Fassung, die sie deklariert — und ein Warenkorb, der in einer Nachricht endet, nicht an einer Kasse.',
+      es: 'Cada recurso de FiveM con la versión que declara — y una cesta que termina en un mensaje, no en una caja.',
     },
-    cta: { en: 'Open the scripts', de: 'Zu den Skripten' },
+    cta: { en: 'Open the scripts', de: 'Zu den Skripten', es: 'Ir a los scripts' },
     extra: {
       en: 'Nearby',
       de: 'In der Nähe',
+      es: 'Cerca de aquí',
       items: [
-        { l: { en: 'The basket', de: 'Der Warenkorb' }, h: (lang) => `${href(lang, 'scripts')}#korb` },
-        { l: { en: 'What the licence check does', de: 'Was die Lizenzprüfung leistet' }, h: (lang) => href(lang, 'api') },
-        { l: { en: 'Questions about a script', de: 'Fragen zu einem Skript' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
-        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt' }, h: (lang) => href(lang, 'impressum') },
+        { l: { en: 'The basket', de: 'Der Warenkorb', es: 'La cesta' }, h: (lang) => `${href(lang, 'scripts')}#korb` },
+        { l: { en: 'What the licence check does', de: 'Was die Lizenzprüfung leistet', es: 'Qué hace la comprobación de licencias' }, h: (lang) => href(lang, 'api') },
+        { l: { en: 'Questions about a script', de: 'Fragen zu einem Skript', es: 'Preguntas sobre un script' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt', es: 'Aviso legal y contacto' }, h: (lang) => href(lang, 'impressum') },
       ],
     },
   },
@@ -104,17 +110,19 @@ export const SITEMAP = {
     lede: {
       en: 'Every skill in the index, with the verdict the engine actually produced.',
       de: 'Jeder Skill im Index, mit dem Urteil, das die Engine tatsächlich erzeugt hat.',
+      es: 'Cada skill del índice, con el veredicto que el motor produjo de verdad.',
     },
-    cta: { en: 'Open the index', de: 'Index öffnen' },
+    cta: { en: 'Open the index', de: 'Index öffnen', es: 'Abrir el índice' },
     extra: {
       en: 'By verdict',
       de: 'Nach Urteil',
+      es: 'Por veredicto',
       items: [
-        { l: { en: 'Passed', de: 'Bestanden' }, h: (lang) => `${href(lang, 'skills')}?v=pass` },
-        { l: { en: 'Needs review', de: 'Prüfen' }, h: (lang) => `${href(lang, 'skills')}?v=review` },
-        { l: { en: 'Blocked', de: 'Blockiert' }, h: (lang) => `${href(lang, 'skills')}?v=block` },
-        { l: { en: 'Not scanned', de: 'Ungeprüft' }, h: (lang) => `${href(lang, 'skills')}?v=unscanned` },
-        { l: { en: 'Submit a skill', de: 'Skill einreichen' }, h: () => `${SITE.repoAirlock}/blob/main/CONTRIBUTING.md`, ext: true },
+        { l: { en: 'Passed', de: 'Bestanden', es: 'Aprobados' }, h: (lang) => `${href(lang, 'skills')}?v=pass` },
+        { l: { en: 'Needs review', de: 'Prüfen', es: 'Por revisar' }, h: (lang) => `${href(lang, 'skills')}?v=review` },
+        { l: { en: 'Blocked', de: 'Blockiert', es: 'Bloqueados' }, h: (lang) => `${href(lang, 'skills')}?v=block` },
+        { l: { en: 'Not scanned', de: 'Ungeprüft', es: 'Sin analizar' }, h: (lang) => `${href(lang, 'skills')}?v=unscanned` },
+        { l: { en: 'Submit a skill', de: 'Skill einreichen', es: 'Enviar un skill' }, h: () => `${SITE.repoAirlock}/blob/main/CONTRIBUTING.md`, ext: true },
       ],
     },
   },
@@ -123,15 +131,17 @@ export const SITEMAP = {
     lede: {
       en: 'Five questions, answered twice: short, and then properly.',
       de: 'Fünf Fragen, zweimal beantwortet: kurz, und dann richtig.',
+      es: 'Cinco preguntas, respondidas dos veces: en corto, y luego en serio.',
     },
-    cta: { en: 'Start reading', de: 'Loslesen' },
+    cta: { en: 'Start reading', de: 'Loslesen', es: 'Empezar a leer' },
     extra: {
       en: 'Depth',
       de: 'Tiefe',
+      es: 'Profundidad',
       items: [
-        { l: { en: 'Short answers', de: 'Kurze Antworten' }, h: (lang) => `${href(lang, 'learn')}?level=basic` },
-        { l: { en: 'The long version', de: 'Die lange Fassung' }, h: (lang) => `${href(lang, 'learn')}?level=deep` },
-        { l: { en: 'Ask in the forum', de: 'Im Forum fragen' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Short answers', de: 'Kurze Antworten', es: 'Respuestas cortas' }, h: (lang) => `${href(lang, 'learn')}?level=basic` },
+        { l: { en: 'The long version', de: 'Die lange Fassung', es: 'La versión larga' }, h: (lang) => `${href(lang, 'learn')}?level=deep` },
+        { l: { en: 'Ask in the forum', de: 'Im Forum fragen', es: 'Preguntar en el foro' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
       ],
     },
   },
@@ -140,15 +150,17 @@ export const SITEMAP = {
     lede: {
       en: 'The licence check a FiveM server talks to: the whole contract, and what it cannot do.',
       de: 'Die Lizenzprüfung, mit der ein FiveM-Server spricht: der ganze Vertrag, und was er nicht kann.',
+      es: 'La comprobación de licencias con la que habla un servidor de FiveM: el contrato entero, y lo que no puede hacer.',
     },
-    cta: { en: 'Read the contract', de: 'Den Vertrag lesen' },
+    cta: { en: 'Read the contract', de: 'Den Vertrag lesen', es: 'Leer el contrato' },
     extra: {
       en: 'Nearby',
       de: 'In der Nähe',
+      es: 'Cerca de aquí',
       items: [
-        { l: { en: 'Questions about the API', de: 'Fragen zur API' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
-        { l: { en: 'Ideas and requests', de: 'Ideen und Wünsche' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
-        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt' }, h: (lang) => href(lang, 'impressum') },
+        { l: { en: 'Questions about the API', de: 'Fragen zur API', es: 'Preguntas sobre la API' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Ideas and requests', de: 'Ideen und Wünsche', es: 'Ideas y peticiones' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+        { l: { en: 'Site notice and contact', de: 'Impressum und Kontakt', es: 'Aviso legal y contacto' }, h: (lang) => href(lang, 'impressum') },
       ],
     },
   },
@@ -157,16 +169,18 @@ export const SITEMAP = {
     lede: {
       en: 'Games from the network — playable right in the browser, and nothing loads from anyone else.',
       de: 'Spiele aus dem Netzwerk — direkt im Browser spielbar, und nichts lädt von Dritten.',
+      es: 'Juegos de la red — se juegan directamente en el navegador, y nada se carga de terceros.',
     },
-    cta: { en: 'Open the games', de: 'Zu den Spielen' },
+    cta: { en: 'Open the games', de: 'Zu den Spielen', es: 'Ir a los juegos' },
     extra: {
       en: 'Play',
       de: 'Spielen',
+      es: 'Jugar',
       items: [
-        { l: { en: 'Reflex', de: 'Reflex' }, h: (lang) => href(lang, 'games/reflex') },
-        { l: { en: 'Pairs', de: 'Paare' }, h: (lang) => href(lang, 'games/pairs') },
-        { l: { en: 'Sequence', de: 'Sequenz' }, h: (lang) => href(lang, 'games/sequence') },
-        { l: { en: 'Suggest a game', de: 'Ein Spiel vorschlagen' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+        { l: { en: 'Reflex', de: 'Reflex', es: 'Reflejos' }, h: (lang) => href(lang, 'games/reflex') },
+        { l: { en: 'Pairs', de: 'Paare', es: 'Parejas' }, h: (lang) => href(lang, 'games/pairs') },
+        { l: { en: 'Sequence', de: 'Sequenz', es: 'Secuencia' }, h: (lang) => href(lang, 'games/sequence') },
+        { l: { en: 'Suggest a game', de: 'Ein Spiel vorschlagen', es: 'Proponer un juego' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
       ],
     },
   },
@@ -175,20 +189,22 @@ export const SITEMAP = {
     lede: {
       en: 'Ask what something means. Beginner questions are the point.',
       de: 'Frag, was etwas bedeutet. Anfängerfragen sind der Sinn der Sache.',
+      es: 'Pregunta qué significa algo. Las preguntas de principiante son el sentido de todo esto.',
     },
-    cta: { en: 'Open the forum', de: 'Forum öffnen' },
+    cta: { en: 'Open the forum', de: 'Forum öffnen', es: 'Abrir el foro' },
     // Categories are not headings, so they cannot be harvested — they are the
     // one place where the menu genuinely owns its own links.
     extra: {
       en: 'Categories',
       de: 'Kategorien',
+      es: 'Categorías',
       items: [
-        { l: { en: 'Help & questions', de: 'Hilfe & Fragen' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
-        { l: { en: 'Skills', de: 'Skills' }, h: (lang) => `${href(lang, 'forum')}?cat=skills` },
-        { l: { en: 'False positives', de: 'False Positives' }, h: (lang) => `${href(lang, 'forum')}?cat=false-positives` },
-        { l: { en: 'Misses', de: 'Übersehenes' }, h: (lang) => `${href(lang, 'forum')}?cat=misses` },
-        { l: { en: 'Ideas', de: 'Ideen' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
-        { l: { en: 'Showcase', de: 'Zeigen' }, h: (lang) => `${href(lang, 'forum')}?cat=showcase` },
+        { l: { en: 'Help & questions', de: 'Hilfe & Fragen', es: 'Ayuda y preguntas' }, h: (lang) => `${href(lang, 'forum')}?cat=help` },
+        { l: { en: 'Skills', de: 'Skills', es: 'Skills' }, h: (lang) => `${href(lang, 'forum')}?cat=skills` },
+        { l: { en: 'False positives', de: 'False Positives', es: 'Falsos positivos' }, h: (lang) => `${href(lang, 'forum')}?cat=false-positives` },
+        { l: { en: 'Misses', de: 'Übersehenes', es: 'Pasado por alto' }, h: (lang) => `${href(lang, 'forum')}?cat=misses` },
+        { l: { en: 'Ideas', de: 'Ideen', es: 'Ideas' }, h: (lang) => `${href(lang, 'forum')}?cat=ideas` },
+        { l: { en: 'Showcase', de: 'Zeigen', es: 'Muestra tu trabajo' }, h: (lang) => `${href(lang, 'forum')}?cat=showcase` },
       ],
     },
   },
@@ -230,9 +246,9 @@ export const NAV = [
     slug: 'scripts',
     key: 'scripts',
     spiele: [
-      { key: 'gta5', l: { en: 'GTA V', de: 'GTA V' }, da: true },
-      { key: 'gta6', l: { en: 'GTA VI', de: 'GTA VI' }, da: false },
-      { key: 'egal', l: { en: 'Game-independent', de: 'Spielunabhängig' }, da: true },
+      { key: 'gta5', l: { en: 'GTA V', de: 'GTA V', es: 'GTA V' }, da: true },
+      { key: 'gta6', l: { en: 'GTA VI', de: 'GTA VI', es: 'GTA VI' }, da: false },
+      { key: 'egal', l: { en: 'Game-independent', de: 'Spielunabhängig', es: 'Independiente del juego' }, da: true },
     ],
   },
   {
@@ -1550,8 +1566,11 @@ export const HEADER_JS = (cfg) => `
     var a = [];
     a.push({ k: 'action', t: S.actTheme, s: '', b: 'theme dark light design hell dunkel modus',
              run: function () { document.getElementById('themeBtn').click(); } });
-    a.push({ k: 'action', t: S.actLang, s: '', b: 'language sprache deutsch english wechseln',
-             run: function () { location.href = C.urls.alt; } });
+    // setTimeout, weil der Klick auf den Palettentreffer sonst noch bis zum
+    // document hochblubbert und der Zuklapp-Wächter des Wählers ihn als
+    // "Klick woanders" liest — der Wähler ginge im selben Moment wieder zu.
+    a.push({ k: 'action', t: S.actLang, s: '', b: 'language sprache idioma deutsch english español espanol wechseln elegir',
+             run: function () { setTimeout(function () { var b = document.getElementById('ghLangBtn'); if (b) b.click(); }, 0); } });
     if (state.user && state.user.emailVerified) {
       a.push({ k: 'action', t: S.actNew, s: '', b: 'forum post thread beitrag neu new schreiben',
                run: function () { location.href = C.urls.newPost; } });

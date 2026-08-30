@@ -150,7 +150,7 @@ drei ehrlichen Chips benutzen: *Auf dieser Seite* / *Anmeldung nötig* /
 ### 6. Arbeitsweise
 
 Miss jede neue Farbe (`WCAG-Kontrast, im Quelltext dokumentiert`), lass
-`npm run check` und `node build/linkcheck.mjs` laufen, bau beide Sprachen,
+`npm run check` und `node build/linkcheck.mjs` laufen, bau alle live-Sprachen,
 schau dir beide Schemata auf drei Breiten an, und schreib zu jeder
 Design-Entscheidung den Grund dorthin, wo die Entscheidung steht — als
 Kommentar im Code, nicht in einem Chat, der verloren geht.

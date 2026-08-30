@@ -22,6 +22,11 @@ export const meta = {
     description:
       'NEXUS bündelt KI-Assistent, Launcher, Browser, Code-Editor und Studio in einer nativen Windows-App. Lokal zuerst, anbieterneutral, bis auf eine Konfigurationsdatei steuerbar.',
   },
+  es: {
+    title: 'NEXUS — el centro de mando sobre tu Windows · Skillry',
+    description:
+      'NEXUS reúne asistente de IA, lanzador, navegador, editor de código y estudio en una app nativa de Windows. Local primero, neutral ante proveedores, controlable hasta el fondo desde un archivo de configuración.',
+  },
 };
 
 const T = {
@@ -103,6 +108,46 @@ const T = {
     statusP:
       'Version 0.9.0, in aktiver Entwicklung, nur Windows, und das Repository ist vorerst privat. Diese Seite wächst mit, sobald es sich öffnet — hier gibt es kein Anmeldeformular und keine Warteliste, denn Adressen für etwas zu sammeln, das noch nicht veröffentlicht ist, wäre eine Art so zu tun, als wäre es das.',
     statusCta: 'AIRLOCK ansehen, das offen ist',
+  },
+
+  es: {
+    eyebrow: 'NEXUS · v0.9.0 · en desarrollo',
+    h1: 'El centro de mando sobre tu Windows.',
+    lede:
+      'Una app nativa que corre en segundo plano y reúne las herramientas para las que normalmente abrirías media docena de programas: asistente, lanzador, navegador, editor de código y estudio.',
+    cta: 'Seguir en GitHub',
+    ctaAirlock: 'Ver AIRLOCK mientras tanto',
+
+    nameNoteH: 'Una cosa sobre el nombre',
+    nameNoteP:
+      'El producto se llama <strong>NEXUS</strong>. «NEXUS OS» es solo el nombre del repositorio de GitHub. NEXUS expresamente <em>no</em> es un sistema operativo — es una capa por encima de uno.',
+
+    modulesH: 'Qué lleva dentro',
+    modules: [
+      ['Compañero', 'Un compañero de IA con voz, accesible desde cualquier parte — escucha, responde, hace cosas y te guía por NEXUS.'],
+      ['Asistente', 'Chat con bucle de herramientas de agente, skills propios y preguntas de seguimiento — contra el proveedor que tú elijas.'],
+      ['Lanzador', 'Un único punto de entrada para los programas y archivos que de verdad abres.'],
+      ['Navegador', 'Integrado, para que un enlace del asistente no te lance a otra ventana.'],
+      ['Editor de código', 'Para el cambio que quieres hacer ahora mismo sin cambiar de contexto.'],
+      ['Estudio', 'Pantalla, cámara, sonido y codificador en una sola consola — emitir y grabar sin un OBS aparte.'],
+    ],
+
+    stanceH: 'Dónde se planta en lo que importa',
+    stance: [
+      ['Local primero', 'El camino por defecto es el local. Los proveedores en la nube son opcionales y se activan uno a uno.'],
+      ['Neutral ante proveedores', 'NEXUS habla con cualquier endpoint compatible con OpenAI. Qué proveedor, qué endpoint y qué modelo — lo decides tú, en los ajustes o en el archivo de configuración.'],
+      ['Nativo, no un envoltorio web', 'WinUI 3 sobre .NET 8. Se comporta como una aplicación de Windows porque lo es.'],
+      ['Configurable hasta el fondo', 'Todo lo que ofrece la interfaz también es accesible desde un archivo de configuración.'],
+    ],
+
+    togetherH: 'Por qué está junto a AIRLOCK',
+    togetherP:
+      'NEXUS tiene skills propios — el mismo tipo de archivo, el mismo problema. Un entorno de trabajo que carga instrucciones escritas por otras personas necesita una forma de comprobarlas. Exactamente por eso existe AIRLOCK. Son productos separados; solo da la casualidad de que se responden el uno al otro.',
+
+    statusH: 'Estado',
+    statusP:
+      'Versión 0.9.0, en desarrollo activo, solo Windows, y el repositorio es privado por ahora. Esta página crecerá cuando se abra — aquí no hay formulario de registro ni lista de espera, porque recoger direcciones para algo aún no publicado sería una forma de fingir que ya lo está.',
+    statusCta: 'Ver AIRLOCK, que sí está abierto',
   },
 };
 

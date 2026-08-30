@@ -22,6 +22,11 @@ export const meta = {
     description:
       'Fünf Runden gegen die eigenen Nerven: die Fläche leuchtet nach zufälliger Wartezeit auf, triff sie so schnell du kannst. Läuft komplett im Browser — kein Konto, nichts wird gespeichert.',
   },
+  es: {
+    title: 'Reflejos — juego de reacción · Skillry Games',
+    description:
+      'Cinco rondas contra tus propios nervios: la superficie se enciende tras una espera aleatoria, acierta lo más rápido que puedas. Corre entero en tu navegador — sin cuenta, nada se guarda.',
+  },
 };
 
 const T = {
@@ -56,6 +61,22 @@ const T = {
     done: 'Fertig!', doneSub: 'Klicken für eine neue Partie',
     round: 'Runde', last: 'Letzte', avg: 'Schnitt', best: 'Beste',
     zurueck: 'Alle Spiele', idee: 'Ein Spiel vorschlagen',
+  },
+  es: {
+    eyebrow: 'Skillry Games',
+    chip: 'En esta página',
+    h1: 'Reflejos',
+    lede: 'Cinco rondas. La superficie se enciende en el color de la marca tras una espera aleatoria — acierta lo más rápido que puedas. Hacer clic antes de tiempo cuesta el honor de la ronda, nada más.',
+    jsNote: 'Este juego necesita JavaScript. Sin él, nada más en esta página hace nada por su cuenta tampoco.',
+    so: ['Haz clic en Empezar — y no quites los ojos de la superficie.', 'En cuanto se encienda: clic, toque o tecla Enter.', 'Tras cinco rondas verás tu media y tu mejor marca. Luego: a batirla.'],
+    start: 'Empezar', startSub: 'Clic, toque o tecla Enter',
+    wait: 'Espera…', waitSub: 'La superficie se encenderá',
+    now: '¡AHORA!',
+    early: 'Demasiado pronto.', earlySub: 'Haz clic y repite la ronda',
+    next: 'Haz clic para la siguiente ronda',
+    done: '¡Hecho!', doneSub: 'Haz clic para otra partida',
+    round: 'Ronda', last: 'Última', avg: 'Media', best: 'Mejor',
+    zurueck: 'Todos los juegos', idee: 'Proponer un juego',
   },
 };
 

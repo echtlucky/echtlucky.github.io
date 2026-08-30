@@ -84,6 +84,10 @@ export const meta = {
     title: 'Anmeldung uebergeben · Skillry',
     description: 'Eine technische Seite, die deine Anmeldung an das Kundenportal weiterreicht. Hier gibt es nichts zu tun.',
   },
+  es: {
+    title: 'Traspaso de la sesión · Skillry',
+    description: 'Una página técnica que pasa tu inicio de sesión al portal de clientes. Aquí no hay nada que hacer.',
+  },
 };
 
 const T = {
@@ -98,6 +102,12 @@ const T = {
     p1: 'Diese Seite gibt es, damit das Kundenportal die Anmeldung uebernehmen kann, die du hier schon hast. Sie laeuft von selbst, in einem versteckten Rahmen, und zeigt nichts an.',
     p2: 'Wenn du von Hand hier gelandet bist, ist nichts kaputt — es gibt hier schlicht nichts zu tun. Das Portal liegt auf lizenz.skillry.de.',
     toPortal: 'Zum Kundenportal',
+  },
+  es: {
+    h1: 'Traspaso de la sesión',
+    p1: 'Esta página existe para que el portal de clientes pueda recoger el inicio de sesión que ya tienes aquí. Funciona sola, dentro de un marco oculto, y no muestra nada.',
+    p2: 'Si llegaste aquí a mano, nada está roto — sencillamente no hay nada que hacer. El portal está en lizenz.skillry.de.',
+    toPortal: 'Al portal de clientes',
   },
 };
 

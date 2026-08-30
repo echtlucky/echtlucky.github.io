@@ -53,6 +53,7 @@
     {
       "id": "de",
       "de": "Deutschland",
+      "es": "Alemania",
       "en": "Germany",
       "boxen": [
         [
@@ -328,6 +329,7 @@
     {
       "id": "atch",
       "de": "Österreich & Schweiz",
+      "es": "Austria y Suiza",
       "en": "Austria & Switzerland",
       "boxen": [
         [
@@ -599,6 +601,7 @@
     {
       "id": "benelux",
       "de": "Benelux",
+      "es": "Benelux",
       "en": "Benelux",
       "boxen": [
         [
@@ -884,6 +887,7 @@
     {
       "id": "fr",
       "de": "Frankreich",
+      "es": "Francia",
       "en": "France",
       "boxen": [
         [
@@ -1129,6 +1133,7 @@
     {
       "id": "ukie",
       "de": "Großbritannien & Irland",
+      "es": "Gran Bretaña e Irlanda",
       "en": "Britain & Ireland",
       "boxen": [
         [
@@ -1389,6 +1394,7 @@
     {
       "id": "iberia",
       "de": "Spanien & Portugal",
+      "es": "España y Portugal",
       "en": "Spain & Portugal",
       "boxen": [
         [
@@ -1654,6 +1660,7 @@
     {
       "id": "it",
       "de": "Italien",
+      "es": "Italia",
       "en": "Italy",
       "boxen": [
         [
@@ -1909,6 +1916,7 @@
     {
       "id": "nordics",
       "de": "Skandinavien",
+      "es": "Escandinavia",
       "en": "Nordics",
       "boxen": [
         [
@@ -2170,6 +2178,7 @@
     {
       "id": "east",
       "de": "Polen & Osteuropa",
+      "es": "Polonia y Europa del Este",
       "en": "Poland & Eastern Europe",
       "boxen": [
         [
@@ -2425,6 +2434,7 @@
     {
       "id": "balkan",
       "de": "Balkan, Türkei & Israel",
+      "es": "Balcanes, Turquía e Israel",
       "en": "Balkans, Türkiye & Israel",
       "boxen": [
         [
@@ -2702,6 +2712,7 @@
     {
       "id": "us",
       "de": "USA",
+      "es": "EE. UU.",
       "en": "United States",
       "boxen": [
         [
@@ -2969,6 +2980,7 @@
     {
       "id": "camx",
       "de": "Kanada & Mexiko",
+      "es": "Canadá y México",
       "en": "Canada & Mexico",
       "boxen": [
         [
@@ -3241,6 +3253,7 @@
     {
       "id": "latam",
       "de": "Südamerika",
+      "es": "Sudamérica",
       "en": "South America",
       "boxen": [
         [
@@ -3523,6 +3536,7 @@
     {
       "id": "jp",
       "de": "Japan",
+      "es": "Japón",
       "en": "Japan",
       "boxen": [
         [
@@ -3784,6 +3798,7 @@
     {
       "id": "krtw",
       "de": "Korea & Taiwan",
+      "es": "Corea y Taiwán",
       "en": "Korea & Taiwan",
       "boxen": [
         [
@@ -4040,6 +4055,7 @@
     {
       "id": "sea",
       "de": "Südostasien",
+      "es": "Sudeste Asiático",
       "en": "South-East Asia",
       "boxen": [
         [
@@ -4306,6 +4322,7 @@
     {
       "id": "aunz",
       "de": "Australien & Neuseeland",
+      "es": "Australia y Nueva Zelanda",
       "en": "Australia & New Zealand",
       "boxen": [
         [
@@ -4589,6 +4606,7 @@
     {
       "id": "africa",
       "de": "Afrika",
+      "es": "África",
       "en": "Africa",
       "boxen": [
         [
@@ -4820,86 +4838,104 @@
       "id": "start",
       "en": "Everyday things",
       "de": "Alltag",
+      "es": "Lo cotidiano",
       "enD": "On almost every street.",
       "deD": "In fast jeder Straße.",
+      "esD": "En casi cualquier calle.",
       "woerter": [
         {
           "de": "Ampel",
+          "es": "Semáforo",
           "en": "Traffic light",
           "p": 1
         },
         {
           "de": "Zebrastreifen",
+          "es": "Paso de cebra",
           "en": "Zebra crossing",
           "p": 1
         },
         {
           "de": "Bushaltestelle",
+          "es": "Parada de autobús",
           "en": "Bus stop",
           "p": 1
         },
         {
           "de": "Fahrrad",
+          "es": "Bicicleta",
           "en": "Bicycle",
           "p": 1
         },
         {
           "de": "Hydrant",
+          "es": "Boca de incendios",
           "en": "Fire hydrant",
           "p": 1
         },
         {
           "de": "Briefkasten",
+          "es": "Buzón",
           "en": "Post box",
           "p": 1
         },
         {
           "de": "Kirche",
+          "es": "Iglesia",
           "en": "Church",
           "p": 1
         },
         {
           "de": "Tankstelle",
+          "es": "Gasolinera",
           "en": "Petrol station",
           "p": 1
         },
         {
           "de": "Baustelle",
+          "es": "Obras",
           "en": "Roadworks",
           "p": 1
         },
         {
           "de": "Mülltonne",
+          "es": "Cubo de basura",
           "en": "Wheelie bin",
           "p": 1
         },
         {
           "de": "Sitzbank",
+          "es": "Banco para sentarse",
           "en": "Bench",
           "p": 1
         },
         {
           "de": "Einbahnstraße",
+          "es": "Señal de sentido único",
           "en": "One-way sign",
           "p": 1
         },
         {
           "de": "Bäckerei",
+          "es": "Panadería",
           "en": "Bakery",
           "p": 1
         },
         {
           "de": "Supermarkt",
+          "es": "Supermercado",
           "en": "Supermarket",
           "p": 1
         },
         {
           "de": "Brücke",
+          "es": "Puente",
           "en": "Bridge",
           "p": 1
         },
         {
           "de": "Graffiti",
+          "es": "Grafiti",
           "en": "Graffiti",
           "p": 1
         }
@@ -4909,86 +4945,104 @@
       "id": "mittel",
       "en": "Takes a look around",
       "de": "Genauer hinsehen",
+      "es": "Mirar con lupa",
       "enD": "There, but not on every corner.",
       "deD": "Gibt es, aber nicht an jeder Ecke.",
+      "esD": "Existen, pero no en cada esquina.",
       "woerter": [
         {
           "de": "Hund",
+          "es": "Perro",
           "en": "Dog",
           "p": 2
         },
         {
           "de": "Katze",
+          "es": "Gato",
           "en": "Cat",
           "p": 2
         },
         {
           "de": "Polizeiauto",
+          "es": "Coche de policía",
           "en": "Police car",
           "p": 2
         },
         {
           "de": "Krankenwagen",
+          "es": "Ambulancia",
           "en": "Ambulance",
           "p": 2
         },
         {
           "de": "Traktor",
+          "es": "Tractor",
           "en": "Tractor",
           "p": 2
         },
         {
           "de": "Windrad",
+          "es": "Aerogenerador",
           "en": "Wind turbine",
           "p": 2
         },
         {
           "de": "Solaranlage",
+          "es": "Placas solares",
           "en": "Solar panels",
           "p": 2
         },
         {
           "de": "Friedhof",
+          "es": "Cementerio",
           "en": "Cemetery",
           "p": 2
         },
         {
           "de": "Spielplatz",
+          "es": "Parque infantil",
           "en": "Playground",
           "p": 2
         },
         {
           "de": "Leuchtturm",
+          "es": "Faro",
           "en": "Lighthouse",
           "p": 2
         },
         {
           "de": "Straßenbahn",
+          "es": "Tranvía",
           "en": "Tram",
           "p": 2
         },
         {
           "de": "Wohnwagen",
+          "es": "Caravana",
           "en": "Caravan",
           "p": 2
         },
         {
           "de": "Boot",
+          "es": "Barca",
           "en": "Boat",
           "p": 2
         },
         {
           "de": "Statue",
+          "es": "Estatua",
           "en": "Statue",
           "p": 2
         },
         {
           "de": "Springbrunnen",
+          "es": "Fuente",
           "en": "Fountain",
           "p": 2
         },
         {
           "de": "Marktstand",
+          "es": "Puesto de mercado",
           "en": "Market stall",
           "p": 2
         }
@@ -4998,86 +5052,104 @@
       "id": "schwer",
       "en": "Rare sightings",
       "de": "Seltene Funde",
+      "es": "Hallazgos raros",
       "enD": "A round can end without a single one of these.",
       "deD": "Eine Runde kann ohne einen einzigen davon enden.",
+      "esD": "Una ronda puede terminar sin uno solo de estos.",
       "woerter": [
         {
           "de": "Hochzeit",
+          "es": "Boda",
           "en": "Wedding",
           "p": 3
         },
         {
           "de": "Regenbogen",
+          "es": "Arcoíris",
           "en": "Rainbow",
           "p": 3
         },
         {
           "de": "Heißluftballon",
+          "es": "Globo aerostático",
           "en": "Hot-air balloon",
           "p": 3
         },
         {
           "de": "Pferd",
+          "es": "Caballo",
           "en": "Horse",
           "p": 3
         },
         {
           "de": "Schneemann",
+          "es": "Muñeco de nieve",
           "en": "Snowman",
           "p": 3
         },
         {
           "de": "Riesenrad",
+          "es": "Noria",
           "en": "Ferris wheel",
           "p": 3
         },
         {
           "de": "Kirmes",
+          "es": "Feria",
           "en": "Funfair",
           "p": 3
         },
         {
           "de": "Baukran",
+          "es": "Grúa de obra",
           "en": "Construction crane",
           "p": 3
         },
         {
           "de": "Flugzeug am Himmel",
+          "es": "Avión en el cielo",
           "en": "Aeroplane in the sky",
           "p": 3
         },
         {
           "de": "Weihnachtsbaum",
+          "es": "Árbol de Navidad",
           "en": "Christmas tree",
           "p": 3
         },
         {
           "de": "Doppeldeckerbus",
+          "es": "Autobús de dos pisos",
           "en": "Double-decker bus",
           "p": 3
         },
         {
           "de": "Tuk-Tuk",
+          "es": "Tuk-tuk",
           "en": "Tuk-tuk",
           "p": 3
         },
         {
           "de": "Kamel",
+          "es": "Camello",
           "en": "Camel",
           "p": 3
         },
         {
           "de": "Das Google-Auto im Spiegel",
+          "es": "El coche de Google en un reflejo",
           "en": "The Google car in a reflection",
           "p": 3
         },
         {
           "de": "Jemand winkt in die Kamera",
+          "es": "Alguien saludando a la cámara",
           "en": "Somebody waving at the camera",
           "p": 3
         },
         {
           "de": "Kirchturmuhr",
+          "es": "Reloj de campanario",
           "en": "Church clock",
           "p": 3
         }
